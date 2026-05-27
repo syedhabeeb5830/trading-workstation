@@ -502,8 +502,6 @@ def _print_no_trade(regime: dict, funnel: dict, portfolio: dict,
             print(f"  {_d('Setups scored but below deployment threshold.')}")
         print(f"  {_d('Quality over frequency. This is normal.')}")
 
-    _print_near_misses(near_misses, regime["regime"])
-
     # Market pulse
     best = max((r.near_miss_score for r in near_misses), default=0)
     _ln()
@@ -545,12 +543,6 @@ def _print_footer(n_ready: int, n_watch: int, near_misses: list,
         heat_clr = _g if heat < 3 else (_y if heat < 4.5 else _r)
         print(heat_clr(f"  Portfolio heat: {heat:.1f}% / 5.0%  "
                        f"({portfolio['position_count']} open positions)"))
-
-    if near_misses:
-        _ln()
-        nm_str = "  ·  ".join(r.ticker for r in near_misses[:3])
-        print(_d(f"  Near misses: {nm_str}"))
-        print(_d( "  (run --debug for full breakdown)"))
 
     _ln()
     print(_d("  ┌─ Commands ──────────────────────────────────────┐"))

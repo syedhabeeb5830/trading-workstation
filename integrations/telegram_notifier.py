@@ -239,9 +239,10 @@ def _save_state(journal_dir: str, state: dict) -> None:
 
 
 # ── R-milestone nudge ─────────────────────────────────────────────────────────
-# Fires once per milestone per trade. Milestones: +1R, +1.5R, +2R, +3R.
+# Fires once per milestone per trade. Milestones: +1R (act), +2R (confirm).
+# +1.5R and +3R removed — no distinct action at those levels.
 
-_R_MILESTONES = [1.0, 1.5, 2.0, 3.0]
+_R_MILESTONES = [1.0, 2.0]
 
 
 def check_and_notify_r_milestones(positions: list[dict],
@@ -274,17 +275,13 @@ def check_and_notify_r_milestones(positions: list[dict],
                 if m == 1.0:
                     action = (
                         f"→ Book partial: sell half position\n"
-                        f"→ Or trail stop above entry to lock in 0R"
+                        f"→ Trail stop to breakeven (entry) to lock 0R"
                     )
-                elif m == 1.5:
-                    action = f"→ Trail stop to +0.5R if not already done"
-                elif m == 2.0:
+                else:  # 2.0R
                     action = (
-                        f"→ If T1 not booked yet: sell half now\n"
-                        f"→ Trail stop to +1R on remainder"
+                        f"→ If partial not done yet: sell half at T1 now\n"
+                        f"→ Trail remainder stop to +1R"
                     )
-                else:
-                    action = f"→ Review: is T2 still realistic? Consider full exit."
 
                 dist_t2 = f"₹{t2:,.2f}" if t2 else "—"
                 _send(
@@ -382,8 +379,8 @@ def check_and_notify_heat(heat_pct: float, max_heat_pct: float,
     Fires when total portfolio heat exceeds 80% of the configured limit.
     Rate-limited to once per day.
     """
-    threshold = max_heat_pct * 80  # 80% of max e.g. 2.4% of 3%
-    if heat_pct < threshold:
+    # Only warn when heat reaches or exceeds the configured limit
+    if heat_pct < max_heat_pct:
         return
 
     state      = _load_state(journal_dir)

@@ -448,16 +448,4 @@ def run_positions_mode(journal_dir: str = "journal", quiet: bool = False) -> Non
     except Exception:
         pass
 
-    # ── Telegram evening summary (only at/after 15:30) ────────────────────
-    try:
-        from datetime import datetime
-        if datetime.now().hour >= 15 and datetime.now().minute >= 30:
-            from integrations.telegram_notifier import notify_evening_summary
-            from config.config import CONFIG
-            cap = float(CONFIG.get("account_capital", 100_000))
-            notify_evening_summary(
-                open_positions=positions, capital=cap,
-                total_heat_pct=round(heat_pct, 2),
-            )
-    except Exception:
-        pass
+

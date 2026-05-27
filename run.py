@@ -92,16 +92,6 @@ def main() -> None:
         help="Full pipeline audit — all tickers, all rejections, score breakdowns",
     )
     parser.add_argument(
-        "--alerts",
-        action="store_true",
-        help="Run alert engine: WATCH→READY, stale setups, guard blocks",
-    )
-    parser.add_argument(
-        "--sync",
-        action="store_true",
-        help="Pull live holdings + positions from Zerodha Kite",
-    )
-    parser.add_argument(
         "--reconcile",
         action="store_true",
         help="Diff journal vs broker (auto-syncs first)",
@@ -202,14 +192,8 @@ def main() -> None:
     elif args.weekly_pulse:
         _cmd_weekly_pulse(args.journal, force=True)
 
-    elif args.alerts:
-        _cmd_alerts(args.journal)
-
     elif args.kite_login:
         _cmd_kite_login()
-
-    elif args.sync:
-        _cmd_sync(args.journal)
 
     elif args.reconcile:
         _cmd_reconcile(args.journal)
