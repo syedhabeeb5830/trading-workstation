@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets & session caches — NEVER commit
+.env
+.zerodha_session.json
+.kite_instruments.json
+
+# Local journal data (user-specific)
+journal/alerts.log
+journal/zerodha_snapshot.json
+journal/scheduler.log
+.scheduled_positions.bat
