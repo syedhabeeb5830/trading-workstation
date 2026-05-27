@@ -21,7 +21,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-TASK_NAME = r"\SwingTrader\AutoPositions"
+TASK_NAME         = r"\SwingTrader\AutoPositions"
+TASK_NAME_MORNING = r"\SwingTrader\MorningBriefing"
 
 
 def _venv_python() -> str:
@@ -72,27 +73,67 @@ def install_scheduler() -> None:
         print(f"     Wrapper:    {wrapper}")
         print(f"     Schedule:   Every 15 min, 09:15–15:30 IST (Mon–Fri)")
         print(f"     Log:        journal/scheduler.log")
-        print(f"\n     View / edit:   taskschd.msc   →  Task Scheduler Library  →  SwingTrader")
-        print(f"     Remove:        python run.py --uninstall-scheduler\n")
     else:
         print(f"\n  ✗ schtasks failed (code {result.returncode}):")
         print(f"    {result.stderr.strip() or result.stdout.strip()}")
         print(f"\n  Try running as Administrator, or install manually:")
         print(f"    schtasks /Create /TN {TASK_NAME} /TR \"{wrapper}\" ...")
 
+    # ── Morning briefing task: run --today once at 09:00 Mon–Fri ─────────────
+    wrapper_morning = Path(cwd) / ".scheduled_today.bat"
+    wrapper_morning.write_text(
+        "@echo off\r\n"
+        f'cd /d "{cwd}"\r\n'
+        "set PYTHONIOENCODING=utf-8\r\n"
+        f'"{python}" run.py --today >> journal\\morning.log 2>&1\r\n',
+        encoding="ascii",
+    )
+    cmd_morning = [
+        "schtasks", "/Create", "/F",
+        "/TN", TASK_NAME_MORNING,
+        "/TR", str(wrapper_morning),
+        "/SC", "WEEKLY",
+        "/D", "MON,TUE,WED,THU,FRI",
+        "/MO", "1",
+        "/ST", "09:00",
+        "/RL", "LIMITED",
+    ]
+    try:
+        result_m = subprocess.run(cmd_morning, capture_output=True, text=True)
+    except FileNotFoundError:
+        print("  ✗ schtasks.exe not found for morning task.")
+        return
+    if result_m.returncode == 0:
+        print(f"\n  ✓ Morning briefing task installed: {TASK_NAME_MORNING}")
+        print(f"     Wrapper:    {wrapper_morning}")
+        print(f"     Schedule:   09:00 IST, Mon–Fri  (runs --today automatically)")
+        print(f"     Log:        journal/morning.log")
+    else:
+        print(f"\n  ✗ Morning task failed (code {result_m.returncode}):")
+        print(f"    {result_m.stderr.strip() or result_m.stdout.strip()}")
+
+    print(f"\n     View / edit:   taskschd.msc  →  Task Scheduler Library  →  SwingTrader")
+    print(f"     Remove:        python run.py --uninstall-scheduler\n")
+
 
 def uninstall_scheduler() -> None:
-    """Remove the scheduled task."""
-    cmd = ["schtasks", "/Delete", "/F", "/TN", TASK_NAME]
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
-    except FileNotFoundError:
-        print("  ✗ schtasks.exe not found.")
-        return
-    if result.returncode == 0:
-        print(f"\n  ✓ Scheduled task removed: {TASK_NAME}\n")
-        wrapper = Path(_project_dir()) / ".scheduled_positions.bat"
-        if wrapper.exists():
-            wrapper.unlink()
-    else:
-        print(f"\n  Task was not installed (or already removed):  {result.stderr.strip()}\n")
+    """Remove both scheduled tasks (positions + morning briefing)."""
+    cwd = _project_dir()
+    for task, bat in [
+        (TASK_NAME,         ".scheduled_positions.bat"),
+        (TASK_NAME_MORNING, ".scheduled_today.bat"),
+    ]:
+        cmd = ["schtasks", "/Delete", "/F", "/TN", task]
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True)
+        except FileNotFoundError:
+            print("  ✗ schtasks.exe not found.")
+            return
+        if result.returncode == 0:
+            print(f"\n  ✓ Scheduled task removed: {task}")
+            bat_path = Path(cwd) / bat
+            if bat_path.exists():
+                bat_path.unlink()
+        else:
+            print(f"  Task not installed (or already removed): {task}")
+    print()

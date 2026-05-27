@@ -322,14 +322,16 @@ def resolve_outcomes(journal_dir: str = "journal",
     else:
         to_process = df[df["resolved"].astype(str) != "True"].copy()
 
-    resolved_count = 0
-    still_open     = 0
-    errors         = 0
+    resolved_count  = 0
+    still_open      = 0
+    errors          = 0
+    _newly_resolved = []  # (ticker, row_dict, outcome) for Telegram exit notifications
 
     print(f"\n  Resolving {len(to_process)} open trade(s)...")
 
     for idx, row in to_process.iterrows():
-        ticker = row["ticker"]
+        ticker   = row["ticker"]
+        was_open = str(row.get("resolved", "")) != "True"
         print(f"    {ticker:<14}", end=" ", flush=True)
 
         try:
@@ -345,6 +347,8 @@ def resolve_outcomes(journal_dir: str = "journal",
                     df.at[idx, col] = val
                 print(f"✓  {outcome['exit_reason']:<10} R={outcome.get('r_multiple', '?'):>5}")
                 resolved_count += 1
+                if was_open:
+                    _newly_resolved.append((ticker, dict(row), outcome))
             else:
                 # Update MFE/MAE even if still open
                 for col in ["mfe_pct", "mae_pct", "exit_reason"]:
@@ -359,6 +363,36 @@ def resolve_outcomes(journal_dir: str = "journal",
 
     # Write updated file back
     df.to_csv(log_path, index=False)
+
+    # ── Telegram exit notifications for freshly resolved trades ──────────────
+    if _newly_resolved:
+        try:
+            final_open = int((df["resolved"].astype(str) != "True").sum())
+            from integrations.telegram_notifier import notify_sl_hit, notify_target_hit
+            for _ticker, _row, _outcome in _newly_resolved:
+                try:
+                    _entry  = float(_row.get("entry_price", 0) or 0)
+                    _exit   = float(_outcome.get("exit_price", 0) or 0)
+                    _qty    = int(float(_row.get("quantity", 0) or 0))
+                    _r      = float(_outcome.get("r_multiple", 0) or 0)
+                    _pnl    = round((_exit - _entry) * _qty, 0)
+                    _reason = _outcome.get("exit_reason", "")
+                    if _reason == "STOP_HIT":
+                        notify_sl_hit(
+                            ticker=_ticker, exit_price=_exit,
+                            r_multiple=_r, loss_inr=abs(_pnl),
+                            open_trades=final_open,
+                        )
+                    elif _reason in ("T1_HIT", "T2_HIT"):
+                        notify_target_hit(
+                            ticker=_ticker, exit_price=_exit,
+                            r_multiple=_r, profit_inr=_pnl,
+                            open_trades=final_open,
+                        )
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
     summary = {
         "resolved":   resolved_count,
