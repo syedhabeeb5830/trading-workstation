@@ -97,6 +97,49 @@ def place_gtt_interactive(ticker: str, journal_dir: str = "journal") -> None:
         print(_y(f"  ⚠  {ticker} status is '{plan['status']}' — not READY/WATCH."))
         print(_d("    Continuing anyway (you may be placing a forward alert).\n"))
 
+    # ── REGIME GATE ────────────────────────────────────────────────────────
+    # Fetch current NIFTY regime and apply the configured gate policy.
+    try:
+        from scanner.scanner import get_market_regime
+        from scanner.guards import check_regime_gate
+        from config.config import CONFIG as _CFG
+        _regime_data = get_market_regime(_CFG)
+        _regime      = _regime_data["regime"]
+        _gate        = check_regime_gate(_regime, _CFG)
+
+        _regime_color = {"BULL": _g, "NEUTRAL": _y, "BEAR": _r}.get(_regime, _d)
+        print(f"  Regime      {_regime_color(_regime):<20}  "
+              f"(strength {_regime_data['strength']:.2f})\n")
+
+        if not _gate.allowed:
+            # BEAR — hard block
+            print(_r(f"  ✗ REGIME GATE: {_gate.reason}"))
+            print(_r( "    ─────────────────────────────────────────────────"))
+            print(_r( "    Opening new longs in a BEAR market amplifies losses."))
+            print(_r( "    The index will drag down even strong individual setups."))
+            print()
+            _override = input(
+                _y("  Override and place anyway? type 'override' to confirm, or press Enter to cancel: ")
+            ).strip().lower()
+            if _override != "override":
+                print(_d("\n  Smart call. No order placed.\n"))
+                return
+            print(_y("\n  ⚠  Override accepted. Proceeding against regime.\n"))
+
+        elif _gate.code == "WARN":
+            # NEUTRAL — warn but allow
+            print(_y(f"  ⚠  REGIME GATE: {_gate.reason}"))
+            print(_y( "    Consider reducing position size or skipping marginal setups."))
+            print()
+            _cont = input(_b("  Proceed? [y/N]: ")).strip().lower()
+            if _cont != "y":
+                print(_d("\n  Cancelled.\n"))
+                return
+            print()
+
+    except Exception:
+        pass  # regime check is advisory — never block --place due to a code error
+
     qty = int(float(plan.get("quantity", 0) or 0))
     if qty <= 0:
         print(_r(f"  ✗ Plan has quantity 0 — increase capital or change tier.\n"))

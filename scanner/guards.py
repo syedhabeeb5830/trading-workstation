@@ -205,3 +205,37 @@ def run_all_guards(plan: dict, context: dict) -> list[GuardResult]:
     if not r.allowed: failures.append(r)
 
     return failures
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. REGIME GATE — block / warn new entries based on NIFTY market state
+# ─────────────────────────────────────────────────────────────────────────────
+def check_regime_gate(regime: str, config: dict) -> GuardResult:
+    """
+    Returns:
+      allowed=True, code="ALLOW"   — BULL or unrecognised regime
+      allowed=True, code="WARN"    — NEUTRAL: proceed but show warning
+      allowed=False, code="BLOCK"  — BEAR: hard block, explicit override needed
+
+    Behaviour is driven by config["regime_gate"] so you can loosen
+    the gate without touching code.
+    """
+    gate_cfg = config.get("regime_gate", {})
+    action   = gate_cfg.get(regime, "allow").lower()
+
+    if action == "block":
+        return GuardResult(
+            False,
+            f"BEAR REGIME — NIFTY below key SMAs. "
+            f"New longs carry high index-level risk.",
+            "BLOCK",
+        )
+    if action == "warn":
+        return GuardResult(
+            True,
+            f"NEUTRAL REGIME — mixed market conditions. "
+            f"Reduce size or skip marginal setups.",
+            "WARN",
+        )
+    # allow
+    return GuardResult(True, "", "ALLOW")

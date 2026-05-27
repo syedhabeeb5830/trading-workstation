@@ -28,6 +28,16 @@ CONFIG = {
     # MARKET REGIME
     # ──────────────────────────────────────────────────────────
     "market_index":            "^NSEI",
+
+    # Regime gate — controls --place behaviour per regime
+    # "allow"  : proceed silently
+    # "warn"   : yellow warning + [y/N] confirm
+    # "block"  : red block + [override/N] — default No
+    "regime_gate": {
+        "BULL":    "allow",
+        "NEUTRAL": "warn",
+        "BEAR":    "block",
+    },
     "regime_sma_fast":         20,
     "regime_sma_slow":         50,
 

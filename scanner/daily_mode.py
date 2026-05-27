@@ -704,6 +704,22 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
     print(_d("  EXECUTION CARDS"))
     print(_d("─" * W))
 
+    # Regime gate banner — shown once above all cards
+    _cur_regime = regime.get("regime", "BULL")
+    if _cur_regime == "BEAR":
+        _ln()
+        print(_r("  " + "═" * (W - 2)))
+        print(_r("  ⚠  BEAR REGIME  —  NEW ENTRIES GATED"))
+        print(_r("  " + "─" * (W - 2)))
+        print(_r("  NIFTY is below key SMAs. --place will require"))
+        print(_r("  manual override. Setups below are shown for"))
+        print(_r("  planning only. Do not trade into a downtrend."))
+        print(_r("  " + "═" * (W - 2)))
+    elif _cur_regime == "NEUTRAL":
+        _ln()
+        print(_y("  ⚠  NEUTRAL REGIME  —  raise your bar today."))
+        print(_y("    Only the highest-score setups with clear RS. Max 1 new trade."))
+
     for i, plan in enumerate(actionable, 1):
         _ln()
         _print_card(i, plan, regime["regime"])
