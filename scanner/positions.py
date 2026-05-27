@@ -422,6 +422,32 @@ def run_positions_mode(journal_dir: str = "journal", quiet: bool = False) -> Non
 
     print_dashboard(positions, journal_dir)
 
+    # ── Telegram: R milestones + unprotected positions + heat ─────────────
+    try:
+        from integrations.telegram_notifier import (
+            check_and_notify_r_milestones,
+            check_and_notify_unprotected,
+            check_and_notify_heat,
+        )
+        from config.config import CONFIG
+        cap        = float(CONFIG.get("account_capital", 100_000))
+        max_heat   = float(CONFIG.get("max_portfolio_heat", 0.03)) * 100
+        risk_inr   = sum(
+            float(p.get("risk_per_share", 0)) * int(p.get("quantity", 0))
+            for p in positions
+        )
+        heat_pct   = round(risk_inr / cap * 100, 2) if cap else 0.0
+
+        check_and_notify_r_milestones(positions, journal_dir)
+        check_and_notify_unprotected(positions, journal_dir)
+        check_and_notify_heat(
+            heat_pct=heat_pct, max_heat_pct=max_heat,
+            open_count=len(positions), capital=cap,
+            journal_dir=journal_dir,
+        )
+    except Exception:
+        pass
+
     # ── Telegram evening summary (only at/after 15:30) ────────────────────
     try:
         from datetime import datetime
@@ -429,11 +455,6 @@ def run_positions_mode(journal_dir: str = "journal", quiet: bool = False) -> Non
             from integrations.telegram_notifier import notify_evening_summary
             from config.config import CONFIG
             cap = float(CONFIG.get("account_capital", 100_000))
-            max_risk = float(CONFIG.get("max_risk_per_trade", 0.01))
-            heat_pct = sum(
-                float(p.get("risk_inr", 0)) / cap * 100
-                for p in positions if p.get("risk_inr")
-            )
             notify_evening_summary(
                 open_positions=positions, capital=cap,
                 total_heat_pct=round(heat_pct, 2),

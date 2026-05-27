@@ -740,3 +740,33 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
         )
     except Exception:
         pass
+
+    # ── Telegram pre-market regime alert ──────────────────────────────────
+    try:
+        from integrations.telegram_notifier import notify_premarket_regime
+        from config.config import CONFIG
+        idx_df       = regime.get("index_df")
+        nifty_price  = 0.0
+        nifty_chg    = 0.0
+        above_20sma  = True
+        above_50sma  = True
+        if idx_df is not None and not idx_df.empty:
+            close       = float(idx_df["Close"].iloc[-1])
+            prev_close  = float(idx_df["Close"].iloc[-2]) if len(idx_df) > 1 else close
+            nifty_price = close
+            nifty_chg   = round((close - prev_close) / prev_close * 100, 2) if prev_close else 0
+            if "SMA_fast" in idx_df.columns:
+                above_20sma = close > float(idx_df["SMA_fast"].iloc[-1])
+            if "SMA_slow" in idx_df.columns:
+                above_50sma = close > float(idx_df["SMA_slow"].iloc[-1])
+        notify_premarket_regime(
+            regime       = regime["regime"],
+            nifty_price  = nifty_price,
+            nifty_chg_pct= nifty_chg,
+            above_20sma  = above_20sma,
+            above_50sma  = above_50sma,
+            ready_count  = n_ready,
+            max_positions= int(CONFIG.get("max_positions", 3)),
+        )
+    except Exception:
+        pass

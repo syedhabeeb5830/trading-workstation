@@ -132,6 +132,11 @@ def main() -> None:
         action="store_true", dest="uninstall_scheduler",
         help="Remove the scheduled --positions task",
     )
+    parser.add_argument(
+        "--weekly-pulse",
+        action="store_true", dest="weekly_pulse",
+        help="Send weekly performance summary to Telegram (any day)",
+    )
 
     # ── Modifiers ─────────────────────────────────────────────────────────────
     parser.add_argument(
@@ -193,6 +198,9 @@ def main() -> None:
 
     elif args.uninstall_scheduler:
         _cmd_uninstall_scheduler()
+
+    elif args.weekly_pulse:
+        _cmd_weekly_pulse(args.journal, force=True)
 
     elif args.alerts:
         _cmd_alerts(args.journal)
@@ -422,6 +430,63 @@ def _cmd_report(report_type: str, journal_dir: str) -> None:
     }
     fn = dispatch.get(report_type.strip().lower(), print_full_report)
     fn(journal_dir=journal_dir)
+
+    # Auto-send weekly pulse on Sundays (once per day)
+    try:
+        from datetime import date
+        import calendar
+        if date.today().weekday() == 6:  # Sunday
+            _cmd_weekly_pulse(journal_dir, force=False)
+    except Exception:
+        pass
+
+
+def _cmd_weekly_pulse(journal_dir: str, force: bool = True) -> None:
+    """Send weekly performance pulse to Telegram."""
+    from integrations.telegram_notifier import (
+        notify_weekly_pulse, weekly_pulse_already_sent_today,
+    )
+    if not force and weekly_pulse_already_sent_today(journal_dir):
+        print("  Weekly pulse already sent today.")
+        return
+    try:
+        from analytics.reports import _load_trades  # internal helper
+        import pandas as pd
+        df = _load_trades(journal_dir)
+        # Closed trades only
+        closed = df[df["resolved"].astype(str).str.upper() == "TRUE"].copy()
+        # This-week trades
+        today = pd.Timestamp.today().normalize()
+        week_start = today - pd.Timedelta(days=today.dayofweek)
+        week = closed[pd.to_datetime(
+            closed.get("exit_date", closed.get("entry_date", pd.NaT)),
+            errors="coerce"
+        ) >= week_start]
+        wins   = int((week.get("r_multiple", pd.Series(dtype=float)) > 0).sum())
+        losses = int((week.get("r_multiple", pd.Series(dtype=float)) <= 0).sum())
+        net_r  = round(float(week.get("r_multiple", pd.Series(dtype=float)).sum()), 2)
+        # Rolling 20-trade expectancy
+        last20     = closed.tail(20)
+        exp_20     = round(float(last20.get("r_multiple",
+                            pd.Series(dtype=float)).mean()), 2) if len(last20) >= 5 else 0.0
+        # Open trades heat
+        open_trades = df[df["resolved"].astype(str).str.upper() != "TRUE"]
+        open_count  = len(open_trades)
+        from config.config import CONFIG
+        cap = float(CONFIG.get("account_capital", 100_000))
+        risk_col = open_trades.get("max_loss_inr", pd.Series(dtype=float))
+        cap_risk = round(float(risk_col.sum()), 0)
+    except Exception:
+        wins, losses, net_r, exp_20 = 0, 0, 0.0, 0.0
+        open_count, cap_risk = 0, 0.0
+
+    notify_weekly_pulse(
+        wins=wins, losses=losses, net_r=net_r,
+        expectancy_20=exp_20, open_count=open_count,
+        capital_at_risk_inr=cap_risk,
+        journal_dir=journal_dir,
+    )
+    print("  ✓ Weekly pulse sent to Telegram.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
