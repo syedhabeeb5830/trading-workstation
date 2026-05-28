@@ -25,12 +25,6 @@ Three commands cover 95% of daily use:
     python run.py --install-scheduler     ← auto-run --positions every 15min
     python run.py --kite-login            ← refresh Kite session (also auto)
 
-  ALGO TRADING (intraday, automated):
-    python run.py --algo                  ← run ORB strategy in paper mode
-    python run.py --algo --live           ← real orders (kill switch active)
-    python run.py --algo --simulate       ← replay last day's data (instant)
-    python run.py --algo --status         ← show today's algo P&L
-
   ADVANCED / occasional:
     python run.py --gtts                  ← list all GTTs on the account
     python run.py --alerts                ← run alert engine standalone
@@ -134,26 +128,27 @@ def main() -> None:
         help="Send weekly performance summary to Telegram (any day)",
     )
 
-    # ── Algo trading ──────────────────────────────────────────────────────────
     parser.add_argument(
         "--algo",
-        nargs="?", const="ORB", metavar="STRATEGY",
-        help="Run algo trading engine (default: ORB strategy, paper mode)",
+        nargs="?",
+        const="ORB",
+        metavar="STRATEGY",
+        help="Run algo engine in paper mode (default: ORB strategy)",
     )
     parser.add_argument(
         "--live",
         action="store_true",
-        help="Algo: place real orders (default is paper mode)",
+        help="Use with --algo: place REAL orders (default is paper)",
     )
     parser.add_argument(
         "--simulate",
         action="store_true",
-        help="Algo: replay last trading day through strategy",
+        help="Use with --algo: replay yesterday's data through strategy",
     )
     parser.add_argument(
         "--status",
         action="store_true",
-        help="Algo: show today's session P&L and trades",
+        help="Use with --algo: show current session P&L and risk state",
     )
 
     # ── Modifiers ─────────────────────────────────────────────────────────────
@@ -253,20 +248,13 @@ def main() -> None:
 
 def _cmd_algo(strategy: str, live: bool = False, simulate: bool = False,
               status: bool = False, journal_dir: str = "journal") -> None:
-    """Algo trading engine — ORB strategy with kill switch."""
+    """Algo engine — ORB strategy, paper/live/simulate modes."""
     from algo.engine import run_algo
-    paper_mode = not live
-    run_algo(
-        strategy=strategy,
-        paper_mode=paper_mode,
-        simulate=simulate,
-        status=status,
-        journal_dir=journal_dir,
-    )
+    run_algo(strategy=strategy, live=live, simulate=simulate,
+             status=status, journal_dir=journal_dir)
 
 
 def _cmd_today(journal_dir: str) -> None:
-    """Daily execution cockpit — primary workflow."""
     from scanner.daily_mode import run_daily_mode
     run_daily_mode(journal_dir=journal_dir)
 

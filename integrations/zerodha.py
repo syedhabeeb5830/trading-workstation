@@ -465,6 +465,15 @@ def get_client_or_none() -> Optional["KiteClient"]:
         return None
 
 
+def get_kite():
+    """
+    Return the raw KiteConnect instance with the current access token set.
+    Used by the algo engine for KiteTicker and order placement.
+    Raises SystemExit if no valid session exists.
+    """
+    return ensure_session_or_login()._kite
+
+
 def ensure_session_or_login() -> "KiteClient":
     """
     Used by REQUIRED Kite commands (--sync, --reconcile, --place, --gtts).
