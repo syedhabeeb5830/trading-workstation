@@ -1,0 +1,124 @@
+﻿.\.venv\Scripts\python : HTTP Error 404: 
+{"quoteSummary":{"result":null,"error":{"code":"Not 
+Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+At line:1 char:32
++ ... NG="utf-8"; .\.venv\Scripts\python run.py --algo --simulate 2>&1 | Ou ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (HTTP Error 404:...TAMOTORS.NS"}}} 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+$TATAMOTORS.NS: possibly delisted; no price data found  (period=59d) (Yahoo 
+error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['TATAMOTORS.NS']: possibly delisted; no price data found  (period=59d) (Yahoo 
+error = "No data found, symbol may be delisted")
+
+  [1mScreener: selecting today's trading universeΓÇª[0m
+
+  [1mΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ[0m
+  [1m  INSTRUMENT SCREENER  ΓÇö  ORB Edge Ranking  (filtered config)[0m
+  [2m  Single-stock isolation ┬╖ composite score = net/trade ├ù WR ├ù depth[0m
+  [1mΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ[0m
+    #  SYMBOL         TRD    WIN%     NET/TRD   GROSS/TRD     SCORE  STATUS
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    1  AXISBANK        12  [92m 75.0%[0m  [92mΓé╣     +113[0m  Γé╣     +169    +235.3  [92mΓ£ô SELECTED[0m
+    2  BHARTIARTL      18  [92m 55.6%[0m  [92mΓé╣      +61[0m  Γé╣     +112    +116.3  [92mΓ£ô SELECTED[0m
+    3  HINDUNILVR      14  [92m 57.1%[0m  [92mΓé╣      +35[0m  Γé╣      +87     +60.7  [92mΓ£ô SELECTED[0m
+    4  SUNPHARMA        8  [92m 50.0%[0m  [92mΓé╣      +28[0m  Γé╣      +83     +30.8  [92mΓ£ô SELECTED[0m
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  [2m  Γû╝ score Γëñ +0  (below cutoff ΓÇö backfill only if < 4-stock floor)[0m
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    5  TITAN           13  [91m 30.8%[0m  [91mΓé╣      -51[0m  Γé╣       -3     -45.6  [2mnot selected[0m
+    6  NESTLEIND       13  [92m 61.5%[0m  [91mΓé╣      -37[0m  Γé╣      +18     -65.2  [2mnot selected[0m
+    7  SBIN            14  [92m 57.1%[0m  [91mΓé╣      -40[0m  Γé╣      +17     -68.6  [2mnot selected[0m
+    8  GRASIM          14  [92m 50.0%[0m  [91mΓé╣      -48[0m  Γé╣       -2     -71.7  [2mnot selected[0m
+    9  ADANIPORTS       7  [91m 42.9%[0m  [91mΓé╣      -92[0m  Γé╣      -44     -80.1  [2mnot selected[0m
+   10  HDFCBANK        11  [91m 45.5%[0m  [91mΓé╣      -68[0m  Γé╣      -15     -81.5  [2mnot selected[0m
+   11  KOTAKBANK       12  [92m 50.0%[0m  [91mΓé╣      -68[0m  Γé╣       -4     -94.3  [2mnot selected[0m
+   12  EICHERMOT       12  [91m  8.3%[0m  [91mΓé╣     -422[0m  Γé╣     -369     -97.4  [2mnot selected[0m
+   13  WIPRO           11  [91m 27.3%[0m  [91mΓé╣     -150[0m  Γé╣     -101    -108.4  [2mnot selected[0m
+   14  BAJFINANCE      11  [91m 27.3%[0m  [91mΓé╣     -184[0m  Γé╣     -139    -132.4  [2mnot selected[0m
+   15  ITC             14  [91m 35.7%[0m  [91mΓé╣     -133[0m  Γé╣      -69    -143.4  [2mnot selected[0m
+   16  MARUTI          13  [91m 46.2%[0m  [91mΓé╣     -108[0m  Γé╣      -58    -144.4  [2mnot selected[0m
+   17  RELIANCE        17  [92m 52.9%[0m  [91mΓé╣      -89[0m  Γé╣      -38    -157.0  [2mnot selected[0m
+   18  LT              14  [92m 57.1%[0m  [91mΓé╣      -93[0m  Γé╣      -33    -160.0  [2mnot selected[0m
+   19  ICICIBANK       12  [91m 25.0%[0m  [91mΓé╣     -279[0m  Γé╣     -215    -193.6  [2mnot selected[0m
+   20  DRREDDY         15  [91m 26.7%[0m  [91mΓé╣     -240[0m  Γé╣     -190    -199.4  [2mnot selected[0m
+   21  TCS             13  [91m 30.8%[0m  [91mΓé╣     -232[0m  Γé╣     -183    -206.8  [2mnot selected[0m
+   22  HDFCLIFE        22  [92m 54.5%[0m  [91mΓé╣     -107[0m  Γé╣      -55    -217.7  [2mnot selected[0m
+   23  ULTRACEMCO      14  [91m 35.7%[0m  [91mΓé╣     -241[0m  Γé╣     -182    -258.4  [2mnot selected[0m
+   24  INFY             3  [91m 33.3%[0m  [92mΓé╣      +80[0m  Γé╣     +120         ΓÇö  [2m< 4 signals[0m
+   25  HCLTECH          2  [92m 50.0%[0m  [91mΓé╣     -239[0m  Γé╣     -188         ΓÇö  [2m< 4 signals[0m
+   26  TECHM            3  [92m 66.7%[0m  [91mΓé╣      -80[0m  Γé╣      -33         ΓÇö  [2m< 4 signals[0m
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  [1mSelected universe  (4 stocks):[0m  AXISBANK, BHARTIARTL, HINDUNILVR, SUNPHARMA
+  [2m  (4 above cutoff)[0m
+  [1mΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ[0m
+
+
+  [1m========================================================[0m
+  [1m  ORB SIMULATION[0m  ΓÇö  Thursday, 28 May 2026
+  [1m========================================================[0m
+  Strategy:    ORB (15-min opening range)
+  Instruments: AXISBANK, BHARTIARTL, HINDUNILVR, SUNPHARMA
+  Range valid: 0.3% ΓÇô 1.5%
+  Target:      2.0├ù range width
+  Risk/trade:  Γé╣1,000
+  [1m========================================================[0m
+
+  [1mΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+  [96mAXISBANK[0m  ΓÇö downloading 1-min data...
+$AXISBANK.NS: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+
+1 Failed download:
+['AXISBANK.NS']: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+  [2m  No data available for 2026-05-28[0m
+
+  [1mΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+  [96mBHARTIARTL[0m  ΓÇö downloading 1-min data...
+$BHARTIARTL.NS: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+
+1 Failed download:
+['BHARTIARTL.NS']: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+  [2m  No data available for 2026-05-28[0m
+
+  [1mΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+  [96mHINDUNILVR[0m  ΓÇö downloading 1-min data...
+$HINDUNILVR.NS: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+  [2m  No data available for 2026-05-28[0m
+
+  [1mΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[0m
+  [96mSUNPHARMA[0m  ΓÇö downloading 1-min data...
+$SUNPHARMA.NS: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+
+1 Failed download:
+['SUNPHARMA.NS']: possibly delisted; no price data found  (1m 2026-05-28 -> 
+2026-05-29)
+  [2m  No data available for 2026-05-28[0m
+
+  [1m========================================================[0m
+  [1m  SIMULATION RESULTS[0m  ΓÇö  28 May 2026
+  [1m========================================================[0m
+
+  Stocks scanned:  4
+  Valid ORB range: 0
+  Trades taken:    0
+  Wins:            0
+  Losses:          0
+  Net P&L:         [92mΓé╣+0.00[0m
+
+  [1m========================================================[0m
+

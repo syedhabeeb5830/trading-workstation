@@ -1,0 +1,830 @@
+{
+  "generated_at": "2026-05-29T19:31:32",
+  "days": 180,
+  "qualified": [
+    "TECHM.NS",
+    "SUNPHARMA.NS",
+    "TITAN.NS",
+    "ADANIPORTS.NS",
+    "ADANIENT.NS",
+    "POLYCAB.NS",
+    "HEROMOTOCO.NS",
+    "CANBK.NS",
+    "SYRMA.NS",
+    "PERSISTENT.NS",
+    "MOTILALOFS.NS",
+    "BSE.NS",
+    "CGPOWER.NS",
+    "RVNL.NS"
+  ],
+  "stats": {
+    "RELIANCE.NS": {
+      "trades": 5,
+      "pf": 0.22,
+      "avg_r": -0.52,
+      "win_rate": 20.0,
+      "net_pnl": -2132.1,
+      "max_dd": 2203.99
+    },
+    "HDFCBANK.NS": {
+      "trades": 1,
+      "pf": Infinity,
+      "avg_r": 0.82,
+      "win_rate": 100.0,
+      "net_pnl": 536.03,
+      "max_dd": 0.0
+    },
+    "ICICIBANK.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -1.03,
+      "win_rate": 0.0,
+      "net_pnl": -2970.2,
+      "max_dd": 2970.2
+    },
+    "SBIN.NS": {
+      "trades": 8,
+      "pf": 1.71,
+      "avg_r": 0.49,
+      "win_rate": 62.5,
+      "net_pnl": 2147.35,
+      "max_dd": 2229.18
+    },
+    "AXISBANK.NS": {
+      "trades": 6,
+      "pf": 0.36,
+      "avg_r": -0.5,
+      "win_rate": 16.7,
+      "net_pnl": -2841.0,
+      "max_dd": 4415.15
+    },
+    "KOTAKBANK.NS": {
+      "trades": 6,
+      "pf": 0.48,
+      "avg_r": -0.27,
+      "win_rate": 16.7,
+      "net_pnl": -1611.63,
+      "max_dd": 3096.06
+    },
+    "INFY.NS": {
+      "trades": 5,
+      "pf": 0.52,
+      "avg_r": -0.24,
+      "win_rate": 20.0,
+      "net_pnl": -1438.24,
+      "max_dd": 1603.02
+    },
+    "TCS.NS": {
+      "trades": 5,
+      "pf": 0.0,
+      "avg_r": -0.79,
+      "win_rate": 0.0,
+      "net_pnl": -3366.63,
+      "max_dd": 3366.62
+    },
+    "HCLTECH.NS": {
+      "trades": 6,
+      "pf": 0.31,
+      "avg_r": -0.59,
+      "win_rate": 16.7,
+      "net_pnl": -3611.95,
+      "max_dd": 4147.75
+    },
+    "TECHM.NS": {
+      "trades": 6,
+      "pf": 2.26,
+      "avg_r": 0.44,
+      "win_rate": 66.7,
+      "net_pnl": 2265.79,
+      "max_dd": 1054.72
+    },
+    "WIPRO.NS": {
+      "trades": 5,
+      "pf": 1.06,
+      "avg_r": 0.19,
+      "win_rate": 40.0,
+      "net_pnl": 126.87,
+      "max_dd": 1388.28
+    },
+    "BHARTIARTL.NS": {
+      "trades": 4,
+      "pf": 0.54,
+      "avg_r": -0.21,
+      "win_rate": 25.0,
+      "net_pnl": -1226.02,
+      "max_dd": 2655.35
+    },
+    "LT.NS": {
+      "trades": 6,
+      "pf": 1.85,
+      "avg_r": 0.22,
+      "win_rate": 33.3,
+      "net_pnl": 1484.91,
+      "max_dd": 1126.67
+    },
+    "ULTRACEMCO.NS": {
+      "trades": 2,
+      "pf": 0.14,
+      "avg_r": -0.4,
+      "win_rate": 50.0,
+      "net_pnl": -813.86,
+      "max_dd": 941.54
+    },
+    "ASIANPAINT.NS": {
+      "trades": 7,
+      "pf": 1.52,
+      "avg_r": 0.27,
+      "win_rate": 57.1,
+      "net_pnl": 1504.45,
+      "max_dd": 2302.02
+    },
+    "MARUTI.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -0.75,
+      "win_rate": 0.0,
+      "net_pnl": -1699.31,
+      "max_dd": 1699.31
+    },
+    "M&M.NS": {
+      "trades": 3,
+      "pf": 0.0,
+      "avg_r": -0.79,
+      "win_rate": 0.0,
+      "net_pnl": -2007.63,
+      "max_dd": 2007.63
+    },
+    "SUNPHARMA.NS": {
+      "trades": 6,
+      "pf": 2.69,
+      "avg_r": 0.56,
+      "win_rate": 66.7,
+      "net_pnl": 2446.67,
+      "max_dd": 908.94
+    },
+    "BAJFINANCE.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -0.5,
+      "win_rate": 0.0,
+      "net_pnl": -2091.02,
+      "max_dd": 2091.02
+    },
+    "BAJAJ-AUTO.NS": {
+      "trades": 6,
+      "pf": 0.52,
+      "avg_r": -0.42,
+      "win_rate": 16.7,
+      "net_pnl": -1751.67,
+      "max_dd": 2293.67
+    },
+    "TITAN.NS": {
+      "trades": 5,
+      "pf": 2.19,
+      "avg_r": 0.36,
+      "win_rate": 60.0,
+      "net_pnl": 1334.09,
+      "max_dd": 1121.67
+    },
+    "POWERGRID.NS": {
+      "trades": 4,
+      "pf": 2.0,
+      "avg_r": 0.29,
+      "win_rate": 50.0,
+      "net_pnl": 1158.93,
+      "max_dd": 597.68
+    },
+    "NTPC.NS": {
+      "trades": 8,
+      "pf": 0.35,
+      "avg_r": -0.48,
+      "win_rate": 25.0,
+      "net_pnl": -3894.09,
+      "max_dd": 4181.08
+    },
+    "ONGC.NS": {
+      "trades": 5,
+      "pf": 0.12,
+      "avg_r": -0.75,
+      "win_rate": 20.0,
+      "net_pnl": -4005.59,
+      "max_dd": 4551.41
+    },
+    "HINDALCO.NS": {
+      "trades": 10,
+      "pf": 0.71,
+      "avg_r": -0.17,
+      "win_rate": 30.0,
+      "net_pnl": -2080.59,
+      "max_dd": 3173.71
+    },
+    "TATASTEEL.NS": {
+      "trades": 10,
+      "pf": 0.41,
+      "avg_r": -0.39,
+      "win_rate": 30.0,
+      "net_pnl": -4167.63,
+      "max_dd": 4217.24
+    },
+    "JSWSTEEL.NS": {
+      "trades": 5,
+      "pf": 0.0,
+      "avg_r": -0.6,
+      "win_rate": 0.0,
+      "net_pnl": -2903.78,
+      "max_dd": 2903.79
+    },
+    "ADANIPORTS.NS": {
+      "trades": 6,
+      "pf": 2.32,
+      "avg_r": 0.3,
+      "win_rate": 66.7,
+      "net_pnl": 1751.24,
+      "max_dd": 938.95
+    },
+    "ADANIENT.NS": {
+      "trades": 5,
+      "pf": 4.79,
+      "avg_r": 0.95,
+      "win_rate": 60.0,
+      "net_pnl": 4269.22,
+      "max_dd": 859.17
+    },
+    "APOLLOHOSP.NS": {
+      "trades": 5,
+      "pf": 0.77,
+      "avg_r": -0.11,
+      "win_rate": 40.0,
+      "net_pnl": -416.08,
+      "max_dd": 1335.99
+    },
+    "TRENT.NS": {
+      "trades": 4,
+      "pf": 0.63,
+      "avg_r": -0.32,
+      "win_rate": 25.0,
+      "net_pnl": -1118.67,
+      "max_dd": 2385.41
+    },
+    "DMART.NS": {
+      "trades": 2,
+      "pf": 3.16,
+      "avg_r": 0.52,
+      "win_rate": 50.0,
+      "net_pnl": 818.26,
+      "max_dd": 379.39
+    },
+    "SIEMENS.NS": {
+      "trades": 6,
+      "pf": 0.39,
+      "avg_r": -0.54,
+      "win_rate": 16.7,
+      "net_pnl": -2961.38,
+      "max_dd": 3989.85
+    },
+    "ABB.NS": {
+      "trades": 5,
+      "pf": 2.64,
+      "avg_r": 0.57,
+      "win_rate": 60.0,
+      "net_pnl": 2794.11,
+      "max_dd": 1050.08
+    },
+    "POLYCAB.NS": {
+      "trades": 8,
+      "pf": 2.58,
+      "avg_r": 0.37,
+      "win_rate": 50.0,
+      "net_pnl": 2819.4,
+      "max_dd": 832.95
+    },
+    "EICHERMOT.NS": {
+      "trades": 3,
+      "pf": 0.25,
+      "avg_r": -0.4,
+      "win_rate": 33.3,
+      "net_pnl": -878.74,
+      "max_dd": 1169.07
+    },
+    "HEROMOTOCO.NS": {
+      "trades": 3,
+      "pf": 1.53,
+      "avg_r": 0.34,
+      "win_rate": 66.7,
+      "net_pnl": 561.72,
+      "max_dd": 1050.36
+    },
+    "GRASIM.NS": {
+      "trades": 5,
+      "pf": 0.52,
+      "avg_r": -0.41,
+      "win_rate": 20.0,
+      "net_pnl": -1648.94,
+      "max_dd": 3064.76
+    },
+    "INDUSINDBK.NS": {
+      "trades": 8,
+      "pf": 0.96,
+      "avg_r": 0.01,
+      "win_rate": 25.0,
+      "net_pnl": -169.09,
+      "max_dd": 2756.61
+    },
+    "BEL.NS": {
+      "trades": 5,
+      "pf": 0.0,
+      "avg_r": -0.95,
+      "win_rate": 0.0,
+      "net_pnl": -4723.7,
+      "max_dd": 4723.71
+    },
+    "HAL.NS": {
+      "trades": 3,
+      "pf": 0.4,
+      "avg_r": -0.41,
+      "win_rate": 33.3,
+      "net_pnl": -1249.32,
+      "max_dd": 1249.33
+    },
+    "CUMMINSIND.NS": {
+      "trades": 9,
+      "pf": 1.19,
+      "avg_r": 0.1,
+      "win_rate": 44.4,
+      "net_pnl": 603.52,
+      "max_dd": 1929.78
+    },
+    "MUTHOOTFIN.NS": {
+      "trades": 8,
+      "pf": 0.42,
+      "avg_r": -0.32,
+      "win_rate": 12.5,
+      "net_pnl": -2495.0,
+      "max_dd": 4289.16
+    },
+    "CANBK.NS": {
+      "trades": 5,
+      "pf": 1.85,
+      "avg_r": 0.33,
+      "win_rate": 40.0,
+      "net_pnl": 1523.28,
+      "max_dd": 1758.05
+    },
+    "PIDILITIND.NS": {
+      "trades": 3,
+      "pf": 0.31,
+      "avg_r": -0.4,
+      "win_rate": 33.3,
+      "net_pnl": -849.98,
+      "max_dd": 1223.89
+    },
+    "HAVELLS.NS": {
+      "trades": 2,
+      "pf": 0.0,
+      "avg_r": -1.05,
+      "win_rate": 0.0,
+      "net_pnl": -1811.85,
+      "max_dd": 1811.85
+    },
+    "BERGEPAINT.NS": {
+      "trades": 4,
+      "pf": 0.57,
+      "avg_r": -0.12,
+      "win_rate": 25.0,
+      "net_pnl": -601.07,
+      "max_dd": 1043.3
+    },
+    "DIVISLAB.NS": {
+      "trades": 4,
+      "pf": 1.36,
+      "avg_r": 0.13,
+      "win_rate": 50.0,
+      "net_pnl": 612.53,
+      "max_dd": 1689.02
+    },
+    "BRITANNIA.NS": {
+      "trades": 1,
+      "pf": 0.0,
+      "avg_r": -0.67,
+      "win_rate": 0.0,
+      "net_pnl": -618.58,
+      "max_dd": 618.58
+    },
+    "PAGEIND.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "DABUR.NS": {
+      "trades": 3,
+      "pf": 0.42,
+      "avg_r": -0.29,
+      "win_rate": 33.3,
+      "net_pnl": -759.4,
+      "max_dd": 1300.34
+    },
+    "GODREJCP.NS": {
+      "trades": 5,
+      "pf": 0.44,
+      "avg_r": -0.4,
+      "win_rate": 20.0,
+      "net_pnl": -1986.11,
+      "max_dd": 2513.82
+    },
+    "COLPAL.NS": {
+      "trades": 4,
+      "pf": 0.23,
+      "avg_r": -0.53,
+      "win_rate": 25.0,
+      "net_pnl": -1949.32,
+      "max_dd": 2520.56
+    },
+    "NAUKRI.NS": {
+      "trades": 3,
+      "pf": 0.0,
+      "avg_r": -0.9,
+      "win_rate": 0.0,
+      "net_pnl": -2721.75,
+      "max_dd": 2721.75
+    },
+    "DLF.NS": {
+      "trades": 2,
+      "pf": 0.35,
+      "avg_r": -0.18,
+      "win_rate": 50.0,
+      "net_pnl": -413.1,
+      "max_dd": 633.3
+    },
+    "LODHA.NS": {
+      "trades": 3,
+      "pf": 0.0,
+      "avg_r": -1.03,
+      "win_rate": 0.0,
+      "net_pnl": -3033.82,
+      "max_dd": 3033.82
+    },
+    "PRESTIGE.NS": {
+      "trades": 2,
+      "pf": Infinity,
+      "avg_r": 0.88,
+      "win_rate": 100.0,
+      "net_pnl": 1654.48,
+      "max_dd": 0.0
+    },
+    "APLAPOLLO.NS": {
+      "trades": 7,
+      "pf": 1.48,
+      "avg_r": 0.22,
+      "win_rate": 57.1,
+      "net_pnl": 1290.79,
+      "max_dd": 991.98
+    },
+    "KEI.NS": {
+      "trades": 5,
+      "pf": 1.05,
+      "avg_r": 0.1,
+      "win_rate": 40.0,
+      "net_pnl": 134.5,
+      "max_dd": 1683.7
+    },
+    "SRF.NS": {
+      "trades": 4,
+      "pf": 0.9,
+      "avg_r": 0.03,
+      "win_rate": 50.0,
+      "net_pnl": -210.16,
+      "max_dd": 1821.29
+    },
+    "BOSCHLTD.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "ZYDUSLIFE.NS": {
+      "trades": 4,
+      "pf": 0.69,
+      "avg_r": -0.19,
+      "win_rate": 25.0,
+      "net_pnl": -852.79,
+      "max_dd": 2765.45
+    },
+    "DIXON.NS": {
+      "trades": 2,
+      "pf": 0.56,
+      "avg_r": -0.04,
+      "win_rate": 50.0,
+      "net_pnl": -109.92,
+      "max_dd": 247.11
+    },
+    "KAYNES.NS": {
+      "trades": 3,
+      "pf": 0.38,
+      "avg_r": -0.29,
+      "win_rate": 33.3,
+      "net_pnl": -812.03,
+      "max_dd": 812.03
+    },
+    "SYRMA.NS": {
+      "trades": 6,
+      "pf": 2.06,
+      "avg_r": 0.48,
+      "win_rate": 50.0,
+      "net_pnl": 2644.01,
+      "max_dd": 1020.1
+    },
+    "AMBER.NS": {
+      "trades": 5,
+      "pf": 0.88,
+      "avg_r": 0.04,
+      "win_rate": 40.0,
+      "net_pnl": -298.6,
+      "max_dd": 972.9
+    },
+    "ASTRAL.NS": {
+      "trades": 6,
+      "pf": 0.77,
+      "avg_r": -0.08,
+      "win_rate": 33.3,
+      "net_pnl": -1043.2,
+      "max_dd": 2628.05
+    },
+    "TRIVENI.NS": {
+      "trades": 2,
+      "pf": 0.37,
+      "avg_r": -0.21,
+      "win_rate": 50.0,
+      "net_pnl": -455.78,
+      "max_dd": 726.33
+    },
+    "PERSISTENT.NS": {
+      "trades": 6,
+      "pf": 1.76,
+      "avg_r": 0.39,
+      "win_rate": 50.0,
+      "net_pnl": 1558.85,
+      "max_dd": 1967.2
+    },
+    "COFORGE.NS": {
+      "trades": 5,
+      "pf": 0.11,
+      "avg_r": -0.4,
+      "win_rate": 40.0,
+      "net_pnl": -2028.36,
+      "max_dd": 2070.13
+    },
+    "KPITTECH.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -0.94,
+      "win_rate": 0.0,
+      "net_pnl": -3749.5,
+      "max_dd": 3749.5
+    },
+    "CHOLAFIN.NS": {
+      "trades": 5,
+      "pf": 0.0,
+      "avg_r": -0.85,
+      "win_rate": 0.0,
+      "net_pnl": -4304.63,
+      "max_dd": 4304.64
+    },
+    "MOTILALOFS.NS": {
+      "trades": 4,
+      "pf": 2.89,
+      "avg_r": 0.53,
+      "win_rate": 75.0,
+      "net_pnl": 1960.41,
+      "max_dd": 1037.5
+    },
+    "BSE.NS": {
+      "trades": 10,
+      "pf": 1.81,
+      "avg_r": 0.37,
+      "win_rate": 50.0,
+      "net_pnl": 3551.56,
+      "max_dd": 2547.03
+    },
+    "CDSL.NS": {
+      "trades": 1,
+      "pf": Infinity,
+      "avg_r": 0.45,
+      "win_rate": 100.0,
+      "net_pnl": 411.56,
+      "max_dd": 0.0
+    },
+    "CGPOWER.NS": {
+      "trades": 5,
+      "pf": 1.93,
+      "avg_r": 0.36,
+      "win_rate": 60.0,
+      "net_pnl": 1646.79,
+      "max_dd": 1277.18
+    },
+    "THERMAX.NS": {
+      "trades": 2,
+      "pf": 0.0,
+      "avg_r": -0.31,
+      "win_rate": 0.0,
+      "net_pnl": -518.83,
+      "max_dd": 518.83
+    },
+    "SKFINDIA.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "SOLARINDS.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "BDL.NS": {
+      "trades": 5,
+      "pf": 0.0,
+      "avg_r": -0.9,
+      "win_rate": 0.0,
+      "net_pnl": -4442.71,
+      "max_dd": 4442.7
+    },
+    "MAZDOCK.NS": {
+      "trades": 1,
+      "pf": Infinity,
+      "avg_r": 0.52,
+      "win_rate": 100.0,
+      "net_pnl": 419.56,
+      "max_dd": 0.0
+    },
+    "MAXHEALTH.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -0.71,
+      "win_rate": 0.0,
+      "net_pnl": -2857.47,
+      "max_dd": 2857.47
+    },
+    "AUROPHARMA.NS": {
+      "trades": 6,
+      "pf": 0.65,
+      "avg_r": -0.15,
+      "win_rate": 50.0,
+      "net_pnl": -1084.83,
+      "max_dd": 1263.76
+    },
+    "LALPATHLAB.NS": {
+      "trades": 3,
+      "pf": 0.31,
+      "avg_r": -0.28,
+      "win_rate": 33.3,
+      "net_pnl": -926.95,
+      "max_dd": 1343.78
+    },
+    "DEEPAKNTR.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "PIIND.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "CLEAN.NS": {
+      "trades": 2,
+      "pf": 2.39,
+      "avg_r": 0.59,
+      "win_rate": 50.0,
+      "net_pnl": 1129.31,
+      "max_dd": 813.04
+    },
+    "RVNL.NS": {
+      "trades": 3,
+      "pf": 2.41,
+      "avg_r": 0.53,
+      "win_rate": 66.7,
+      "net_pnl": 1486.54,
+      "max_dd": 1054.26
+    },
+    "IREDA.NS": {
+      "trades": 3,
+      "pf": 1.5,
+      "avg_r": 0.24,
+      "win_rate": 33.3,
+      "net_pnl": 648.17,
+      "max_dd": 658.19
+    },
+    "OIL.NS": {
+      "trades": 7,
+      "pf": 0.1,
+      "avg_r": -0.65,
+      "win_rate": 28.6,
+      "net_pnl": -4663.63,
+      "max_dd": 5193.71
+    },
+    "COALINDIA.NS": {
+      "trades": 7,
+      "pf": 0.26,
+      "avg_r": -0.48,
+      "win_rate": 14.3,
+      "net_pnl": -3608.03,
+      "max_dd": 4224.64
+    },
+    "RECLTD.NS": {
+      "trades": 2,
+      "pf": 0.0,
+      "avg_r": -0.7,
+      "win_rate": 0.0,
+      "net_pnl": -1439.28,
+      "max_dd": 1439.28
+    },
+    "PFC.NS": {
+      "trades": 5,
+      "pf": 1.32,
+      "avg_r": 0.13,
+      "win_rate": 60.0,
+      "net_pnl": 599.92,
+      "max_dd": 1005.09
+    },
+    "IRCTC.NS": {
+      "trades": 4,
+      "pf": 0.2,
+      "avg_r": -0.63,
+      "win_rate": 25.0,
+      "net_pnl": -2036.29,
+      "max_dd": 2549.85
+    },
+    "INDIGO.NS": {
+      "trades": 4,
+      "pf": 0.0,
+      "avg_r": -0.92,
+      "win_rate": 0.0,
+      "net_pnl": -3487.07,
+      "max_dd": 3487.08
+    },
+    "TIINDIA.NS": {
+      "trades": 5,
+      "pf": 0.2,
+      "avg_r": -0.53,
+      "win_rate": 20.0,
+      "net_pnl": -2641.11,
+      "max_dd": 2868.36
+    },
+    "AIAENG.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "SUZLON.NS": {
+      "trades": 3,
+      "pf": 1.07,
+      "avg_r": 0.07,
+      "win_rate": 33.3,
+      "net_pnl": 135.12,
+      "max_dd": 1048.87
+    },
+    "YESBANK.NS": {
+      "trades": 0,
+      "pf": 0.0,
+      "avg_r": 0.0,
+      "win_rate": 0.0,
+      "net_pnl": 0.0,
+      "max_dd": 0.0
+    },
+    "PAYTM.NS": {
+      "trades": 5,
+      "pf": 0.05,
+      "avg_r": -0.52,
+      "win_rate": 20.0,
+      "net_pnl": -2686.5,
+      "max_dd": 2686.5
+    },
+    "NYKAA.NS": {
+      "trades": 5,
+      "pf": 0.1,
+      "avg_r": -0.57,
+      "win_rate": 20.0,
+      "net_pnl": -2981.63,
+      "max_dd": 3310.09
+    }
+  }
+}

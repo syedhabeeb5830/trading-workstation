@@ -83,13 +83,17 @@ CONFIG = {
     # this %, treat the setup as "chasing" and block new entries.
     "max_entry_drift_pct":     1.5,
 
-    #FIX
-    "breakout_proximity_pct":  4.0,       # widened from 3.0
-    "entry_buffer_pct":        0.25,
-    "max_extension_pct":       3.0,       # widened from 2.0
-    
-    # --- ADD THIS LINE TO FIX THE KEYERROR ---
-    "ready_max_distance_pct":  1.5,       # Max % distance below entry price to qualify as READY status
+    # ──────────────────────────────────────────────────────────
+    # READY status threshold (used by --today cockpit)
+    # ──────────────────────────────────────────────────────────
+    "ready_max_distance_pct":  1.5,
+
+    # ──────────────────────────────────────────────────────────
+    # DAILY-LOSS CIRCUIT BREAKER  (enforced by --doctor + guards)
+    # If realised P&L on a single day drops to -X% of capital,
+    # --place refuses new trades for the rest of the day.
+    # ──────────────────────────────────────────────────────────
+    "daily_loss_breaker_pct":  0.02,    # 2.0% of capital (₹2,000 on ₹1L)
 
     # ──────────────────────────────────────────────────────────
     # STOP ENGINE

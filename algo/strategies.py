@@ -41,6 +41,7 @@ class Signal:
     strategy: str
     reason: str
     quantity: int = 0
+    regime: str = "UNKNOWN"   # MarketRegime.value — set by engine after RegimeClassifier
 
     @property
     def risk_per_share(self) -> float:
@@ -79,6 +80,8 @@ class ORBState:
 class ORBStrategy:
     """Opening Range Breakout strategy."""
     NAME = "ORB"
+
+    _MIN_RR = 1.5    # Minimum reward:risk ratio — below this the trade isn't worth the commission + slippage
 
     def __init__(self):
         self._states: dict[str, ORBState] = {}
@@ -134,12 +137,17 @@ class ORBStrategy:
         # LONG breakout
         if price > buy_trigger and not state.long_triggered:
             state.long_triggered = True
-            state.trade_taken    = True
-            state.last_signal_type = SignalType.BUY
 
             stop   = state.range_low
             target = price + (state.range_width * self._target_mult)
             rr     = (target - price) / (price - stop) if price != stop else 0
+
+            # Institutional RR gate: reject setups with poor risk/reward
+            if rr < self._MIN_RR:
+                return None
+
+            state.trade_taken      = True
+            state.last_signal_type = SignalType.BUY
 
             return Signal(
                 type=SignalType.BUY, symbol=symbol, price=price,
@@ -152,12 +160,17 @@ class ORBStrategy:
         # SHORT breakdown
         if price < sell_trigger and not state.short_triggered:
             state.short_triggered = True
-            state.trade_taken     = True
-            state.last_signal_type = SignalType.SELL
 
             stop   = state.range_high
             target = price - (state.range_width * self._target_mult)
             rr     = (price - target) / (stop - price) if stop != price else 0
+
+            # Institutional RR gate: reject setups with poor risk/reward
+            if rr < self._MIN_RR:
+                return None
+
+            state.trade_taken      = True
+            state.last_signal_type = SignalType.SELL
 
             return Signal(
                 type=SignalType.SELL, symbol=symbol, price=price,

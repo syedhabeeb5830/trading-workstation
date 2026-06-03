@@ -37,6 +37,10 @@ class AlgoExecutor:
         self.paper_mode = paper_mode
         self._sim_mode  = False          # Set True during simulation to skip file I/O
 
+        # Playbook / ExpectancyGate (lazy-loaded on first call)
+        self._playbook           = None
+        self._min_expectancy_r   = 0.30   # minimum avg_r to accept a signal
+
         journal = Path(journal_dir)
         journal.mkdir(exist_ok=True)
 
@@ -64,11 +68,18 @@ class AlgoExecutor:
     # ── Main entry points ──────────────────────────────────────────────────
 
     def execute_signal(self, signal: Signal) -> Optional[TradeRecord]:
-        """Risk gate → sizing → execute. Returns TradeRecord or None."""
+        """Risk gate → expectancy gate → sizing → execute. Returns TradeRecord or None."""
         verdict = self.risk_guard.check_new_trade(signal, signal.timestamp)
         if not verdict:
             self._log_signal(signal, "REJECTED", verdict.reason)
             self._print_rejection(signal, verdict.reason)
+            return None
+
+        # Expectancy gate: skip if we have sufficient data and edge is negative
+        exp_ok, exp_reason = self._gate_expectancy(signal)
+        if not exp_ok:
+            self._log_signal(signal, "REJECTED", exp_reason)
+            self._print_rejection(signal, exp_reason)
             return None
 
         quantity = self.risk_guard.calculate_position_size(signal)
@@ -265,6 +276,46 @@ class AlgoExecutor:
     def _print_rejection(self, signal: Signal, reason: str) -> None:
         print(f"  {_R}\u2717 {signal.symbol} {signal.type.value} rejected: {reason}{_RST}",
               flush=True)
+
+    # ── Expectancy gate ───────────────────────────────────────────────────
+
+    def load_playbook(self) -> None:
+        """Lazy-load the Playbook DB.  Call once at engine startup."""
+        try:
+            from analytics.playbook import Playbook
+            self._playbook = Playbook()
+        except Exception as exc:
+            print(f"  {_D}  [executor] playbook unavailable: {exc}{_RST}")
+
+    def _gate_expectancy(self, signal: Signal) -> tuple[bool, str]:
+        """
+        Query playbook for avg_r on (symbol, regime) from paper+live trades.
+        Blocks the signal only if:
+          - playbook is loaded, AND
+          - sufficient data exists (>= 5 paper/live trades), AND
+          - avg_r < min_expectancy_r (negative or low edge)
+        Returns (ok, reason).
+        """
+        if self._playbook is None:
+            return True, ""
+        try:
+            exp = self._playbook.get_expectancy(
+                symbol=signal.symbol,
+                regime=getattr(signal, "regime", "UNKNOWN"),
+                min_trades=5,
+            )
+            if not exp["sufficient"]:
+                return True, ""   # not enough data — let it through
+            avg_r = exp["avg_r"] or 0.0
+            if avg_r < self._min_expectancy_r:
+                return False, (
+                    f"ExpectancyGate: {signal.symbol} [{signal.regime}] "
+                    f"avg_r={avg_r:+.2f}R < {self._min_expectancy_r:.2f}R "
+                    f"({exp['n']} paper/live trades)"
+                )
+        except Exception:
+            pass
+        return True, ""
 
     # ── Telegram ──────────────────────────────────────────────────────────
 

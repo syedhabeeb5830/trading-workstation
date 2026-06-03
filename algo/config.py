@@ -22,7 +22,7 @@ ALGO_CONFIG: dict = {
     "orb_min_range_pct":      0.3,          # skip if range too tight (choppy)
     "orb_max_range_pct":      1.5,          # skip if range too wide (news risk)
     "orb_target_multiple":    2.0,          # target = 2x range width
-    "no_new_trades_after":    "14:30",      # no fresh entries after this time
+    "no_new_trades_after":    "11:00",      # ORB edge expires ~75 min after open; no new entries after this time
 
     # ── Candle timeframes ────────────────────────────────────────────────────
     "candle_intervals":       [15],         # used by MultiTimeframeCandleManager
@@ -34,6 +34,7 @@ ALGO_CONFIG: dict = {
     "max_daily_profit_pct":   4.0,          # greed guard: stop after 4% profit
     "max_trades_per_day":     6,            # max total trades per session
     "max_concurrent_positions": 2,          # max open trades at once
+    "max_sector_positions":   1,            # max simultaneous positions in the same sector
 
     # ── Circuit breaker ───────────────────────────────────────────────────────
     "consecutive_loss_pause": 3,            # pause after N consecutive losses

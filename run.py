@@ -17,17 +17,23 @@ Three commands cover 95% of daily use:
     python run.py --reconcile             ← journal ↔ broker truth check
     python run.py --resolve               ← update closed trade outcomes
 
+  PRE-FLIGHT (mandatory first command each morning):
+    python run.py --doctor                ← deployment readiness check
+
   WEEKLY review:
     python run.py --report [TYPE]         ← analytics; TYPE=full|expectancy|
                                             segment|edge|equity|scanlog
 
+  STRATEGY VALIDATION (monthly / pre-deployment):
+    python run.py --backtest 60           ← ORB intraday backtest (research)
+    python run.py --walkforward 120       ← out-of-sample edge check
+    python run.py --swing-backtest        ← per-ticker SWING validation
+
   ONE-TIME SETUP:
-    python run.py --install-scheduler     ← auto-run --positions every 15min
     python run.py --kite-login            ← refresh Kite session (also auto)
 
   ADVANCED / occasional:
     python run.py --gtts                  ← list all GTTs on the account
-    python run.py --alerts                ← run alert engine standalone
     python run.py --debug                 ← why setups failed (strategy review)
     python run.py --record TICKER         ← manually log an off-plan trade
     python run.py --sync                  ← pull from Kite (auto in reconcile)
@@ -113,21 +119,90 @@ def main() -> None:
         help="Book a partial exit on an open trade (auto-moves stop to breakeven)",
     )
     parser.add_argument(
-        "--install-scheduler",
-        action="store_true", dest="install_scheduler",
-        help="Register Windows Task to run --positions every 15min during market hours",
+        "--doctor",
+        action="store_true",
+        help="Pre-flight deployment check (run FIRST every morning).",
     )
     parser.add_argument(
-        "--uninstall-scheduler",
-        action="store_true", dest="uninstall_scheduler",
-        help="Remove the scheduled --positions task",
+        "--morning",
+        action="store_true",
+        help="Zero-decision morning: doctor + scan + ONE trade pick. Default for new users.",
     )
     parser.add_argument(
-        "--weekly-pulse",
-        action="store_true", dest="weekly_pulse",
-        help="Send weekly performance summary to Telegram (any day)",
+        "--universe",
+        action="store_true",
+        help="Show watchlist vs backtest-qualified universe report.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Use with --doctor: treat warnings as failures too.",
+    )
+    parser.add_argument(
+        "--swing-backtest",
+        nargs="?",
+        const="",
+        dest="swing_backtest",
+        metavar="TICKERS",
+        help="Per-ticker swing backtest. Pass comma-list or omit to use today's shortlist.",
+    )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=180,
+        help="Days of history for --swing-backtest (default: 180).",
     )
 
+    parser.add_argument(
+        "--backtest",
+        nargs="?",
+        const=30,
+        type=int,
+        metavar="DAYS",
+        help="Run ORB backtest over last N trading days (default: 30)."
+             " Auto-selects best 8 instruments via screener.",
+    )
+    parser.add_argument(
+        "--walkforward",
+        nargs="?",
+        const=120,
+        type=int,
+        metavar="DAYS",
+        help="Walk-forward validation: first 80%% = in-sample, last 20%% = OOS (default: 120 days).",
+    )
+    parser.add_argument(
+        "--screen",
+        nargs="?",
+        const=30,
+        type=int,
+        metavar="DAYS",
+        help="Run instrument screener only — rank all 27 candidates, show top picks",
+    )
+    parser.add_argument(
+        "--no-auto-select",
+        action="store_true",
+        dest="no_auto_select",
+        help="Use with --backtest: skip screener, use hardcoded instruments in config.py",
+    )
+    parser.add_argument(
+        "--top-n",
+        type=int,
+        default=8,
+        dest="top_n",
+        metavar="N",
+        help="How many stocks the screener selects (default: 8)",
+    )
+    parser.add_argument(
+        "--playbook",
+        action="store_true",
+        help="Show expectancy report from Journal/playbook.db",
+    )
+    parser.add_argument(
+        "--replay",
+        metavar="DATE",
+        default=None,
+        help="Show all trades on DATE from playbook (format: YYYY-MM-DD)",
+    )
     parser.add_argument(
         "--algo",
         nargs="?",
@@ -188,9 +263,43 @@ def main() -> None:
     # DISPATCH
     # ─────────────────────────────────────────────────────────────────────────
 
-    if args.algo is not None:
+    if args.doctor:
+        import sys as _sys
+        _sys.exit(_cmd_doctor(args.journal, strict=args.strict))
+
+    if args.morning:
+        import sys as _sys
+        _sys.exit(_cmd_morning(args.journal))
+
+    if args.universe:
+        import sys as _sys
+        _sys.exit(_cmd_universe(args.journal))
+
+    if args.swing_backtest is not None:
+        _cmd_swing_backtest(args.swing_backtest, args.journal, days=args.days)
+        return
+
+    if args.backtest is not None:
+        _cmd_backtest(args.backtest,
+                      auto_select=not args.no_auto_select,
+                      top_n=args.top_n)
+
+    elif args.walkforward is not None:
+        _cmd_walkforward(args.walkforward)
+
+    elif args.screen is not None:
+        _cmd_screen(args.screen, top_n=args.top_n)
+
+    elif args.playbook:
+        _cmd_playbook()
+
+    elif args.replay is not None:
+        _cmd_replay(args.replay)
+
+    elif args.algo is not None:
         _cmd_algo(args.algo, live=args.live, simulate=args.simulate,
-                  status=args.status, journal_dir=args.journal)
+                  status=args.status, journal_dir=args.journal,
+                  auto_select=not args.no_auto_select, top_n=args.top_n)
 
     elif args.today:
         _cmd_today(args.journal)
@@ -209,15 +318,6 @@ def main() -> None:
 
     elif args.partial:
         _cmd_partial(args.partial[0], args.partial[1], args.price, args.journal)
-
-    elif args.install_scheduler:
-        _cmd_install_scheduler()
-
-    elif args.uninstall_scheduler:
-        _cmd_uninstall_scheduler()
-
-    elif args.weekly_pulse:
-        _cmd_weekly_pulse(args.journal, force=True)
 
     elif args.kite_login:
         _cmd_kite_login()
@@ -246,12 +346,50 @@ def main() -> None:
 # COMMAND IMPLEMENTATIONS
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _cmd_backtest(days: int = 30, auto_select: bool = True, top_n: int = 8) -> None:
+    """Multi-day ORB backtest with Zerodha fee model."""
+    from algo.backtest import run_backtest
+    run_backtest(days=days, auto_select=auto_select, top_n=top_n)
+
+
+def _cmd_walkforward(days: int = 120) -> None:
+    """Walk-forward validation: IS (80%) vs OOS (20%) using the FILTERED config."""
+    from algo.backtest import run_walkforward
+    run_walkforward(days=days)
+
+
+def _cmd_screen(days: int = 30, top_n: int = 8) -> None:
+    """Standalone instrument screener — rank all 27 candidates."""
+    from algo.backtest import run_screen
+    run_screen(days=days, top_n=top_n)
+
+
+def _cmd_playbook() -> None:
+    """Print full expectancy report from Journal/playbook.db."""
+    from analytics.playbook import Playbook
+    Playbook().print_report()
+
+
+def _cmd_replay(date_str: str) -> None:
+    """Print all trades on a specific date from the playbook."""
+    from datetime import date
+    from analytics.playbook import Playbook
+    try:
+        d = date.fromisoformat(date_str)
+    except ValueError:
+        print(f"  Invalid date '{date_str}'. Use YYYY-MM-DD format.")
+        return
+    Playbook().print_replay(d)
+
+
 def _cmd_algo(strategy: str, live: bool = False, simulate: bool = False,
-              status: bool = False, journal_dir: str = "journal") -> None:
+              status: bool = False, journal_dir: str = "journal",
+              auto_select: bool = True, top_n: int = 8) -> None:
     """Algo engine — ORB strategy, paper/live/simulate modes."""
     from algo.engine import run_algo
     run_algo(strategy=strategy, live=live, simulate=simulate,
-             status=status, journal_dir=journal_dir)
+             status=status, journal_dir=journal_dir,
+             auto_select=auto_select, top_n=top_n)
 
 
 def _cmd_today(journal_dir: str) -> None:
@@ -297,19 +435,51 @@ def _cmd_partial(ticker: str, qty: str, price, journal_dir: str) -> None:
 
 
 def _cmd_install_scheduler() -> None:
-    from scanner.scheduler import install_scheduler
-    install_scheduler()
+    print("\n  ✗ --install-scheduler removed in production hardening.\n"
+          "    Manual --positions only; auto-checking creates monitoring compulsion.\n")
 
 
 def _cmd_uninstall_scheduler() -> None:
-    from scanner.scheduler import uninstall_scheduler
-    uninstall_scheduler()
+    print("\n  ✗ --uninstall-scheduler removed (see --install-scheduler).\n")
 
 
 def _cmd_alerts(journal_dir: str) -> None:
-    """Alert engine — WATCH→READY, stale setups, guard blocks."""
-    from scanner.alerts import run_alerts
-    run_alerts(journal_dir=journal_dir)
+    print("\n  ✗ --alerts removed in production hardening.\n"
+          "    Telegram alerts created emotional triggers. Use --positions and --doctor instead.\n")
+
+
+def _cmd_doctor(journal_dir: str, strict: bool = False) -> int:
+    """Pre-flight deployment check."""
+    from scanner.doctor import run_doctor
+    return run_doctor(journal_dir=journal_dir, strict=strict)
+
+
+def _cmd_morning(journal_dir: str) -> int:
+    """Zero-decision-fatigue morning command."""
+    from scanner.morning import run_morning
+    return run_morning(journal_dir=journal_dir, run_doctor_first=True,
+                       refresh_scan=True)
+
+
+def _cmd_universe(journal_dir: str) -> int:
+    """Show watchlist and qualified-universe comparison report."""
+    from scanner.universe import show_universe
+    return show_universe(journal_dir=journal_dir)
+
+
+def _cmd_swing_backtest(spec: str, journal_dir: str, days: int = 180) -> None:
+    """Per-ticker swing strategy backtest."""
+    spec = (spec or "").strip()
+    if not spec:
+        from analytics.swing_backtest import run_swing_backtest_shortlist
+        run_swing_backtest_shortlist(journal_dir=journal_dir, days=days)
+        return
+    from analytics.swing_backtest import run_swing_backtest
+    tickers = [t.strip() for t in spec.split(",") if t.strip()]
+    if not tickers:
+        print("  No tickers supplied.")
+        return
+    run_swing_backtest(tickers, days=days)
 
 
 def _cmd_kite_login() -> None:
@@ -449,14 +619,8 @@ def _cmd_report(report_type: str, journal_dir: str) -> None:
     fn = dispatch.get(report_type.strip().lower(), print_full_report)
     fn(journal_dir=journal_dir)
 
-    # Auto-send weekly pulse on Sundays (once per day)
-    try:
-        from datetime import date
-        import calendar
-        if date.today().weekday() == 6:  # Sunday
-            _cmd_weekly_pulse(journal_dir, force=False)
-    except Exception:
-        pass
+    # Weekly Telegram pulse removed in production hardening:
+    # auto-broadcasts create monitoring compulsion. Use --report locally.
 
 
 def _cmd_weekly_pulse(journal_dir: str, force: bool = True) -> None:

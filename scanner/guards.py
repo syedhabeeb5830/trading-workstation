@@ -160,6 +160,51 @@ def check_max_positions(open_positions: list[dict],
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 6b. DAILY-LOSS CIRCUIT BREAKER — block new trades if today's realised
+#     P&L breaches the configured drawdown limit.
+# ─────────────────────────────────────────────────────────────────────────────
+def check_daily_loss_circuit(journal_dir: str,
+                              account_capital: float,
+                              breaker_pct: float) -> GuardResult:
+    """
+    Reads trade log, computes today's realised P&L on CLOSED trades,
+    and blocks new entries if it has fallen below -breaker_pct * capital.
+    """
+    if account_capital <= 0 or breaker_pct <= 0:
+        return GuardResult(True, "")
+    try:
+        from analytics.outcome_tracker import load_trade_log
+        import pandas as _pd
+        df = load_trade_log(journal_dir=journal_dir)
+        if df.empty:
+            return GuardResult(True, "")
+        today = date.today()
+        df["exit_date"] = _pd.to_datetime(df.get("exit_date"), errors="coerce")
+        closed_today = df[
+            (df["status"].astype(str).str.upper() == "CLOSED") &
+            (df["exit_date"].dt.date == today)
+        ]
+        realised = 0.0
+        for _, r in closed_today.iterrows():
+            entry = float(r.get("entry_price", 0) or 0)
+            exitp = float(r.get("exit_price",  0) or 0)
+            qty   = float(r.get("quantity",    0) or 0)
+            realised += (exitp - entry) * qty
+    except Exception:
+        return GuardResult(True, "")
+
+    breaker_inr = account_capital * breaker_pct
+    if realised <= -breaker_inr:
+        return GuardResult(
+            False,
+            f"DAILY-LOSS CIRCUIT — realised ₹{realised:+,.0f} "
+            f"≤ -₹{breaker_inr:,.0f}. No new trades today.",
+            "CIRCUIT",
+        )
+    return GuardResult(True, "")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # AGGREGATE — run all guards, return list of failures (empty = allowed)
 # ─────────────────────────────────────────────────────────────────────────────
 def run_all_guards(plan: dict, context: dict) -> list[GuardResult]:
@@ -202,6 +247,14 @@ def run_all_guards(plan: dict, context: dict) -> list[GuardResult]:
     if not r.allowed: failures.append(r)
 
     r = check_max_positions(op, cfg.get("max_positions", 6))
+    if not r.allowed: failures.append(r)
+
+    jdir = context.get("journal_dir", "journal")
+    r = check_daily_loss_circuit(
+        journal_dir=jdir,
+        account_capital=float(cfg.get("account_capital", 0) or 0),
+        breaker_pct=float(cfg.get("daily_loss_breaker_pct", 0) or 0),
+    )
     if not r.allowed: failures.append(r)
 
     return failures

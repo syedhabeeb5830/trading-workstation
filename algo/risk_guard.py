@@ -31,6 +31,7 @@ class TradeRecord:
     entry_time: datetime
     exit_price: Optional[float] = None
     exit_time: Optional[datetime] = None
+    partial_pnl: float = 0.0       # P&L locked by 50% partial exit at 1R (before final close)
     pnl: float = 0.0
     status: str = "OPEN"          # OPEN | WIN | LOSS | SQUAREOFF
     exit_reason: str = ""
@@ -49,9 +50,9 @@ class TradeRecord:
         self.exit_time   = exit_time
         self.exit_reason = reason
         if self.is_long:
-            self.pnl = (exit_price - self.entry_price) * self.quantity
+            self.pnl = self.partial_pnl + (exit_price - self.entry_price) * self.quantity
         else:
-            self.pnl = (self.entry_price - exit_price) * self.quantity
+            self.pnl = self.partial_pnl + (self.entry_price - exit_price) * self.quantity
         if reason == "SQUAREOFF" or reason == "EOD_SQUAREOFF":
             self.status = "SQUAREOFF"
         else:
@@ -101,6 +102,11 @@ class RiskGuard:
         self._square_off   = time(*map(int, self.cfg["square_off_time"].split(":")))
         self._no_new_after = time(*map(int, self.cfg["no_new_trades_after"].split(":")))
 
+        # Period risk tracking (updated from live P&L feed)
+        self._week_pnl  : float = 0.0   # closed P&L for current ISO week before today
+        self._month_pnl : float = 0.0   # closed P&L for current month before today
+        self._size_mult : float = 1.0   # 0.5 when monthly drawdown 4–8%, 1.0 otherwise
+
     # ── State queries ──────────────────────────────────────────────────────
 
     @property
@@ -148,6 +154,17 @@ class RiskGuard:
 
     # ── Risk gate ──────────────────────────────────────────────────────────
 
+    def set_period_pnl(self, week_pnl: float, month_pnl: float) -> None:
+        """
+        Inject rolling P&L context from an external source (e.g. broker API).
+        Call once at session start so weekly/monthly checks have full context.
+
+        week_pnl  — net P&L for the current ISO week EXCLUDING today
+        month_pnl — net P&L for the current calendar month EXCLUDING today
+        """
+        self._week_pnl  = week_pnl
+        self._month_pnl = month_pnl
+
     def check_new_trade(self, signal: Signal, current_time: datetime
                         ) -> RiskGuardVerdict:
         if self._killed:
@@ -189,6 +206,24 @@ class RiskGuard:
                 f"exceeds limit \u20b9{max_loss:,.0f}",
             )
 
+        # Weekly drawdown gate (hard block)
+        capital = self.cfg["capital"]
+        total_week  = self._week_pnl  + self.realized_pnl
+        total_month = self._month_pnl + self.realized_pnl
+        week_limit  = capital * (self.cfg.get("max_weekly_loss_pct",  3.0) / 100)
+        month_limit = capital * (self.cfg.get("max_monthly_loss_pct", 8.0) / 100)
+        if total_week <= -week_limit:
+            return RiskGuardVerdict(
+                False,
+                f"WEEKLY RISK GATE: Week P&L \u20b9{total_week:,.0f} \u2264 "
+                f"-\u20b9{week_limit:,.0f} ({self.cfg.get('max_weekly_loss_pct', 3.0):.0f}% capital)",
+            )
+        # Monthly drawdown: reduce size to 50% (not a hard block)
+        if total_month <= -month_limit:
+            self._size_mult = 0.5
+        else:
+            self._size_mult = 1.0
+
         max_profit = self.cfg["capital"] * (self.cfg["max_daily_profit_pct"] / 100)
         if self.realized_pnl >= max_profit:
             self._kill("Daily profit target reached \u2014 greed guard")
@@ -224,7 +259,7 @@ class RiskGuard:
         available = capital_available - committed
         qty_by_capital = int(available / signal.price) if signal.price > 0 else 0
 
-        return min(qty, qty_by_capital)
+        return int(min(qty, qty_by_capital) * self._size_mult)
 
     # ── Trade lifecycle ────────────────────────────────────────────────────
 
