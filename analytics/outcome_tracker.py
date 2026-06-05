@@ -33,13 +33,16 @@ WHY MFE and MAE?
     These two metrics diagnose stop/target placement quality over time.
 """
 
-import os
 import csv
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
+
+from analytics.journal_writer import (
+    atomic_append_rows, atomic_csv_write, cleanup_orphaned_temp,
+)
 
 
 # ── Trade log schema ──────────────────────────────────────────────────────────
@@ -121,8 +124,9 @@ def record_trade_entry(
     ticker   = plan["ticker"]
     trade_id = f"{entry_date.replace('-','')}_{ticker.replace('.NS','')}"
 
-    log_path    = get_trade_log_path(journal_dir)
-    write_header = not log_path.exists() or log_path.stat().st_size == 0
+    log_path = get_trade_log_path(journal_dir)
+    # Remove any orphaned .tmp from a prior crash before appending
+    cleanup_orphaned_temp(log_path)
 
     row = {col: "" for col in TRADE_COLUMNS}
     row.update({
@@ -147,11 +151,7 @@ def record_trade_entry(
         "exit_reason":       "OPEN",
     })
 
-    with open(log_path, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=TRADE_COLUMNS, extrasaction="ignore")
-        if write_header:
-            writer.writeheader()
-        writer.writerow(row)
+    atomic_append_rows(log_path, [row], TRADE_COLUMNS)
 
     print(f"  ✓ Trade logged: {trade_id} | Entry ₹{plan.get('entry_price')} | Stop ₹{plan.get('stop_price')}")
     return trade_id
@@ -361,8 +361,8 @@ def resolve_outcomes(journal_dir: str = "journal",
             print(f"✗  error: {e}")
             errors += 1
 
-    # Write updated file back
-    df.to_csv(log_path, index=False)
+    # Write updated file back atomically (temp → fsync → rename)
+    atomic_csv_write(log_path, df)
 
     # ── Telegram exit notifications for freshly resolved trades ──────────────
     if _newly_resolved:

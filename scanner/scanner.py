@@ -7,10 +7,15 @@ No output/printing here — pure data functions only.
 Also provides run_scanner() for diagnostic verbose mode.
 """
 
+import logging
 import pandas as pd
 import numpy as np
 import yfinance as yf
 from datetime import datetime
+
+from scanner.data_validator import validate_ohlcv, clean_ohlcv
+
+_log = logging.getLogger(__name__)
 
 try:
     from config.config import CONFIG
@@ -73,11 +78,26 @@ def get_market_regime(config: dict) -> dict:
 def fetch_stock_data(ticker: str, config: dict) -> pd.DataFrame | None:
     df = yf.download(ticker, period=config["data_period"],
                      auto_adjust=True, progress=False)
-    if df.empty: return None
+    if df is None or df.empty:
+        return None
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
     df = df.dropna()
-    return df if len(df) >= config["min_bars"] else None
+    if len(df) < config["min_bars"]:
+        return None
+
+    # Fix duplicates before validation
+    df = clean_ohlcv(df)
+
+    result = validate_ohlcv(df, ticker=ticker)
+    for w in result.warnings:
+        _log.warning(w)
+    if not result.valid:
+        _log.error("Dropping %s — data integrity failure: %s", ticker,
+                   "; ".join(result.errors))
+        return None
+
+    return df
 
 
 # ── Hard gates ─────────────────────────────────────────────────────────────────
