@@ -6,6 +6,7 @@ __pycache__/
 .env
 .zerodha_session.json
 .kite_instruments.json
+HANDOFF.md
 
 # Local journal data (user-specific)
 journal/alerts.log
