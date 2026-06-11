@@ -251,6 +251,13 @@ def main() -> None:
         help="Minimal output (for scheduled runs)",
     )
     parser.add_argument(
+        "--profile",
+        metavar="PROFILE",
+        default="balanced",
+        choices=["tight", "balanced", "aggressive", "discovery"],
+        help="Filter profile: tight | balanced (default) | aggressive | discovery",
+    )
+    parser.add_argument(
         "--journal",
         metavar="DIR",
         default="journal",
@@ -302,7 +309,7 @@ def main() -> None:
                   auto_select=not args.no_auto_select, top_n=args.top_n)
 
     elif args.today:
-        _cmd_today(args.journal)
+        _cmd_today(args.journal, profile=args.profile)
 
     elif args.positions:
         _cmd_positions(args.journal, quiet=args.quiet)
@@ -339,7 +346,7 @@ def main() -> None:
 
     else:
         # No flag given — default to --today
-        _cmd_today(args.journal)
+        _cmd_today(args.journal, profile=args.profile)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -392,9 +399,9 @@ def _cmd_algo(strategy: str, live: bool = False, simulate: bool = False,
              auto_select=auto_select, top_n=top_n)
 
 
-def _cmd_today(journal_dir: str) -> None:
+def _cmd_today(journal_dir: str, profile: str = "balanced") -> None:
     from scanner.daily_mode import run_daily_mode
-    run_daily_mode(journal_dir=journal_dir)
+    run_daily_mode(journal_dir=journal_dir, profile=profile)
 
 def _cmd_positions(journal_dir: str, quiet: bool = False) -> None:
     """Active position cockpit — manage open trades."""

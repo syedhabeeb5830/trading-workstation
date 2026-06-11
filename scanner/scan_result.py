@@ -1,14 +1,15 @@
 """
-scanner/scan_result.py  —  Observable Scan Pipeline (Phase 6)
+scanner/scan_result.py  —  Observable Scan Pipeline (Phase 7)
 =============================================================
 Every ticker produces a ScanResult — pass or fail — with full audit trail.
 
-KEY CHANGES from Phase 5:
-  - Pipeline uses new 3-dimensional scoring (setup/exec/regime)
-  - open_risk_inr passed to position sizing
-  - Tier replaces grade in all plan outputs
-  - Gap-up rejection tracked
-  - Regime no longer multiplies score
+Phase 7 changes:
+  - on_radar flag: ATR-high and weak-trend stocks flow through the FULL
+    pipeline instead of being hard-rejected. Trader sees them in ON RADAR.
+  - fail_category: machine-readable rejection label for diagnostics.
+  - Soft filter gate never stops on_radar stocks.
+  - get_on_radar(), get_rejection_breakdown() added.
+  - get_near_misses() now excludes on_radar stocks (they have own section).
 """
 
 import os
@@ -21,8 +22,10 @@ import pandas as pd
 @dataclass
 class ScanResult:
     ticker:              str
-    stage:               str = "DATA"
+    stage:               str  = "DATA"
     passed:              bool = False
+    on_radar:            bool = False   # failed a threshold but trader should see it
+    fail_category:       str  = ""      # DATA|LIQUIDITY|ATR_LOW|ATR_HIGH|TREND|RS|RANGE|SCORE|RR|REGIME
 
     rejection_reasons:   list = field(default_factory=list)
     caution_notes:       list = field(default_factory=list)
@@ -51,11 +54,15 @@ class ScanResult:
 
     @property
     def is_hard_reject(self) -> bool:
-        return self.stage in ("DATA", "LIQUIDITY", "ATR")
+        # ATR_HIGH / TREND are no longer hard rejects — they advance to on_radar.
+        # ATR_LOW stays hard (dead/flat stock — no meaningful trade).
+        return (self.stage in ("DATA", "LIQUIDITY")
+                or self.fail_category == "ATR_LOW")
 
     @property
     def is_near_miss(self) -> bool:
-        return not self.passed and not self.is_hard_reject
+        # on_radar stocks have their own display section
+        return not self.passed and not self.is_hard_reject and not self.on_radar
 
     @property
     def primary_rejection(self) -> str:
@@ -85,6 +92,10 @@ def run_observable_scan(config: dict,
     """
     Full observable pipeline. Returns (regime, list[ScanResult]).
     open_risk_inr fed to position sizing for portfolio heat.
+
+    Phase 7: ATR-high and weak-trend stocks are no longer hard-rejected.
+    They flow through the full pipeline as on_radar=True and appear in
+    the ON RADAR section of --today for trader review.
     """
     try:
         from scanner.scanner import (
@@ -114,10 +125,9 @@ def run_observable_scan(config: dict,
         )
         from scanner.watchlist import WATCHLIST
 
-    regime  = get_market_regime(config)
-    results = []
-
-    regime_str    = regime["regime"]
+    regime         = get_market_regime(config)
+    results        = []
+    regime_str     = regime["regime"]
     regime_str_val = regime["strength"]
     reg_score      = compute_regime_score(regime_str, regime_str_val)
 
@@ -128,20 +138,23 @@ def run_observable_scan(config: dict,
         df = fetch_stock_data(ticker, config)
         if df is None:
             r.add_rejection("No data or insufficient history")
+            r.fail_category = "DATA"
             results.append(r); continue
 
         r.price = float(df["Close"].iloc[-1])
 
         # ── LIQUIDITY ─────────────────────────────────────────────────────────
-        r.stage = "LIQUIDITY"
+        r.stage      = "LIQUIDITY"
         r.avg_volume = float(df["Volume"].tail(20).mean())
 
         if r.avg_volume < config["min_avg_volume"]:
             r.add_rejection(
                 f"Low volume ({r.avg_volume:,.0f} < {config['min_avg_volume']:,} min)")
+            r.fail_category = "LIQUIDITY"
             results.append(r); continue
         if r.price < config["min_price"]:
             r.add_rejection(f"Price too low (₹{r.price:.0f} < ₹{config['min_price']})")
+            r.fail_category = "LIQUIDITY"
             results.append(r); continue
 
         # ── ATR ───────────────────────────────────────────────────────────────
@@ -151,45 +164,45 @@ def run_observable_scan(config: dict,
         r.atr_val  = float(atr_series.iloc[-1])
         r.atr_pct  = round((r.atr_val / r.price) * 100, 2) if r.price else 0.0
 
-        if r.atr_pct > config["max_atr_pct"]:
-            r.add_rejection(
-                f"ATR too high ({r.atr_pct:.1f}% > {config['max_atr_pct']}%)")
-            results.append(r); continue
         if r.atr_pct < config["min_atr_pct"]:
             r.add_rejection(
-                f"ATR too low ({r.atr_pct:.1f}% < {config['min_atr_pct']}%)")
+                f"ATR too low ({r.atr_pct:.1f}% < {config['min_atr_pct']}%) — flat/dead")
+            r.fail_category = "ATR_LOW"
             results.append(r); continue
 
+        if r.atr_pct > config["max_atr_pct"]:
+            # Phase 7: no longer a hard reject — show to trader as ON RADAR
+            r.on_radar     = True
+            r.fail_category = "ATR_HIGH"
+            r.add_caution(
+                f"HIGH VOLATILITY — ATR {r.atr_pct:.1f}% exceeds threshold "
+                f"({config['max_atr_pct']}%) — wider stop, higher slippage risk")
+
         # ── TREND ─────────────────────────────────────────────────────────────
-        r.stage = "TREND"
+        r.stage       = "TREND"
         trend         = compute_trend_quality(df)
         r.trend_score = trend["score_raw"]
 
         if r.trend_score < config["min_trend_score"]:
-            rs_           = compute_relative_strength(df, regime["index_df"])
-            consolidation = compute_consolidation(df, config)
-            volume        = compute_volume_behavior(df, config)
-            breakout      = compute_breakout_proximity(df, config)
-            r.rs          = rs_
-            r.range_pct   = consolidation["range_pct"]
-            r.volume_ratio = volume["volume_ratio"]
-            r.distance_pct = breakout["distance_pct"]
-
+            # Phase 7: no longer a hard reject — show to trader as ON RADAR
+            r.on_radar = True
+            if not r.fail_category:
+                r.fail_category = "TREND"
             conds     = trend["conditions"]
             failed    = [k for k, v in conds.items() if not v]
             label_map = {
-                "above_sma20": "below 20 SMA", "above_sma50": "below 50 SMA",
-                "sma20_above_sma50": "20<50 SMA", "above_sma200": "below 200 SMA"
+                "above_sma20":       "below 20 SMA",
+                "above_sma50":       "below 50 SMA",
+                "sma20_above_sma50": "20 SMA < 50 SMA",
+                "above_sma200":      "below 200 SMA",
             }
-            r.add_rejection(
-                f"Weak trend ({r.trend_score}/4) — "
+            r.add_caution(
+                f"WEAK TREND ({r.trend_score}/4 SMAs) — "
                 + ", ".join(label_map.get(f, f) for f in failed)
             )
-            r.near_miss_score = _compute_near_miss_score(r, config)
-            results.append(r); continue
 
-        # ── SOFT FILTERS (score, not hard reject) ────────────────────────────
-        r.stage = "SOFT_FILTERS"
+        # ── SOFT FILTERS (score penalty, not hard reject) ─────────────────────
+        r.stage       = "SOFT_FILTERS"
         rs            = compute_relative_strength(df, regime["index_df"])
         consolidation = compute_consolidation(df, config)
         volume        = compute_volume_behavior(df, config)
@@ -200,27 +213,33 @@ def run_observable_scan(config: dict,
         r.volume_ratio  = volume["volume_ratio"]
         r.distance_pct  = breakout["distance_pct"]
 
-        rejected = False
+        soft_failed = False
 
-        # These are now soft thresholds — set wider, penalise in score
         if rs < config["min_rs"]:
             r.add_rejection(
                 f"Weak RS ({rs:+.1f}% < {config['min_rs']:+.1f}% floor)")
-            rejected = True
+            if not r.fail_category:
+                r.fail_category = "RS"
+            if not r.on_radar:
+                soft_failed = True
 
         if consolidation["range_pct"] > config["max_consolidation_pct"]:
             r.add_rejection(
                 f"Range too wide ({consolidation['range_pct']:.1f}%"
                 f" > {config['max_consolidation_pct']}%)")
-            rejected = True
+            if not r.fail_category:
+                r.fail_category = "RANGE"
+            if not r.on_radar:
+                soft_failed = True
 
-        if rejected:
+        if soft_failed:
             r.near_miss_score = _compute_near_miss_score(r, config)
             results.append(r); continue
+        # on_radar stocks continue regardless of soft-filter outcome
 
         # ── SCORE ─────────────────────────────────────────────────────────────
-        r.stage = "SCORED"
-        metrics = {
+        r.stage  = "SCORED"
+        metrics  = {
             "trend":             trend,
             "relative_strength": rs,
             "consolidation":     consolidation,
@@ -230,7 +249,6 @@ def run_observable_scan(config: dict,
         }
         r.metrics = metrics
 
-        # Compute entry to get exec_score inputs
         from scanner.trade_engine import compute_entry, compute_stops
         entry_data = compute_entry(df, config)
         stop_data  = compute_stops(df, r.atr_val, entry_data["entry_price"], config)
@@ -253,17 +271,26 @@ def run_observable_scan(config: dict,
         if not volume["is_drying_up"]:
             r.add_caution(f"Volume not drying up yet ({volume['volume_ratio']:.2f}× avg)")
 
-        if plan["tier"] == "AVOID":
-            rr = plan.get("rr_t1", 0)
-            if rr < config["min_rr_ratio"]:
-                r.add_rejection(
-                    f"RR too low ({rr:.1f}x < {config['min_rr_ratio']:.1f}x)")
-            elif regime_str == "BEAR":
-                r.add_rejection("BEAR regime — no new longs")
-            else:
-                r.add_rejection(
-                    f"Setup score too low for deployment "
-                    f"(setup {r.setup_score:.0f} < PILOT threshold)")
+        # on_radar stocks never graduate to the main actionable list —
+        # they always surface in the ON RADAR section regardless of tier.
+        if plan["tier"] == "AVOID" or r.on_radar:
+            if plan["tier"] == "AVOID":
+                rr = plan.get("rr_t1", 0)
+                if rr < config["min_rr_ratio"]:
+                    r.add_rejection(
+                        f"RR too low ({rr:.1f}x < {config['min_rr_ratio']:.1f}x)")
+                    if not r.fail_category:
+                        r.fail_category = "RR"
+                elif regime_str == "BEAR":
+                    r.add_rejection("BEAR regime — no new longs")
+                    if not r.fail_category:
+                        r.fail_category = "REGIME"
+                else:
+                    r.add_rejection(
+                        f"Setup score too low "
+                        f"(setup {r.setup_score:.0f} < PILOT {config['tier_thresholds']['PILOT']:.0f})")
+                    if not r.fail_category:
+                        r.fail_category = "SCORE"
             r.near_miss_score = _compute_near_miss_score(r, config)
             results.append(r); continue
 
@@ -273,10 +300,55 @@ def run_observable_scan(config: dict,
     return regime, results
 
 
-def get_near_misses(results: list, n: int = 5) -> list:
+# ── Query helpers ──────────────────────────────────────────────────────────────
+
+def get_near_misses(results: list, n: int = 10) -> list:
+    """Stocks that failed soft gates — NOT on_radar (those have own section)."""
     near = [r for r in results if r.is_near_miss]
     near.sort(key=lambda r: r.near_miss_score, reverse=True)
     return near[:n]
+
+
+def get_on_radar(results: list, n: int = 15) -> list:
+    """Stocks that failed ATR-high or TREND threshold — shown for trader review."""
+    radar = [r for r in results if r.on_radar]
+    radar.sort(
+        key=lambda r: r.near_miss_score if r.near_miss_score > 0 else r.setup_score,
+        reverse=True
+    )
+    return radar[:n]
+
+
+def get_rejection_breakdown(results: list) -> dict:
+    """
+    Returns categorised rejection counts and representative samples
+    for the diagnostics block in --today.
+    """
+    hard_excluded  = [r for r in results if r.stage in ("DATA", "LIQUIDITY")]
+    atr_dead       = [r for r in results if r.stage == "ATR"]   # ATR_LOW only now
+    on_radar_list  = [r for r in results if r.on_radar]
+
+    near_all       = [r for r in results if r.is_near_miss]
+    rs_fails       = [r for r in near_all if r.fail_category == "RS"]
+    range_fails    = [r for r in near_all if r.fail_category == "RANGE"]
+    score_fails    = [r for r in near_all if r.fail_category == "SCORE"]
+    rr_fails       = [r for r in near_all if r.fail_category == "RR"]
+    regime_fails   = [r for r in near_all if r.fail_category == "REGIME"]
+
+    top_near = sorted(near_all, key=lambda r: r.near_miss_score, reverse=True)[:3]
+
+    return {
+        "hard_excluded": hard_excluded,
+        "atr_dead":      atr_dead,
+        "on_radar":      on_radar_list,
+        "rs_fails":      rs_fails,
+        "range_fails":   range_fails,
+        "score_fails":   score_fails,
+        "rr_fails":      rr_fails,
+        "regime_fails":  regime_fails,
+        "top_near":      top_near,
+        "near_all":      near_all,
+    }
 
 
 def get_breadth_funnel(results: list) -> dict:

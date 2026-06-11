@@ -453,17 +453,338 @@ def _print_near_misses(near_misses: list, regime: str) -> None:
     _thin()
 
 
+# ── Scan diagnostics ────────────────────────────────────────────────────────────
+
+def _print_rejection_breakdown(breakdown: dict, regime_str: str, config: dict) -> None:
+    """
+    Always-shown diagnostics block — explains WHY stocks didn't qualify.
+    Replaces the opaque 'NO ACTIONABLE SETUPS' silence.
+    """
+    hard     = breakdown["hard_excluded"]
+    dead     = breakdown["atr_dead"]
+    radar    = breakdown["on_radar"]
+    rs_f     = breakdown["rs_fails"]
+    rng_f    = breakdown["range_fails"]
+    scr_f    = breakdown["score_fails"]
+    rr_f     = breakdown["rr_fails"]
+    reg_f    = breakdown["regime_fails"]
+    top_near = breakdown["top_near"]
+
+    _ln()
+    print(f"  {_b('SCAN DIAGNOSTICS')}  {_d('— why stocks did not qualify')}")
+    _thin()
+
+    # Hard-excluded (structural — no trade possible)
+    if hard:
+        names = "  ".join(
+            f"{_d(r.ticker)} {_d('(' + r.rejection_reasons[0][:22] + '...' if r.rejection_reasons and len(r.rejection_reasons[0]) > 22 else r.rejection_reasons[0] if r.rejection_reasons else '' + ')')}"
+            for r in hard[:5]
+        )
+        print(f"  Hard-excluded  ({len(hard)}):  {names}")
+    if dead:
+        names = "  ".join(f"{_d(r.ticker)} {_d(f'{r.atr_pct:.1f}%')}" for r in dead[:4])
+        print(f"  ATR too flat   ({len(dead)}):  {names}  {_d('(< ' + str(config.get('min_atr_pct', 0.8)) + '% — dead stocks)')}")
+
+    if radar:
+        atr_high = sum(1 for r in radar if r.fail_category == "ATR_HIGH")
+        wk_trend = sum(1 for r in radar if r.fail_category == "TREND")
+        parts = []
+        if atr_high: parts.append(f"{atr_high} volatile")
+        if wk_trend: parts.append(f"{wk_trend} weak-trend")
+        print(f"  On Radar       ({len(radar)}):  {_y('shown below')}  {_d('(' + ', '.join(parts) + ')')}")
+
+    # Soft filter failures
+    soft_total = len(rs_f) + len(rng_f) + len(scr_f) + len(rr_f) + len(reg_f)
+    if soft_total > 0:
+        _ln()
+        print(f"  {_d('Soft filter failures:')}")
+
+        if rs_f:
+            avg_rs  = sum(r.rs for r in rs_f) / len(rs_f)
+            worst_r = min(rs_f, key=lambda r: r.rs)
+            print(f"    {_y('Weak RS')}        ({len(rs_f):>2}):  "
+                  f"avg {avg_rs:+.1f}%  │  floor {config.get('min_rs', -5):+.1f}%  │  "
+                  f"worst: {worst_r.ticker} {worst_r.rs:+.1f}%")
+
+        if rng_f:
+            avg_rng  = sum(r.range_pct for r in rng_f) / len(rng_f)
+            worst_r  = max(rng_f, key=lambda r: r.range_pct)
+            print(f"    {_y('Range too wide')}  ({len(rng_f):>2}):  "
+                  f"avg {avg_rng:.1f}%   │  ceiling {config.get('max_consolidation_pct', 10):.0f}%    │  "
+                  f"worst: {worst_r.ticker} {worst_r.range_pct:.1f}%")
+
+    scored_avoids = len(scr_f) + len(rr_f) + len(reg_f)
+    if scored_avoids > 0:
+        _ln()
+        print(f"  {_d('Scored but AVOID:')}")
+        pilot_thr = config.get("tier_thresholds", {}).get("PILOT", 42)
+
+        if scr_f:
+            avg_ss  = sum(r.setup_score for r in scr_f) / len(scr_f)
+            closest = max(scr_f, key=lambda r: r.setup_score)
+            print(f"    {_y('Score too low')}   ({len(scr_f):>2}):  "
+                  f"avg setup {avg_ss:.0f}  │  PILOT floor {pilot_thr:.0f}  │  "
+                  f"closest: {closest.ticker} {closest.setup_score:.0f}")
+
+        if rr_f:
+            avg_rr  = sum(r.plan.get("rr_t1", 0) for r in rr_f if r.plan) / max(len(rr_f), 1)
+            print(f"    {_y('RR too low')}      ({len(rr_f):>2}):  "
+                  f"avg {avg_rr:.1f}x   │  min {config.get('min_rr_ratio', 2.0):.1f}x")
+
+        if reg_f:
+            print(f"    {_r('Regime blocked')}  ({len(reg_f):>2}):  "
+                  f"{regime_str} regime — no new longs permitted")
+
+    # Nearest to qualifying (actionable insight)
+    if top_near:
+        _ln()
+        print(f"  {_d('Nearest to qualifying:')}")
+        for r in top_near:
+            gaps = []
+            pilot_thr = config.get("tier_thresholds", {}).get("PILOT", 42)
+            if r.setup_score > 0 and r.setup_score < pilot_thr:
+                gaps.append(f"{pilot_thr - r.setup_score:.0f}pt from PILOT")
+            if r.rs < config.get("min_rs", -5):
+                gaps.append(f"RS {r.rs:+.1f}% (need {config.get('min_rs', -5):+.1f}%)")
+            if r.range_pct > config.get("max_consolidation_pct", 10):
+                gaps.append(f"range {r.range_pct:.1f}% (need <{config.get('max_consolidation_pct', 10):.0f}%)")
+            gap_str = "  ·  ".join(gaps[:2]) if gaps else ""
+            print(f"    {_c(r.ticker):<18}  score {r.setup_score:.0f}   {_d(gap_str)}")
+
+    _thin()
+
+
+# ── ON RADAR display ────────────────────────────────────────────────────────────
+
+def _print_on_radar(on_radar_list: list) -> None:
+    """
+    Compact table of stocks that failed ATR-high or TREND threshold.
+    These are shown for trader review — not hard-rejected.
+    """
+    if not on_radar_list:
+        return
+    _ln()
+    print(f"  {_b('ON RADAR')}  {_d('— below threshold, shown for your review')}")
+    _thin()
+
+    hdr_fmt = "  {:<3} {:<18} {:<20} {:>5}  {:>6}  {:>7}  {:>7}  {:>5}"
+    print(hdr_fmt.format("#", "TICKER", "FLAG", "SETUP", "TREND", "RS", "RANGE", "ATR"))
+    _thin()
+
+    for i, r in enumerate(on_radar_list, 1):
+        flag_map   = {"ATR_HIGH": "HIGH VOLATILITY", "TREND": "WEAK TREND"}
+        flag_label = flag_map.get(r.fail_category, r.fail_category)
+        flag_clr   = _r if r.fail_category == "TREND" else _y
+
+        trend_str  = f"{r.trend_score}/4"
+        rs_str     = f"{r.rs:+.1f}%" if r.rs else "n/a"
+        range_str  = f"{r.range_pct:.1f}%" if r.range_pct else "n/a"
+        atr_str    = f"{r.atr_pct:.1f}%" if r.atr_pct else "n/a"
+        setup_str  = f"{r.setup_score:.0f}" if r.setup_score > 0 else "—"
+
+        num_col    = str(i).ljust(3)
+        ticker_col = r.ticker.ljust(18)
+        flag_col   = flag_label.ljust(20)
+
+        print(f"  {num_col} {_c(ticker_col)} {flag_clr(flag_col)} "
+              f"{setup_str:>5}  {trend_str:>6}  {rs_str:>7}  {range_str:>7}  {atr_str:>5}")
+
+        # Show primary caution note
+        for note in r.caution_notes[:1]:
+            print(f"     {_y('⚠  ' + note)}")
+
+        # Show any additional rejection reasons (RS fail, range fail from soft filters)
+        for reason in r.rejection_reasons[:1]:
+            print(f"     {_d('·  ' + reason)}")
+        _ln()
+
+    _thin()
+    print(_d("  Tip: --profile aggressive to relax ATR/trend thresholds"))
+
+
+# ── Bear regime ─────────────────────────────────────────────────────────────────
+
+def _print_bear_mode(regime: dict, portfolio: dict, results: list,
+                     open_positions: list, config: dict) -> None:
+    """
+    Dedicated BEAR display — completely different from NEUTRAL/BULL.
+
+    Three sections only:
+      1. NIFTY context  — how far from recovery, exact threshold
+      2. Open positions — your only active job
+      3. Recovery watchlist — ranked setups to arm when regime turns
+
+    No scan diagnostics. No RS/range/score clutter. One reason blocked everything
+    (regime) so one page needs to convey that cleanly.
+    """
+    ts   = datetime.now().strftime("%d %b %Y  %H:%M")
+    heat = portfolio["heat_used_pct"]
+    pcnt = portfolio["position_count"]
+
+    # ── Header ────────────────────────────────────────────────────────────────
+    _rule()
+    print(f"  {_b('SWING TRADER — DAILY COCKPIT')}")
+    print(f"  {_d(ts)}")
+    _rule()
+    _ln()
+    print(_r(_b("  🔴  BEAR MARKET  —  CAPITAL PRESERVATION")))
+    print(_r("  No new long entries. Regime blocks all setups."))
+    print(_r("  Your only job: manage open positions and wait."))
+    _ln()
+
+    # ── NIFTY context ─────────────────────────────────────────────────────────
+    idx_df = regime.get("index_df")
+    if idx_df is not None and not idx_df.empty:
+        close = float(idx_df["Close"].iloc[-1])
+        sma20 = float(idx_df["SMA_fast"].iloc[-1]) if "SMA_fast" in idx_df.columns else None
+        sma50 = float(idx_df["SMA_slow"].iloc[-1]) if "SMA_slow" in idx_df.columns else None
+
+        print(f"  {_b('NIFTY')}     {_r(f'₹{close:,.0f}')}", end="")
+        if sma20:
+            d20 = ((close - sma20) / sma20) * 100
+            print(f"   {_r(f'{d20:+.1f}%')} {_d('vs 20 SMA')}", end="")
+        if sma50:
+            d50 = ((close - sma50) / sma50) * 100
+            print(f"   {_r(f'{d50:+.1f}%')} {_d('vs 50 SMA')}", end="")
+        print()
+
+        if sma50 and close < sma50:
+            gap     = sma50 - close
+            pct_gap = (gap / close) * 100
+            print(f"  {_b('RECOVERY')}  NIFTY must close above "
+                  f"{_y(f'₹{sma50:,.0f}')}   "
+                  f"{_d(f'(+{pct_gap:.1f}%  =  ₹{gap:,.0f} away)')}")
+    _ln()
+
+    # ── Capital & heat ────────────────────────────────────────────────────────
+    try:
+        from scanner.capital import get_effective_capital
+        from config.config   import CONFIG as _CFG
+        cap = get_effective_capital(_CFG)
+        src = _g("LIVE") if cap.source == "kite" else _d("CONFIG")
+        print(f"  {_b('CAPITAL')}  ₹{cap.capital:>10,.0f}   "
+              f"{_b('AVAIL')} ₹{cap.available:>10,.0f}   {src}")
+    except Exception:
+        pass
+
+    heat_bar = int(heat / 5.0 * 20)
+    heat_clr = _g if heat < 3.0 else (_y if heat < 4.5 else _r)
+    bar      = heat_clr("█" * heat_bar) + _d("░" * (20 - heat_bar))
+    print(f"  {_b('HEAT')}     {bar}  {heat_clr(f'{heat:.1f}%')}  "
+          f"{_d(f'({pcnt}/6 open positions)')}")
+    _thin()
+
+    # ── Open positions ────────────────────────────────────────────────────────
+    _ln()
+    if open_positions:
+        print(f"  {_r(_b('OPEN POSITIONS'))}  ({len(open_positions)} active)  "
+              f"{_d('— full focus here')}")
+        _thin()
+        for p in open_positions:
+            r        = p["r_current"]
+            clr      = _g if r >= 1.0 else (_y if r >= 0 else _r)
+            dist     = p.get("dist_to_t1", 0)
+            days     = p.get("days_held", 0)
+            t1_str   = f"   {_d(f'→T1: {dist:+.1f}%')}" if dist else ""
+            days_str = _d(f"{days}d held")
+            print(f"  {_c(p['ticker'])}  {clr(f'{r:+.1f}R')}   {days_str}{t1_str}")
+            entry_line = (
+                f"Entry ₹{p['entry']:,.0f}  "
+                f"Now ₹{p['current']:,.0f}  "
+                f"Stop ₹{p['stop']:,.0f}"
+            )
+            print(f"     {_d(entry_line)}")
+            priority = p.get("action_priority", 5)
+            aclr     = _r if priority <= 1 else (_y if priority <= 3 else _d)
+            print(f"     {aclr('→  ' + p['action'])}")
+    else:
+        print(f"  {_b('OPEN POSITIONS')}  (none)  "
+              f"{_d('Full capital preserved.')}")
+    _thin()
+
+    # ── Recovery watchlist ────────────────────────────────────────────────────
+    thr        = config.get("tier_thresholds", {})
+    open_tkrs  = {p.get("ticker", "") for p in open_positions}
+
+    def _bull_tier(score: float) -> str:
+        if score >= thr.get("TIER_1", 72): return "TIER_1 ★★"
+        if score >= thr.get("TIER_2", 55): return "TIER_2 ★ "
+        if score >= thr.get("PILOT",  42): return "PILOT  ◑ "
+        return "sub-PILOT  "
+
+    # All stocks that got a full scoring pass (setup_score > 0)
+    recovery = [r for r in results if r.plan and r.setup_score > 0]
+    recovery.sort(key=lambda r: r.setup_score, reverse=True)
+    regime_only = sum(1 for r in recovery if r.fail_category == "REGIME")
+
+    _ln()
+    print(f"  {_b('RECOVERY WATCHLIST')}  "
+          f"{_d('— arm these when NIFTY crosses 50 SMA')}")
+    print(f"  {_d(f'{len(recovery)} scored  ·  {regime_only} blocked only by regime  ·  top {min(len(recovery), 12)} shown')}")
+    _thin()
+
+    if recovery:
+        print(f"  {'#':<3} {'TICKER':<16} {'TIER (BULL)':<12} "
+              f"{'SETUP':>5}  {'TREND':>5}  {'RS':>7}  STATUS")
+        _thin()
+        for i, r in enumerate(recovery[:12], 1):
+            tier_lbl  = _bull_tier(r.setup_score)
+            trend_str = f"{r.trend_score}/4"
+            rs_str    = f"{r.rs:+.1f}%" if r.rs != 0 else "n/a"
+            status    = r.plan.get("status", "?") if r.plan else "?"
+            sclr      = STATUS_CLR.get(status, _d)
+
+            num_col    = str(i).ljust(3)
+            ticker_col = r.ticker.ljust(16)
+            tier_col   = tier_lbl.ljust(12)
+
+            tier_clr = (
+                _g if "TIER_1" in tier_lbl or "TIER_2" in tier_lbl
+                else (_y if "PILOT" in tier_lbl else _d)
+            )
+
+            flags = ""
+            if r.ticker in open_tkrs:
+                flags += f"  {_d('· already open')}"
+            if r.fail_category == "ATR_HIGH":
+                flags += f"  {_y('· high ATR')}"
+            elif r.fail_category == "TREND":
+                flags += f"  {_r('· weak trend')}"
+
+            print(f"  {num_col} {_c(ticker_col)} {tier_clr(tier_col)} "
+                  f"{r.setup_score:>5.0f}  {trend_str:>5}  {rs_str:>7}  "
+                  f"{sclr(status)}{flags}")
+
+        if len(recovery) > 12:
+            rem = len(recovery) - 12
+            print(f"  {_d(f'  ... +{rem} more — run --debug for full list')}")
+    else:
+        print(f"  {_d('No scoreable setups found. Market breadth very weak.')}")
+
+    _ln()
+    _thin()
+
+    # ── Trigger reminder ──────────────────────────────────────────────────────
+    if idx_df is not None and not idx_df.empty and "SMA_slow" in idx_df.columns:
+        sma50 = float(idx_df["SMA_slow"].iloc[-1])
+        print(_y(f"  When NIFTY closes above ₹{sma50:,.0f}  →  run --today immediately"))
+    _ln()
+    _rule()
+    _ln()
+
+
 # ── No-trade ────────────────────────────────────────────────────────────────────
 
 def _print_no_trade(regime: dict, funnel: dict, portfolio: dict,
                     near_misses: list) -> None:
-    meta       = _REGIME_META.get(regime["regime"], _REGIME_META["NEUTRAL"])
-    icon       = meta["icon"]
-    clr        = meta["clr"]
-    sstr       = f"(strength {regime['strength']:.2f})"
-    ts         = datetime.now().strftime("%d %b %Y  %H:%M")
-    f          = funnel
-    heat       = portfolio["heat_used_pct"]
+    """Header block for the no-trade case. Detailed diagnostics follow separately."""
+    meta  = _REGIME_META.get(regime["regime"], _REGIME_META["NEUTRAL"])
+    icon  = meta["icon"]
+    clr   = meta["clr"]
+    sstr  = f"(strength {regime['strength']:.2f})"
+    ts    = datetime.now().strftime("%d %b %Y  %H:%M")
+    f     = funnel
+    heat  = portfolio["heat_used_pct"]
 
     _rule()
     print(f"  {_b('SWING TRADER — DAILY COCKPIT')}")
@@ -473,6 +794,27 @@ def _print_no_trade(regime: dict, funnel: dict, portfolio: dict,
     print(f"  {_b('MARKET')}  {icon}  {clr(_b(regime['regime']))}  {_d(sstr)}")
     print(f"  {clr(meta['decision'])}")
     _ln()
+
+    # Capital
+    try:
+        from scanner.capital import get_effective_capital
+        from config.config   import CONFIG as _CFG
+        cap = get_effective_capital(_CFG)
+        src_badge = _g("LIVE") if cap.source == "kite" else _d("CONFIG")
+        print(f"  {_b('CAPITAL')}  ₹{cap.capital:>10,.0f}   "
+              f"{_b('AVAIL')} ₹{cap.available:>10,.0f}   "
+              f"{_b('DEPLOYED')} {cap.deployed_pct:>4.1f}%   {src_badge}")
+    except Exception:
+        pass
+
+    # Heat bar
+    heat_max  = 5.0
+    heat_bar  = int(heat / heat_max * 20)
+    heat_clr  = _g if heat < 3.0 else (_y if heat < 4.5 else _r)
+    bar       = heat_clr("█" * heat_bar) + _d("░" * (20 - heat_bar))
+    pos_count = portfolio["position_count"]
+    print(f"  {_b('HEAT')}     {bar}  {heat_clr(f'{heat:.1f}%')}  "
+          f"{_d(f'({pos_count}/6 open positions)')}")
 
     funnel_str = (
         f"{f['total']} scanned  →  {f['passed_liq']} liquid"
@@ -493,34 +835,14 @@ def _print_no_trade(regime: dict, funnel: dict, portfolio: dict,
         print(f"  {_d(_b('NO ACTIONABLE SETUPS TODAY'))}")
         _ln()
         if f["passed_filters"] == 0 and f["passed_trend"] == 0:
-            print(f"  {_d('Broad weakness — few stocks in uptrend.')}")
+            print(f"  {_d('Broad market weakness — few stocks in uptrend.')}")
         elif f["passed_filters"] == 0:
             print(f"  {_d('Stocks trending but no tight coils found.')}")
         elif f["scored"] == 0:
             print(f"  {_d('Coils exist but RS too weak vs NIFTY.')}")
         else:
-            print(f"  {_d('Setups scored but below deployment threshold.')}")
-        print(f"  {_d('Quality over frequency. This is normal.')}")
-
-    # Market pulse
-    best = max((r.near_miss_score for r in near_misses), default=0)
-    _ln()
-    print(f"  {_b('MARKET PULSE')}")
-    _thin()
-    if best >= 75:
-        print(f"  {_y('Close to setups — 1-2 conditions away. Watch carefully.')}")
-    elif best >= 50:
-        print(f"  {_d('Moderate proximity. Market building toward setups.')}")
-    else:
-        print(f"  {_d('Low proximity. Check again in 2-3 days.')}")
-
-    if heat > 0:
-        _ln()
-        print(f"  {_d('Portfolio heat: ' + str(heat) + '% used. Open positions exist.')}")
-
-    _ln()
-    _rule()
-    _ln()
+            print(f"  {_d('Setups scored but below deployment thresholds.')}")
+        print(f"  {_d('Full breakdown below.')}")
 
 
 # ── Footer ──────────────────────────────────────────────────────────────────────
@@ -556,34 +878,52 @@ def _print_footer(n_ready: int, n_watch: int, near_misses: list,
 
 # ── MAIN ENTRY POINT ───────────────────────────────────────────────────────────
 
-def run_daily_mode(journal_dir: str = "journal") -> None:
-    """python run.py --today"""
+def run_daily_mode(journal_dir: str = "journal", profile: str = "balanced") -> None:
+    """python run.py --today [--profile tight|balanced|aggressive|discovery]"""
     try:
         from config.config        import CONFIG
         from analytics.scan_logger import log_scan_results
         from scanner.scan_result  import (
-            run_observable_scan, get_near_misses, get_breadth_funnel
+            run_observable_scan, get_near_misses, get_breadth_funnel,
+            get_on_radar, get_rejection_breakdown,
         )
         from scanner.portfolio    import load_portfolio_state, filter_by_portfolio
+        from scanner.filter_engine import apply_profile, profile_description
     except ModuleNotFoundError:
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
         from config.config        import CONFIG
         from analytics.scan_logger import log_scan_results
         from scanner.scan_result  import (
-            run_observable_scan, get_near_misses, get_breadth_funnel
+            run_observable_scan, get_near_misses, get_breadth_funnel,
+            get_on_radar, get_rejection_breakdown,
         )
         from scanner.portfolio    import load_portfolio_state, filter_by_portfolio
+        from scanner.filter_engine import apply_profile, profile_description
 
-    print(f"\n  {_d('Scanning...')}  ", end="\r", flush=True)
+    profile = (profile or "balanced").lower().strip()
+    try:
+        scan_config = apply_profile(CONFIG, profile)
+    except ValueError:
+        print(f"  Unknown profile '{profile}' — using balanced.")
+        scan_config = CONFIG
+        profile     = "balanced"
+
+    profile_note = (
+        f"  {_d('Profile: ' + profile.upper() + '  —  ' + profile_description(profile))}\n"
+        if profile != "balanced" else ""
+    )
+    print(f"\n{profile_note}  {_d('Scanning...')}  ", end="\r", flush=True)
 
     # Load portfolio state FIRST — passes open_risk_inr to scanner
     portfolio = load_portfolio_state(journal_dir)
 
     regime, results = run_observable_scan(
-        CONFIG, open_risk_inr=portfolio["open_risk_inr"]
+        scan_config, open_risk_inr=portfolio["open_risk_inr"]
     )
     funnel      = get_breadth_funnel(results)
-    near_misses = get_near_misses(results, n=5)
+    near_misses = get_near_misses(results, n=10)
+    on_radar    = get_on_radar(results)
+    breakdown   = get_rejection_breakdown(results)
 
     all_plans   = [r.plan for r in results if r.passed and r.plan]
 
@@ -595,11 +935,12 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
             plan.setdefault("caution_notes", r.caution_notes)
 
     # Filter actionable: not AVOID, not WATCH tier, status not AVOID
+    _min_rr = scan_config.get("min_rr_ratio", CONFIG["min_rr_ratio"])
     def _actionable(p):
         return (
             p["tier"] not in ("AVOID", "WATCH")
             and p["status"] not in ("AVOID",)
-            and p["rr_t1"] >= CONFIG["min_rr_ratio"]
+            and p["rr_t1"] >= _min_rr
         )
 
     tier_order   = {"TIER_1": 0, "TIER_2": 1, "PILOT": 2}
@@ -608,7 +949,7 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
     actionable = [p for p in all_plans if _actionable(p)]
 
     # Apply portfolio filters (annotates, doesn't remove)
-    actionable = filter_by_portfolio(actionable, portfolio, CONFIG)
+    actionable = filter_by_portfolio(actionable, portfolio, scan_config)
 
     actionable.sort(key=lambda p: (
         status_order.get(p["status"], 9),
@@ -678,9 +1019,22 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
         p["sector_crowded"] = already >= 2   # 2+ already open = crowded
 
     if not actionable:
-        _print_no_trade(regime, funnel, portfolio, near_misses)
-        if open_positions:
-            _print_open_positions(open_positions)
+        if regime["regime"] == "BEAR":
+            # Bear regime has its own clean display — suppress all generic noise
+            _print_bear_mode(regime, portfolio, results, open_positions, scan_config)
+        else:
+            # NEUTRAL / lean BULL — generic no-trade path with diagnostics
+            _print_no_trade(regime, funnel, portfolio, near_misses)
+            _print_rejection_breakdown(breakdown, regime["regime"], scan_config)
+            if near_misses:
+                _print_near_misses(near_misses, regime["regime"])
+            if on_radar:
+                _print_on_radar(on_radar)
+            if open_positions:
+                _print_open_positions(open_positions)
+            _ln()
+            _rule()
+            _ln()
         return
 
     _print_header(regime, funnel, portfolio)
@@ -718,6 +1072,14 @@ def run_daily_mode(journal_dir: str = "journal") -> None:
 
     n_ready = sum(1 for p in actionable if p["status"] == "READY")
     n_watch = sum(1 for p in actionable if p["status"] == "WATCH")
+
+    # Near misses + on_radar always shown — never silent after the cards
+    if near_misses:
+        _print_near_misses(near_misses, regime["regime"])
+    if on_radar:
+        _print_on_radar(on_radar)
+    _print_rejection_breakdown(breakdown, regime["regime"], scan_config)
+
     _print_footer(n_ready, n_watch, near_misses, portfolio, journal_dir)
 
     # Alert engine: surface WATCH→READY transitions, stale setups, and
