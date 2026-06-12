@@ -1,0 +1,4 @@
+week_id,date,regime,exposure,deployed,cash,ticker,allocation,conviction,sector
+2026-W24,2026-06-12,WEAK_BEAR,25.0,25.0,75.0,DATAPATTNS,10.0,100.0,Capital Goods
+2026-W24,2026-06-12,WEAK_BEAR,25.0,25.0,75.0,RRKABEL,10.0,98.4,Capital Goods
+2026-W24,2026-06-12,WEAK_BEAR,25.0,25.0,75.0,DEEPAKFERT,5.0,97.1,Chemicals

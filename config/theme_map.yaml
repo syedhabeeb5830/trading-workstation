@@ -1,0 +1,41 @@
+# config/theme_map.yaml — Macro-theme grouping for diversification (Phase 10B)
+# ===========================================================================
+# Sector diversification is insufficient: Capital Goods, Defense, Power Equipment
+# and Industrial Manufacturing all rip and dump together. Themes group the NSE
+# "Industry" sectors into macro complexes so no single theme can dominate the book.
+#
+# Keys map a THEME → the NSE sector strings (as they appear in the Nifty 500 file).
+# A sector not listed here falls into its own single-sector theme.
+
+INDUSTRIAL_COMPLEX:
+  - Capital Goods
+  - Construction
+  - Construction Materials
+
+POWER_COMPLEX:
+  - Power
+  - Oil Gas & Consumable Fuels
+
+FINANCIAL_COMPLEX:
+  - Financial Services
+
+TECH_COMPLEX:
+  - Information Technology
+  - Telecommunication
+  - Media Entertainment & Publication
+
+CONSUMPTION_COMPLEX:
+  - Fast Moving Consumer Goods
+  - Consumer Services
+  - Consumer Durables
+  - Automobile and Auto Components
+  - Realty
+  - Services
+
+MATERIALS_COMPLEX:
+  - Metals & Mining
+  - Chemicals
+  - Textiles
+
+HEALTHCARE_COMPLEX:
+  - Healthcare

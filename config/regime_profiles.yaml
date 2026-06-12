@@ -1,0 +1,82 @@
+# config/regime_profiles.yaml — Regime-Aware Scoring Weights (Phase 7)
+# =====================================================================
+# External source of truth for adaptive scoring weights. Edit here — no code
+# changes required. Phase 8 (Edge Analytics) can rewrite this file as it learns
+# which profiles actually generate returns.
+#
+# RULES:
+#   • Each profile MUST sum to 100.
+#   • Keys: rs, sector, breakout, trend, liquidity, atr, freshness
+#     (these are the seven Phase-4 composite components — names must match).
+#   • NEUTRAL mirrors the static Phase-4 model and is the reference baseline
+#     used to compute promotion/demotion deltas.
+
+# STRONG_BULL — find aggressive leaders; leadership dominates.
+STRONG_BULL:
+  rs: 30
+  sector: 25
+  breakout: 20
+  trend: 10
+  liquidity: 5
+  atr: 5
+  freshness: 5
+
+# BULL — healthy uptrend; still leadership-led, a little more trend.
+BULL:
+  rs: 28
+  sector: 22
+  breakout: 20
+  trend: 15
+  liquidity: 5
+  atr: 5
+  freshness: 5
+
+# NEUTRAL — baseline (mirrors the static Phase-4 weights).
+NEUTRAL:
+  rs: 25
+  sector: 20
+  breakout: 20
+  trend: 15
+  liquidity: 10
+  atr: 5
+  freshness: 5
+
+# RANGE — breakouts fail more often; lean on trend quality, de-emphasise breakout.
+RANGE:
+  rs: 20
+  sector: 20
+  breakout: 10
+  trend: 25
+  liquidity: 10
+  atr: 10
+  freshness: 5
+
+# WEAK_BEAR — reward quality/trend, punish speculative breakouts.
+WEAK_BEAR:
+  rs: 20
+  sector: 20
+  breakout: 10
+  trend: 30
+  liquidity: 10
+  atr: 5
+  freshness: 5
+
+# STRONG_BEAR — only elite trend leaders survive.
+STRONG_BEAR:
+  rs: 20
+  sector: 20
+  breakout: 5
+  trend: 35
+  liquidity: 10
+  atr: 5
+  freshness: 5
+
+# VOLATILE — capital preservation; trend + liquidity, minimise breakout chasing.
+VOLATILE:
+  rs: 15
+  sector: 15
+  breakout: 5
+  trend: 30
+  liquidity: 20
+  atr: 10
+  freshness: 5

@@ -1,0 +1,123 @@
+{
+  "generated_at": "2026-06-11T20:52:46",
+  "horizon": "20",
+  "n_records": 1167,
+  "n_screen_dates": 6,
+  "grade_perf": {
+    "A+": {
+      "avg_return": -7.21,
+      "n": 4
+    },
+    "A": {
+      "avg_return": 0.47,
+      "n": 52
+    },
+    "B+": {
+      "avg_return": -0.81,
+      "n": 131
+    },
+    "B": {
+      "avg_return": -0.78,
+      "n": 203
+    },
+    "C": {
+      "avg_return": -0.25,
+      "n": 173
+    },
+    "D": {
+      "avg_return": -1.75,
+      "n": 604
+    }
+  },
+  "rs_perf": {
+    "MARKET_LEADER": {
+      "avg_return": -0.05,
+      "n": 119
+    },
+    "SECTOR_LEADER": {
+      "avg_return": -0.31,
+      "n": 115
+    },
+    "EMERGING_LEADER": {
+      "avg_return": -2.2,
+      "n": 71
+    },
+    "NEUTRAL": {
+      "avg_return": -0.36,
+      "n": 370
+    },
+    "LAGGARD": {
+      "avg_return": -2.11,
+      "n": 492
+    }
+  },
+  "sector_perf": {
+    "Top 5 sectors": {
+      "avg_return": -0.63,
+      "n": 486
+    },
+    "Middle sectors": {
+      "avg_return": -1.53,
+      "n": 595
+    },
+    "Bottom sectors": {
+      "avg_return": -1.83,
+      "n": 86
+    }
+  },
+  "action_perf": {
+    "ACTION_NOW": {
+      "avg_return": -2.4,
+      "win_rate": 0.25,
+      "n": 8
+    },
+    "WATCHLIST": {
+      "avg_return": -0.87,
+      "win_rate": 0.411,
+      "n": 175
+    },
+    "AVOID": {
+      "avg_return": -1.22,
+      "win_rate": 0.395,
+      "n": 984
+    }
+  },
+  "regime_perf": {
+    "BULL": {
+      "avg_return": -1.86,
+      "win_rate": 0.365,
+      "profit_factor": 0.56,
+      "n": 971
+    },
+    "NEUTRAL": {
+      "avg_return": 2.24,
+      "win_rate": 0.556,
+      "profit_factor": 2.08,
+      "n": 196
+    }
+  },
+  "adaptive_vs_composite": {
+    "composite_alpha": 1.11,
+    "adaptive_alpha": 1.23,
+    "improvement": 0.12,
+    "universe_avg": -1.17
+  },
+  "portfolio": {
+    "avg_return": -2.84,
+    "win_rate": 0.333,
+    "sharpe": -0.62,
+    "sortino": -0.99,
+    "max_drawdown": -16.44,
+    "n_trades": 6,
+    "basis": "Top-5 by actionability (no ACTION_NOW)"
+  },
+  "edge_score": 15.7,
+  "edge_components": {
+    "bucket_separation": 5.0,
+    "actionability_edge": 0.0,
+    "regime_edge": 3.0,
+    "adaptive_improvement": 7.7,
+    "portfolio_performance": 0.0
+  },
+  "verdict": "NO EDGE"
+}

@@ -46,6 +46,14 @@ import argparse
 
 
 def main() -> None:
+    # RC1 hardening: force UTF-8 stdout so box-drawing glyphs in any command
+    # don't crash on a Windows cp1252 console when output is piped/redirected.
+    try:
+        import sys as _s
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
     parser = argparse.ArgumentParser(
         prog="run.py",
         description="Swing Trade Workstation",
@@ -172,11 +180,51 @@ def main() -> None:
     )
     parser.add_argument(
         "--screen",
+        action="store_true",
+        help="Swing-trading cockpit: dynamic Nifty 500 screen → Top 20 board + Top 5 actionable trades",
+    )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Use with --screen: force-refresh the universe + OHLCV cache",
+    )
+    parser.add_argument(
+        "--portfolio",
+        action="store_true",
+        help="Portfolio construction: conviction-weighted allocation under regime/sector/correlation limits",
+    )
+    parser.add_argument(
+        "--review-portfolio",
+        action="store_true",
+        dest="review_portfolio",
+        help="Portfolio lifecycle review: HOLD/ADD/REDUCE/EXIT/ROTATE per holding + theme/action labels",
+    )
+    parser.add_argument(
+        "--validate-edge",
+        action="store_true",
+        dest="validate_edge",
+        help="Edge validation: walk-forward forward-return analytics + EDGE_SCORE",
+    )
+    parser.add_argument(
+        "--validate-rolling",
+        action="store_true",
+        dest="validate_rolling",
+        help="Rolling edge validation: weekly screens over N years + significance tests (SLOW)",
+    )
+    parser.add_argument("--years", type=float, default=2.0,
+                        help="Use with --validate-rolling: lookback window in years (default 2)")
+    parser.add_argument("--every", type=int, default=1, dest="every_weeks",
+                        help="Use with --validate-rolling: screen every N weeks (default 1)")
+    parser.add_argument("--rsample", type=int, default=0, dest="rsample",
+                        help="Use with --validate-rolling: cap universe to N tickers (default full)")
+    parser.add_argument(
+        "--orb-screen",
         nargs="?",
         const=30,
         type=int,
+        dest="orb_screen",
         metavar="DAYS",
-        help="Run instrument screener only — rank all 27 candidates, show top picks",
+        help="ORB instrument screener — rank the 27 algo candidates (intraday ORB strategy)",
     )
     parser.add_argument(
         "--no-auto-select",
@@ -294,8 +342,29 @@ def main() -> None:
     elif args.walkforward is not None:
         _cmd_walkforward(args.walkforward)
 
-    elif args.screen is not None:
-        _cmd_screen(args.screen, top_n=args.top_n)
+    elif args.screen:
+        import sys as _sys
+        _sys.exit(_cmd_swing_screen(force_refresh=args.refresh))
+
+    elif args.portfolio:
+        import sys as _sys
+        _sys.exit(_cmd_portfolio(force_refresh=args.refresh))
+
+    elif args.review_portfolio:
+        import sys as _sys
+        _sys.exit(_cmd_review_portfolio(force_refresh=args.refresh))
+
+    elif args.validate_edge:
+        import sys as _sys
+        _sys.exit(_cmd_validate_edge())
+
+    elif args.validate_rolling:
+        import sys as _sys
+        _sys.exit(_cmd_validate_rolling(years=args.years, every_weeks=args.every_weeks,
+                                        sample=args.rsample))
+
+    elif args.orb_screen is not None:
+        _cmd_screen(args.orb_screen, top_n=args.top_n)
 
     elif args.playbook:
         _cmd_playbook()
@@ -366,9 +435,63 @@ def _cmd_walkforward(days: int = 120) -> None:
 
 
 def _cmd_screen(days: int = 30, top_n: int = 8) -> None:
-    """Standalone instrument screener — rank all 27 candidates."""
+    """ORB instrument screener — rank the 27 algo candidates."""
     from algo.backtest import run_screen
     run_screen(days=days, top_n=top_n)
+
+
+def _cmd_swing_screen(force_refresh: bool = False) -> int:
+    """Swing-trading cockpit — dynamic Nifty 500 screen (Phases 1-5)."""
+    from screen.screen_runner import run_screen as run_swing_screen
+    return run_swing_screen(force_refresh=force_refresh)
+
+
+def _cmd_portfolio(force_refresh: bool = False) -> int:
+    """Portfolio construction — conviction-weighted allocation (Phase 9)."""
+    from portfolio.portfolio_engine import run_portfolio
+    return run_portfolio(force_refresh=force_refresh)
+
+
+def _cmd_review_portfolio(force_refresh: bool = False) -> int:
+    """Portfolio lifecycle review — HOLD/ADD/REDUCE/EXIT/ROTATE (Phase 10B)."""
+    from portfolio.lifecycle_engine import run_review_portfolio
+    return run_review_portfolio(force_refresh=force_refresh)
+
+
+def _cmd_validate_edge() -> int:
+    """Edge validation — walk-forward forward-return analytics + EDGE_SCORE (Phase 8)."""
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from analytics.edge_validation import run_edge_validation, render_edge_report
+    print("\n  Running walk-forward edge validation (this replays the screener "
+          "across past dates)...")
+    snap, _ = run_edge_validation(period="2y", persist=True, export=True)
+    render_edge_report(snap)
+    from datetime import date as _d
+    print(f"  Reports: reports/edge_report_{_d.today().isoformat()}.md (+ .json)\n")
+    return 0
+
+
+def _cmd_validate_rolling(years: float = 2.0, every_weeks: int = 1,
+                          sample: int = 0) -> int:
+    """Rolling edge validation — weekly screens + significance tests (Improvement 2)."""
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from analytics.rolling_validation import run_rolling_validation, render_rolling_report
+    print(f"\n  Rolling validation: replaying the screener every {every_weeks} week(s) "
+          f"over {years}y\n  (this is SLOW — one full Phase 2-7 replay per screen date)...")
+    rep, _ = run_rolling_validation(period="5y", years=years, every_weeks=every_weeks,
+                                    sample=sample, persist=True, export=True)
+    render_rolling_report(rep)
+    from datetime import date as _d
+    print(f"  Reports: reports/rolling_report_{_d.today().isoformat()}.md (+ .json)\n")
+    return 0
 
 
 def _cmd_playbook() -> None:

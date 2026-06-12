@@ -1,0 +1,2 @@
+week_id,date,regime,regime_score,trend,breadth,leadership,participation,volatility,trend_state,volatility_state,summary
+2026-W24,2026-06-12,NEUTRAL,52.6,15.0,39.9,95.0,61.0,100.0,DOWN,NORMAL,"42% of stocks above EMA50 (35% > EMA20, 42% > EMA200) | Sector leadership: Capital Goods, Textiles, Healthcare | 4 ACTION_NOW setups, 27 A/A+ grades | Volatility NORMAL (India VIX 14.7) | Index trend DOWN"

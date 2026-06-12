@@ -1,0 +1,487 @@
+week_id,date,rank,ticker,sector,score,grade,rs_status,rs_bucket,drivers
+2026-W24,2026-06-12,1,DATAPATTNS.NS,Capital Goods,90.96,A+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Fresh breakout (≤2d) | 2.0x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,2,APARINDS.NS,Capital Goods,90.76,A+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | 1.6x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,3,WELCORP.NS,Capital Goods,89.42,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,4,RRKABEL.NS,Capital Goods,87.78,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,5,CAPLIPOINT.NS,Healthcare,86.54,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #5 (Healthcare) | Fresh breakout (≤2d) | 2.7x volume expansion | Strong uptrend
+2026-W24,2026-06-12,6,PREMIERENE.NS,Capital Goods,85.88,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,7,ASTERDM.NS,Healthcare,85.54,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #5 (Healthcare) | Fresh breakout (≤2d) | 3.3x volume expansion | Strong uptrend
+2026-W24,2026-06-12,8,SYRMA.NS,Capital Goods,85.38,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,9,DEEPAKFERT.NS,Chemicals,84.62,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,10,ADANIGREEN.NS,Power,84.56,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #4 (Power) | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,11,CGPOWER.NS,Capital Goods,84.02,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,12,HSCL.NS,Chemicals,83.92,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | 1.9x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,13,GVT&D.NS,Capital Goods,83.78,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,14,THERMAX.NS,Capital Goods,83.78,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,15,ADANIENT.NS,Metals & Mining,82.84,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #3 (Metals & Mining) | Strong uptrend
+2026-W24,2026-06-12,16,MAHABANK.NS,Financial Services,82.7,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | 1.6x volume expansion | Strong uptrend
+2026-W24,2026-06-12,17,ABSLAMC.NS,Financial Services,82.52,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | 2.0x volume expansion | Strong uptrend
+2026-W24,2026-06-12,18,BHARATFORG.NS,Automobile and Auto Components,82.46,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | 2.0x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,19,CPPLUS.NS,Capital Goods,82.38,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,20,KIRLOSENG.NS,Capital Goods,82.18,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,21,ATHERENERG.NS,Automobile and Auto Components,81.48,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,22,ADANIENSOL.NS,Power,81.46,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #4 (Power) | Strong uptrend
+2026-W24,2026-06-12,23,LAURUSLABS.NS,Healthcare,81.4,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,24,SAILIFE.NS,Healthcare,81.06,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #5 (Healthcare) | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,25,BELRISE.NS,Automobile and Auto Components,80.94,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,26,EMMVEE.NS,Capital Goods,80.38,A,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,27,ADANIPORTS.NS,Services,80.28,A,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend | High-quality base
+2026-W24,2026-06-12,28,ACMESOLAR.NS,Power,79.92,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #4 (Power) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,29,ACUTAAS.NS,Healthcare,78.96,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #5 (Healthcare) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,30,CEMPRO.NS,Construction,78.3,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | 2.2x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,31,VTL.NS,Textiles,78.16,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #2 (Textiles) | Strong uptrend
+2026-W24,2026-06-12,32,CHENNPETRO.NS,Oil Gas & Consumable Fuels,78.1,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,33,CCL.NS,Fast Moving Consumer Goods,78.08,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Fresh breakout (≤2d) | 4.3x volume expansion | Strong uptrend
+2026-W24,2026-06-12,34,POWERINDIA.NS,Capital Goods,77.82,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,35,JINDALSAW.NS,Capital Goods,77.72,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,36,ZYDUSLIFE.NS,Healthcare,77.66,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,37,RBLBANK.NS,Financial Services,77.52,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,38,BHEL.NS,Capital Goods,77.38,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #1 (Capital Goods)
+2026-W24,2026-06-12,39,CRAFTSMAN.NS,Automobile and Auto Components,77.36,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,40,AEGISLOG.NS,Oil Gas & Consumable Fuels,77.24,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Fresh breakout (≤2d) | 4.6x volume expansion | Strong uptrend
+2026-W24,2026-06-12,41,GRANULES.NS,Healthcare,76.0,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #5 (Healthcare)
+2026-W24,2026-06-12,42,HFCL.NS,Telecommunication,75.76,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,43,GLAND.NS,Healthcare,75.7,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,44,FEDERALBNK.NS,Financial Services,75.44,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,45,MINDACORP.NS,Automobile and Auto Components,75.34,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,46,WOCKPHARMA.NS,Healthcare,75.16,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #5 (Healthcare) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,47,NLCINDIA.NS,Power,75.06,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #4 (Power) | 3.1x volume expansion | Ideal volatility
+2026-W24,2026-06-12,48,J&KBANK.NS,Financial Services,74.78,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,49,LLOYDSME.NS,Metals & Mining,74.74,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,50,TATACOMM.NS,Telecommunication,74.56,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,51,SAREGAMA.NS,Media Entertainment & Publication,73.88,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,52,ADANIPOWER.NS,Power,73.32,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Sector #4 (Power)
+2026-W24,2026-06-12,53,MOTHERSON.NS,Automobile and Auto Components,72.94,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,54,TRITURBINE.NS,Capital Goods,72.68,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,55,JBMA.NS,Automobile and Auto Components,72.54,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,56,TEJASNET.NS,Telecommunication,72.36,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,57,POLYCAB.NS,Capital Goods,72.24,B+,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,58,GROWW.NS,Financial Services,71.82,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend
+2026-W24,2026-06-12,59,HONASA.NS,Fast Moving Consumer Goods,71.74,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,60,NAM-INDIA.NS,Financial Services,71.32,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader
+2026-W24,2026-06-12,61,SCHNEIDER.NS,Capital Goods,71.28,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,62,NESTLEIND.NS,Fast Moving Consumer Goods,70.86,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,63,STARHEALTH.NS,Financial Services,70.82,B+,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,64,NUVAMA.NS,Financial Services,70.52,B+,SECTOR_LEADER,TOP_50,Sector Leader | Strong uptrend
+2026-W24,2026-06-12,65,ATGL.NS,Oil Gas & Consumable Fuels,70.46,B+,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,66,EMCURE.NS,Healthcare,70.28,B+,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #5 (Healthcare) | 2.5x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,67,ZENTEC.NS,Capital Goods,70.28,B+,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,68,APOLLOHOSP.NS,Healthcare,69.94,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,69,VBL.NS,Fast Moving Consumer Goods,69.72,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,70,SAIL.NS,Metals & Mining,69.6,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,71,SHYAMMETL.NS,Capital Goods,69.52,B,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,72,CGCL.NS,Financial Services,69.44,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,73,IFCI.NS,Financial Services,69.44,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,74,NIVABUPA.NS,Financial Services,69.32,B,SECTOR_LEADER,TOP_50,Sector Leader | Strong uptrend
+2026-W24,2026-06-12,75,PIRAMALFIN.NS,Financial Services,69.32,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,76,ELGIEQUIP.NS,Capital Goods,69.02,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,77,ANGELONE.NS,Financial Services,68.84,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Strong uptrend
+2026-W24,2026-06-12,78,PHOENIXLTD.NS,Realty,68.82,B,SECTOR_LEADER,TOP_50,Sector Leader | 1.6x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,79,SOLARINDS.NS,Chemicals,68.62,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader
+2026-W24,2026-06-12,80,FORTIS.NS,Healthcare,68.52,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend | High-quality base
+2026-W24,2026-06-12,81,KIMS.NS,Healthcare,68.46,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,82,RADICO.NS,Fast Moving Consumer Goods,68.46,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,83,AIAENG.NS,Capital Goods,68.28,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,84,CONCORDBIO.NS,Healthcare,68.0,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Fresh breakout (≤2d) | 2.0x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,85,BALRAMCHIN.NS,Fast Moving Consumer Goods,67.96,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,86,SAMMAANCAP.NS,Financial Services,67.94,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,87,CUMMINSIND.NS,Capital Goods,67.78,B,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,88,IDFCFIRSTB.NS,Financial Services,67.69,B,EMERGING_LEADER,TOP_50,Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,89,IPCALAB.NS,Healthcare,67.66,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,90,VIJAYA.NS,Healthcare,67.66,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Sector #5 (Healthcare) | Ideal volatility
+2026-W24,2026-06-12,91,TITAGARH.NS,Capital Goods,67.52,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,92,NH.NS,Healthcare,67.4,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,93,PTCIL.NS,Capital Goods,67.18,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,94,TATATECH.NS,Information Technology,66.68,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Fresh breakout (≤2d) | Strong uptrend
+2026-W24,2026-06-12,95,JBCHEPHARM.NS,Healthcare,66.48,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,96,BOSCHLTD.NS,Automobile and Auto Components,66.46,B,NEUTRAL,TOP_50,Strong uptrend | High-quality base
+2026-W24,2026-06-12,97,BLUEJET.NS,Healthcare,66.31,B,EMERGING_LEADER,BOTTOM_50,Sector #5 (Healthcare) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,98,JSWINFRA.NS,Services,66.04,B,NEUTRAL,TOP_50,2.5x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,99,PIDILITIND.NS,Chemicals,66.04,B,NEUTRAL,TOP_50,2.2x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,100,ACE.NS,Capital Goods,66.0,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods) | 1.5x volume expansion | High-quality base
+2026-W24,2026-06-12,101,FACT.NS,Chemicals,65.94,B,NEUTRAL,TOP_50,6.7x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,102,KPRMILL.NS,Textiles,65.44,B,NEUTRAL,TOP_50,Sector #2 (Textiles) | 1.5x volume expansion | Strong uptrend
+2026-W24,2026-06-12,103,CHAMBLFERT.NS,Chemicals,65.36,B,NEUTRAL,TOP_50,3.2x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,104,NAVINFLUOR.NS,Chemicals,65.16,B,NEUTRAL,TOP_50,2.2x volume expansion | Strong uptrend
+2026-W24,2026-06-12,105,GRASIM.NS,Construction Materials,65.1,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,106,ANANDRATHI.NS,Financial Services,65.06,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader
+2026-W24,2026-06-12,107,BEML.NS,Capital Goods,65.06,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,108,CARTRADE.NS,Consumer Services,64.96,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Fresh breakout (≤2d) | 7.2x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,109,KEI.NS,Capital Goods,64.9,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,110,BANDHANBNK.NS,Financial Services,64.68,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader
+2026-W24,2026-06-12,111,HONAUT.NS,Capital Goods,64.68,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,112,BIOCON.NS,Healthcare,64.18,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,113,TORNTPHARM.NS,Healthcare,64.18,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,114,IIFL.NS,Financial Services,64.09,B,EMERGING_LEADER,BOTTOM_50,Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,115,INDGN.NS,Healthcare,64.08,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | 2.3x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,116,SRF.NS,Chemicals,64.04,B,NEUTRAL,BOTTOM_50,Strong uptrend | High-quality base
+2026-W24,2026-06-12,117,SCI.NS,Services,63.68,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Ideal volatility
+2026-W24,2026-06-12,118,PFC.NS,Financial Services,63.46,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader
+2026-W24,2026-06-12,119,ELECON.NS,Capital Goods,63.4,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Strong uptrend
+2026-W24,2026-06-12,120,PAGEIND.NS,Textiles,63.38,B,NEUTRAL,TOP_50,Sector #2 (Textiles) | Strong uptrend
+2026-W24,2026-06-12,121,USHAMART.NS,Capital Goods,63.38,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,122,DIXON.NS,Consumer Durables,63.29,B,EMERGING_LEADER,TOP_50,Strong uptrend
+2026-W24,2026-06-12,123,AJANTPHARM.NS,Healthcare,63.26,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,124,GRSE.NS,Capital Goods,63.24,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,125,JSWSTEEL.NS,Metals & Mining,63.22,B,NEUTRAL,TOP_50,Sector #3 (Metals & Mining) | 1.6x volume expansion
+2026-W24,2026-06-12,126,NEULANDLAB.NS,Healthcare,62.92,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,127,HINDALCO.NS,Metals & Mining,62.8,B,NEUTRAL,TOP_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,128,TEGA.NS,Capital Goods,62.68,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods) | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,129,TARIL.NS,Capital Goods,62.64,B,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods)
+2026-W24,2026-06-12,130,GMRAIRPORT.NS,Services,62.42,B,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,131,SIEMENS.NS,Capital Goods,62.42,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,132,OLECTRA.NS,Automobile and Auto Components,62.3,B,NEUTRAL,TOP_20,Top 20% Relative Strength | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,133,KPIL.NS,Construction,62.02,B,SECTOR_LEADER,TOP_50,Sector Leader
+2026-W24,2026-06-12,134,BSE.NS,Financial Services,61.84,B,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader
+2026-W24,2026-06-12,135,FINCABLES.NS,Capital Goods,61.78,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,136,ABB.NS,Capital Goods,61.76,B,NEUTRAL,TOP_20,Top 20% Relative Strength | Sector #1 (Capital Goods)
+2026-W24,2026-06-12,137,NMDC.NS,Metals & Mining,61.7,B,NEUTRAL,TOP_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,138,EXIDEIND.NS,Automobile and Auto Components,61.68,B,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,139,TIINDIA.NS,Automobile and Auto Components,61.68,B,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,140,AUROPHARMA.NS,Healthcare,61.66,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,141,COHANCE.NS,Healthcare,61.52,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,142,HBLENGINE.NS,Capital Goods,61.38,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,143,SUZLON.NS,Capital Goods,61.38,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,144,ENGINERSIN.NS,Construction,61.26,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Ideal volatility
+2026-W24,2026-06-12,145,JSWDULUX.NS,Consumer Durables,61.21,B,EMERGING_LEADER,TOP_50,Strong uptrend
+2026-W24,2026-06-12,146,INTELLECT.NS,Information Technology,60.95,B,EMERGING_LEADER,BOTTOM_50,2.4x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,147,CIPLA.NS,Healthcare,60.94,B,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,148,PNBHOUSING.NS,Financial Services,60.94,B,SECTOR_LEADER,TOP_50,Sector Leader
+2026-W24,2026-06-12,149,IKS.NS,Information Technology,60.9,B,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Strong uptrend
+2026-W24,2026-06-12,150,TATAPOWER.NS,Power,60.78,B,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,151,HAL.NS,Capital Goods,60.64,B,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,152,RAINBOW.NS,Healthcare,60.48,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,153,ASAHIINDIA.NS,Automobile and Auto Components,60.19,B,EMERGING_LEADER,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,154,ENRIN.NS,Capital Goods,60.18,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,155,ANTHEM.NS,Healthcare,60.16,B,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,156,WELSPUNLIV.NS,Textiles,60.14,B,NEUTRAL,TOP_50,Sector #2 (Textiles)
+2026-W24,2026-06-12,157,TIMKEN.NS,Capital Goods,60.12,B,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,158,MEDANTA.NS,Healthcare,59.68,C,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,159,NYKAA.NS,Consumer Services,59.48,C,SECTOR_LEADER,TOP_50,Sector Leader | 1.8x volume expansion
+2026-W24,2026-06-12,160,TATACHEM.NS,Chemicals,59.44,C,NEUTRAL,BOTTOM_50,2.5x volume expansion
+2026-W24,2026-06-12,161,MARICO.NS,Fast Moving Consumer Goods,59.4,C,NEUTRAL,TOP_50,Strong uptrend | High-quality base
+2026-W24,2026-06-12,162,GPIL.NS,Capital Goods,59.38,C,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,163,ZFCVINDIA.NS,Automobile and Auto Components,59.36,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,164,JSWENERGY.NS,Power,59.32,C,NEUTRAL,TOP_50,Sector #4 (Power)
+2026-W24,2026-06-12,165,ZYDUSWELL.NS,Fast Moving Consumer Goods,59.2,C,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader
+2026-W24,2026-06-12,166,ZEEL.NS,Media Entertainment & Publication,59.14,C,NEUTRAL,TOP_50,Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,167,HINDZINC.NS,Metals & Mining,59.0,C,NEUTRAL,BOTTOM_50,Sector #3 (Metals & Mining) | 1.5x volume expansion
+2026-W24,2026-06-12,168,GMDCLTD.NS,Metals & Mining,58.96,C,NEUTRAL,TOP_50,Sector #3 (Metals & Mining) | Ideal volatility
+2026-W24,2026-06-12,169,CARBORUNIV.NS,Capital Goods,58.88,C,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,170,MCX.NS,Financial Services,58.74,C,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader | Ideal volatility
+2026-W24,2026-06-12,171,TATASTEEL.NS,Metals & Mining,58.74,C,NEUTRAL,TOP_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,172,AFCONS.NS,Construction,58.52,C,NEUTRAL,BOTTOM_50,11.5x volume expansion | Strong uptrend | High-quality base
+2026-W24,2026-06-12,173,COALINDIA.NS,Oil Gas & Consumable Fuels,58.32,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,174,DRREDDY.NS,Healthcare,58.28,C,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,175,DIVISLAB.NS,Healthcare,58.18,C,NEUTRAL,TOP_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,176,FLUOROCHEM.NS,Chemicals,58.12,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,177,NATIONALUM.NS,Metals & Mining,58.1,C,NEUTRAL,TOP_50,Sector #3 (Metals & Mining) | Ideal volatility
+2026-W24,2026-06-12,178,KOTAKBANK.NS,Financial Services,58.05,C,EMERGING_LEADER,BOTTOM_50,High-quality base
+2026-W24,2026-06-12,179,SUPREMEIND.NS,Capital Goods,58.0,C,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,180,ASIANPAINT.NS,Consumer Durables,57.78,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,181,IGL.NS,Oil Gas & Consumable Fuels,57.73,C,EMERGING_LEADER,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,182,CESC.NS,Power,57.68,C,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,183,BAJAJ-AUTO.NS,Automobile and Auto Components,57.56,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,184,GAIL.NS,Oil Gas & Consumable Fuels,57.46,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,185,TMPV.NS,Automobile and Auto Components,57.44,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,186,ITI.NS,Telecommunication,57.32,C,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,187,GRAPHITE.NS,Capital Goods,57.18,C,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,188,JWL.NS,Capital Goods,56.88,C,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,189,RKFORGE.NS,Automobile and Auto Components,56.86,C,NEUTRAL,TOP_50,2.0x volume expansion
+2026-W24,2026-06-12,190,EICHERMOT.NS,Automobile and Auto Components,56.42,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,191,PPLPHARMA.NS,Healthcare,56.42,C,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,192,SONACOMS.NS,Automobile and Auto Components,56.28,C,NEUTRAL,TOP_20,Top 20% Relative Strength
+2026-W24,2026-06-12,193,TECHM.NS,Information Technology,56.28,C,SECTOR_LEADER,TOP_50,Sector Leader | Strong uptrend
+2026-W24,2026-06-12,194,ONESOURCE.NS,Healthcare,56.26,C,NEUTRAL,TOP_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,195,PCBL.NS,Chemicals,56.14,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,196,INDUSTOWER.NS,Telecommunication,56.02,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,197,PARADEEP.NS,Chemicals,55.98,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,198,LENSKART.NS,Consumer Services,55.96,C,SECTOR_LEADER,TOP_20,Top 20% Relative Strength | Sector Leader
+2026-W24,2026-06-12,199,OFSS.NS,Information Technology,55.78,C,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader
+2026-W24,2026-06-12,200,MANKIND.NS,Healthcare,55.66,C,NEUTRAL,TOP_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,201,SCHAEFFLER.NS,Automobile and Auto Components,55.66,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,202,GLENMARK.NS,Healthcare,55.54,C,NEUTRAL,TOP_50,Sector #5 (Healthcare) | Ideal volatility
+2026-W24,2026-06-12,203,JUBLPHARMA.NS,Healthcare,55.52,C,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,204,WAAREEENER.NS,Capital Goods,55.5,C,NEUTRAL,TOP_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,205,SUNPHARMA.NS,Healthcare,55.42,C,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,206,ANANTRAJ.NS,Realty,55.26,C,SECTOR_LEADER,TOP_50,Sector Leader | Ideal volatility
+2026-W24,2026-06-12,207,ABDL.NS,Fast Moving Consumer Goods,55.22,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,208,JSWCEMENT.NS,Construction Materials,55.22,C,SECTOR_LEADER,TOP_50,Sector Leader
+2026-W24,2026-06-12,209,MRPL.NS,Oil Gas & Consumable Fuels,55.22,C,NEUTRAL,TOP_50,Fresh breakout (≤2d) | 4.4x volume expansion
+2026-W24,2026-06-12,210,LALPATHLAB.NS,Healthcare,55.16,C,NEUTRAL,TOP_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,211,LUPIN.NS,Healthcare,55.04,C,NEUTRAL,TOP_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,212,ASTRAL.NS,Capital Goods,54.5,C,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,213,ANURAS.NS,Chemicals,54.38,C,NEUTRAL,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,214,BANKINDIA.NS,Financial Services,54.16,C,NEUTRAL,TOP_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,215,ENDURANCE.NS,Automobile and Auto Components,54.04,C,NEUTRAL,BOTTOM_50,1.7x volume expansion
+2026-W24,2026-06-12,216,NETWEB.NS,Information Technology,53.88,C,MARKET_LEADER,TOP_10,Top 10% Relative Strength | Market Leader | Ideal volatility
+2026-W24,2026-06-12,217,AXISBANK.NS,Financial Services,53.8,C,NEUTRAL,TOP_50,1.8x volume expansion | High-quality base
+2026-W24,2026-06-12,218,TENNIND.NS,Automobile and Auto Components,53.8,C,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,219,INDUSINDBK.NS,Financial Services,53.62,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,220,COFORGE.NS,Information Technology,53.53,C,EMERGING_LEADER,BOTTOM_50,Strong uptrend
+2026-W24,2026-06-12,221,ATUL.NS,Chemicals,53.48,C,NEUTRAL,TOP_50,Best factor: liquidity 70
+2026-W24,2026-06-12,222,NBCC.NS,Construction,53.14,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,223,MMTC.NS,Services,53.04,C,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,224,OIL.NS,Oil Gas & Consumable Fuels,53.0,C,NEUTRAL,BOTTOM_50,4.1x volume expansion
+2026-W24,2026-06-12,225,BIKAJI.NS,Fast Moving Consumer Goods,52.82,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,226,BEL.NS,Capital Goods,52.74,C,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,227,INDHOTEL.NS,Consumer Services,52.62,C,NEUTRAL,TOP_50,Strong uptrend | High-quality base
+2026-W24,2026-06-12,228,NTPCGREEN.NS,Power,52.18,C,NEUTRAL,TOP_50,Sector #4 (Power)
+2026-W24,2026-06-12,229,JINDALSTEL.NS,Metals & Mining,52.08,C,NEUTRAL,BOTTOM_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,230,HEXT.NS,Information Technology,52.03,C,EMERGING_LEADER,BOTTOM_50,Strong uptrend
+2026-W24,2026-06-12,231,SUMICHEM.NS,Chemicals,51.88,C,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,232,APTUS.NS,Financial Services,51.82,C,NEUTRAL,TOP_50,1.6x volume expansion
+2026-W24,2026-06-12,233,SBIN.NS,Financial Services,51.4,C,NEUTRAL,TOP_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,234,AARTIIND.NS,Chemicals,51.38,C,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,235,CASTROLIND.NS,Oil Gas & Consumable Fuels,51.34,C,NEUTRAL,TOP_50,Best factor: breakout 74
+2026-W24,2026-06-12,236,ABCAPITAL.NS,Financial Services,51.3,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,237,CAMS.NS,Financial Services,51.3,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,238,LICHSGFIN.NS,Financial Services,51.3,C,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,239,TRAVELFOOD.NS,Consumer Services,51.22,C,NEUTRAL,TOP_50,1.7x volume expansion | Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,240,HINDCOPPER.NS,Metals & Mining,51.0,C,NEUTRAL,TOP_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,241,DEEPAKNTR.NS,Chemicals,50.88,C,NEUTRAL,TOP_50,Best factor: liquidity 70
+2026-W24,2026-06-12,242,GABRIEL.NS,Automobile and Auto Components,50.8,C,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,243,BERGEPAINT.NS,Consumer Durables,50.76,C,NEUTRAL,TOP_50,Strong uptrend
+2026-W24,2026-06-12,244,GESHIP.NS,Services,50.72,C,NEUTRAL,TOP_50,Ideal volatility
+2026-W24,2026-06-12,245,SJVN.NS,Power,50.28,C,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,246,TATACAP.NS,Financial Services,50.26,C,NEUTRAL,TOP_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,247,NHPC.NS,Power,50.18,C,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,248,POWERGRID.NS,Power,50.18,C,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,249,ICICIAMC.NS,Financial Services,49.88,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,250,INDIANB.NS,Financial Services,49.82,D,NEUTRAL,TOP_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,251,HUDCO.NS,Financial Services,49.7,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,252,LT.NS,Construction,49.58,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,253,GODREJIND.NS,Diversified,49.5,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,254,360ONE.NS,Financial Services,49.48,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,255,SARDAEN.NS,Metals & Mining,49.46,D,NEUTRAL,BOTTOM_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,256,MOTILALOFS.NS,Financial Services,49.44,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,257,NTPC.NS,Power,49.3,D,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,258,IGIL.NS,Services,49.22,D,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,259,TORNTPOWER.NS,Power,49.18,D,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,260,LGEINDIA.NS,Consumer Durables,49.08,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,261,MANAPPURAM.NS,Financial Services,48.94,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,262,MGL.NS,Oil Gas & Consumable Fuels,48.84,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,263,CANFINHOME.NS,Financial Services,48.8,D,NEUTRAL,TOP_50,1.8x volume expansion | High-quality base
+2026-W24,2026-06-12,264,TATACONSUM.NS,Fast Moving Consumer Goods,48.76,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,265,DELHIVERY.NS,Services,48.68,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,266,BANKBARODA.NS,Financial Services,48.56,D,NEUTRAL,BOTTOM_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,267,RAILTEL.NS,Telecommunication,48.52,D,NEUTRAL,BOTTOM_50,Best factor: sector 72
+2026-W24,2026-06-12,268,CREDITACC.NS,Financial Services,48.3,D,NEUTRAL,TOP_50,Best factor: liquidity 70
+2026-W24,2026-06-12,269,PETRONET.NS,Oil Gas & Consumable Fuels,48.18,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,270,KAJARIACER.NS,Consumer Durables,48.08,D,NEUTRAL,TOP_50,Best factor: liquidity 70
+2026-W24,2026-06-12,271,ALKEM.NS,Healthcare,47.92,D,NEUTRAL,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,272,AUBANK.NS,Financial Services,47.86,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,273,CUB.NS,Financial Services,47.86,D,NEUTRAL,TOP_50,2.3x volume expansion | High-quality base
+2026-W24,2026-06-12,274,ICICIBANK.NS,Financial Services,47.8,D,NEUTRAL,BOTTOM_50,1.6x volume expansion | High-quality base
+2026-W24,2026-06-12,275,MPHASIS.NS,Information Technology,47.71,D,EMERGING_LEADER,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,276,HEG.NS,Capital Goods,47.64,D,NEUTRAL,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,277,COLPAL.NS,Fast Moving Consumer Goods,47.48,D,NEUTRAL,BOTTOM_50,2.5x volume expansion
+2026-W24,2026-06-12,278,LINDEINDIA.NS,Chemicals,47.38,D,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,279,GRAVITA.NS,Metals & Mining,46.96,D,LAGGARD,BOTTOM_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,280,GALLANTT.NS,Capital Goods,46.64,D,NEUTRAL,TOP_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,281,CIEINDIA.NS,Automobile and Auto Components,46.4,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,282,VMM.NS,Consumer Services,46.32,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,283,KARURVYSYA.NS,Financial Services,46.26,D,NEUTRAL,TOP_50,2.1x volume expansion
+2026-W24,2026-06-12,284,TMCV.NS,Capital Goods,46.14,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,285,RECLTD.NS,Financial Services,45.82,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,286,REDINGTON.NS,Services,45.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,287,MEESHO.NS,Consumer Services,45.72,D,NEUTRAL,TOP_50,9.0x volume expansion | Ideal volatility
+2026-W24,2026-06-12,288,COROMANDEL.NS,Chemicals,45.48,D,LAGGARD,BOTTOM_50,1.6x volume expansion | High-quality base
+2026-W24,2026-06-12,289,CROMPTON.NS,Consumer Durables,45.36,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,290,LICI.NS,Financial Services,45.2,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,291,GICRE.NS,Financial Services,45.06,D,NEUTRAL,TOP_50,Best factor: liquidity 70
+2026-W24,2026-06-12,292,PERSISTENT.NS,Information Technology,45.03,D,EMERGING_LEADER,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,293,INDIGO.NS,Services,45.0,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,294,UNIONBANK.NS,Financial Services,44.82,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,295,ERIS.NS,Healthcare,44.66,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare) | Strong uptrend
+2026-W24,2026-06-12,296,BAYERCROP.NS,Chemicals,44.48,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,297,TBOTEK.NS,Consumer Services,44.47,D,EMERGING_LEADER,BOTTOM_50,1.6x volume expansion
+2026-W24,2026-06-12,298,SYNGENE.NS,Healthcare,44.44,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare) | 1.5x volume expansion
+2026-W24,2026-06-12,299,NIACL.NS,Financial Services,44.28,D,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,300,APLAPOLLO.NS,Capital Goods,44.24,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,301,MAZDOCK.NS,Capital Goods,44.24,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,302,URBANCO.NS,Consumer Services,44.12,D,NEUTRAL,TOP_50,2.2x volume expansion | High-quality base
+2026-W24,2026-06-12,303,PWL.NS,Consumer Services,44.0,D,NEUTRAL,TOP_50,Strong uptrend | Ideal volatility
+2026-W24,2026-06-12,304,TATAINVEST.NS,Financial Services,43.8,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,305,NAVA.NS,Power,43.68,D,NEUTRAL,BOTTOM_50,Sector #4 (Power)
+2026-W24,2026-06-12,306,ARE&M.NS,Automobile and Auto Components,43.66,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,307,OBEROIRLTY.NS,Realty,43.52,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,308,VOLTAS.NS,Consumer Durables,43.34,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,309,NUVOCO.NS,Construction Materials,43.32,D,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,310,AMBER.NS,Consumer Durables,43.22,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,311,ASHOKLEY.NS,Capital Goods,43.14,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,312,TATAELXSI.NS,Information Technology,42.75,D,EMERGING_LEADER,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,313,AFFLE.NS,Information Technology,42.74,D,NEUTRAL,TOP_50,Best factor: liquidity 85
+2026-W24,2026-06-12,314,SPLPETRO.NS,Chemicals,42.48,D,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,315,FSL.NS,Services,42.32,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,316,SHRIRAMFIN.NS,Financial Services,42.3,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,317,JYOTICNC.NS,Capital Goods,42.14,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,318,TITAN.NS,Consumer Durables,42.08,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,319,HINDUNILVR.NS,Fast Moving Consumer Goods,42.02,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,320,HEROMOTOCO.NS,Automobile and Auto Components,41.72,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,321,INOXWIND.NS,Capital Goods,41.64,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,322,ETERNAL.NS,Consumer Services,41.56,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,323,ABBOTINDIA.NS,Healthcare,41.54,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,324,CANHLIFE.NS,Financial Services,41.32,D,NEUTRAL,TOP_50,Best factor: atr 80
+2026-W24,2026-06-12,325,IDBI.NS,Financial Services,41.26,D,LAGGARD,BOTTOM_50,2.2x volume expansion | High-quality base
+2026-W24,2026-06-12,326,ESCORTS.NS,Capital Goods,41.14,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,327,SHREECEM.NS,Construction Materials,41.14,D,NEUTRAL,BOTTOM_50,2.2x volume expansion
+2026-W24,2026-06-12,328,PRESTIGE.NS,Realty,40.82,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,329,BDL.NS,Capital Goods,40.64,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,330,COCHINSHIP.NS,Capital Goods,40.64,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,331,KAYNES.NS,Capital Goods,40.64,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods)
+2026-W24,2026-06-12,332,AADHARHFC.NS,Financial Services,40.56,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,333,MARUTI.NS,Automobile and Auto Components,40.42,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,334,CANBK.NS,Financial Services,40.3,D,LAGGARD,BOTTOM_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,335,HOMEFIRST.NS,Financial Services,40.3,D,NEUTRAL,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,336,PNB.NS,Financial Services,40.3,D,LAGGARD,BOTTOM_50,Fresh breakout (≤2d)
+2026-W24,2026-06-12,337,ONGC.NS,Oil Gas & Consumable Fuels,40.22,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,338,SWANCORP.NS,Chemicals,40.1,D,LAGGARD,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,339,RHIM.NS,Capital Goods,39.72,D,LAGGARD,BOTTOM_50,Sector #1 (Capital Goods) | Ideal volatility
+2026-W24,2026-06-12,340,HDFCAMC.NS,Financial Services,39.7,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,341,IREDA.NS,Financial Services,39.7,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,342,UPL.NS,Chemicals,39.6,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,343,JUBLINGREA.NS,Chemicals,39.42,D,NEUTRAL,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,344,SUNTV.NS,Media Entertainment & Publication,39.34,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,345,VEDL.NS,Metals & Mining,38.96,D,LAGGARD,BOTTOM_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,346,GILLETTE.NS,Fast Moving Consumer Goods,38.48,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,347,APOLLOTYRE.NS,Automobile and Auto Components,38.4,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,348,DMART.NS,Consumer Services,38.18,D,NEUTRAL,TOP_50,Best factor: liquidity 100
+2026-W24,2026-06-12,349,PVRINOX.NS,Media Entertainment & Publication,38.06,D,LAGGARD,BOTTOM_50,Best factor: sector 74
+2026-W24,2026-06-12,350,HYUNDAI.NS,Automobile and Auto Components,37.78,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,351,TRENT.NS,Consumer Services,37.62,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,352,JSL.NS,Metals & Mining,37.46,D,LAGGARD,BOTTOM_50,Sector #3 (Metals & Mining)
+2026-W24,2026-06-12,353,CLEAN.NS,Chemicals,37.38,D,LAGGARD,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,354,ULTRACEMCO.NS,Construction Materials,37.2,D,NEUTRAL,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,355,HDFCBANK.NS,Financial Services,37.12,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,356,POLYMED.NS,Healthcare,36.94,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare) | 1.8x volume expansion | Ideal volatility
+2026-W24,2026-06-12,357,M&M.NS,Automobile and Auto Components,36.9,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,358,TVSMOTOR.NS,Automobile and Auto Components,36.9,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,359,UNOMINDA.NS,Automobile and Auto Components,36.9,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,360,FORCEMOT.NS,Automobile and Auto Components,36.8,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,361,PFIZER.NS,Healthcare,36.78,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,362,MRF.NS,Automobile and Auto Components,36.66,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,363,HINDPETRO.NS,Oil Gas & Consumable Fuels,36.46,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,364,GODFRYPHLP.NS,Fast Moving Consumer Goods,36.44,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,365,THELEELA.NS,Consumer Services,36.38,D,NEUTRAL,TOP_50,Best factor: breakout 68
+2026-W24,2026-06-12,366,JAINREC.NS,Metals & Mining,36.36,D,LAGGARD,BOTTOM_50,Sector #3 (Metals & Mining) | Ideal volatility
+2026-W24,2026-06-12,367,PAYTM.NS,Financial Services,36.26,D,LAGGARD,BOTTOM_50,2.2x volume expansion
+2026-W24,2026-06-12,368,INDIAMART.NS,Consumer Services,36.12,D,NEUTRAL,BOTTOM_50,High-quality base
+2026-W24,2026-06-12,369,AIIL.NS,Financial Services,35.84,D,NEUTRAL,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,370,IRFC.NS,Financial Services,35.82,D,LAGGARD,BOTTOM_50,1.6x volume expansion
+2026-W24,2026-06-12,371,JKTYRE.NS,Automobile and Auto Components,35.8,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,372,AAVAS.NS,Financial Services,35.72,D,LAGGARD,BOTTOM_50,1.6x volume expansion
+2026-W24,2026-06-12,373,IOC.NS,Oil Gas & Consumable Fuels,35.72,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,374,RELIANCE.NS,Oil Gas & Consumable Fuels,35.44,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,375,CEATLTD.NS,Automobile and Auto Components,35.4,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,376,BHARTIHEXA.NS,Telecommunication,35.26,D,LAGGARD,BOTTOM_50,1.8x volume expansion
+2026-W24,2026-06-12,377,MAXHEALTH.NS,Healthcare,35.06,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,378,BALKRISIND.NS,Automobile and Auto Components,34.6,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,379,GLAXO.NS,Healthcare,34.28,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare)
+2026-W24,2026-06-12,380,BHARTIARTL.NS,Telecommunication,34.26,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,381,CRISIL.NS,Financial Services,34.22,D,LAGGARD,BOTTOM_50,3.8x volume expansion | High-quality base
+2026-W24,2026-06-12,382,CHOLAFIN.NS,Financial Services,33.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,383,GODREJCP.NS,Fast Moving Consumer Goods,33.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,384,BRITANNIA.NS,Fast Moving Consumer Goods,33.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,385,CDSL.NS,Financial Services,33.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,386,SBFC.NS,Financial Services,33.56,D,LAGGARD,BOTTOM_50,Best factor: breakout 62
+2026-W24,2026-06-12,387,DOMS.NS,Fast Moving Consumer Goods,33.46,D,LAGGARD,BOTTOM_50,5.7x volume expansion
+2026-W24,2026-06-12,388,NATCOPHARM.NS,Healthcare,33.32,D,LAGGARD,BOTTOM_50,Sector #5 (Healthcare) | Ideal volatility
+2026-W24,2026-06-12,389,KFINTECH.NS,Financial Services,33.3,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,390,BPCL.NS,Oil Gas & Consumable Fuels,33.22,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,391,SUNDARMFIN.NS,Financial Services,33.22,D,LAGGARD,BOTTOM_50,2.0x volume expansion
+2026-W24,2026-06-12,392,SBICARD.NS,Financial Services,33.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,393,LTTS.NS,Information Technology,33.14,D,NEUTRAL,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,394,AEGISVOPAK.NS,Oil Gas & Consumable Fuels,32.98,D,LAGGARD,BOTTOM_50,4.0x volume expansion
+2026-W24,2026-06-12,395,BLUEDART.NS,Services,32.7,D,LAGGARD,BOTTOM_50,1.9x volume expansion
+2026-W24,2026-06-12,396,ECLERX.NS,Services,32.68,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,397,BAJAJHLDNG.NS,Financial Services,32.44,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,398,BAJFINANCE.NS,Financial Services,32.3,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,399,IEX.NS,Financial Services,32.3,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,400,JIOFIN.NS,Financial Services,32.3,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,401,HDFCLIFE.NS,Financial Services,32.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,402,CONCOR.NS,Services,32.18,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,403,HAVELLS.NS,Consumer Durables,32.08,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,404,INDIACEM.NS,Construction Materials,32.08,D,NEUTRAL,BOTTOM_50,Best factor: atr 60
+2026-W24,2026-06-12,405,PIIND.NS,Chemicals,32.02,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,406,PGEL.NS,Consumer Durables,31.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,407,PINELABS.NS,Financial Services,31.82,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,408,AWL.NS,Fast Moving Consumer Goods,31.72,D,LAGGARD,BOTTOM_50,1.9x volume expansion
+2026-W24,2026-06-12,409,GODIGIT.NS,Financial Services,31.7,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,410,MFSL.NS,Financial Services,31.54,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,411,ICICIGI.NS,Financial Services,31.5,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,412,CHOICEIN.NS,Financial Services,30.8,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,413,UBL.NS,Fast Moving Consumer Goods,30.8,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,414,CHALET.NS,Consumer Services,30.76,D,NEUTRAL,BOTTOM_50,Best factor: atr 60
+2026-W24,2026-06-12,415,POLICYBZR.NS,Financial Services,30.74,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,416,SOBHA.NS,Realty,30.72,D,NEUTRAL,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,417,SBILIFE.NS,Financial Services,30.66,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,418,BAJAJHFL.NS,Financial Services,30.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,419,PATANJALI.NS,Fast Moving Consumer Goods,30.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,420,BLUESTARCO.NS,Consumer Durables,30.28,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,421,HDBFS.NS,Financial Services,30.22,D,LAGGARD,BOTTOM_50,1.6x volume expansion
+2026-W24,2026-06-12,422,KALYANKJIL.NS,Consumer Durables,30.22,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,423,FIVESTAR.NS,Financial Services,30.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,424,ICICIPRULI.NS,Financial Services,30.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,425,NCC.NS,Construction,29.82,D,LAGGARD,BOTTOM_50,2.0x volume expansion
+2026-W24,2026-06-12,426,UNITDSPR.NS,Fast Moving Consumer Goods,29.8,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,427,DABUR.NS,Fast Moving Consumer Goods,29.76,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,428,LTF.NS,Financial Services,29.7,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,429,BBTC.NS,Fast Moving Consumer Goods,29.32,D,LAGGARD,BOTTOM_50,Best factor: breakout 69
+2026-W24,2026-06-12,430,SAPPHIRE.NS,Consumer Services,29.32,D,LAGGARD,BOTTOM_50,4.5x volume expansion | High-quality base
+2026-W24,2026-06-12,431,ITC.NS,Fast Moving Consumer Goods,29.26,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,432,KEC.NS,Construction,29.26,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,433,BAJAJFINSV.NS,Financial Services,29.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,434,MUTHOOTFIN.NS,Financial Services,28.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,435,M&MFIN.NS,Financial Services,28.7,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,436,RITES.NS,Construction,28.36,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,437,EMAMILTD.NS,Fast Moving Consumer Goods,28.22,D,LAGGARD,BOTTOM_50,1.9x volume expansion
+2026-W24,2026-06-12,438,LODHA.NS,Realty,28.22,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,439,ACC.NS,Construction Materials,28.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,440,EIDPARRY.NS,Fast Moving Consumer Goods,28.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,441,JMFINANCIL.NS,Financial Services,28.2,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,442,POONAWALLA.NS,Financial Services,28.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,443,BLS.NS,Consumer Services,28.18,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,444,AMBUJACEM.NS,Construction Materials,28.08,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,445,UTIAMC.NS,Financial Services,27.56,D,LAGGARD,BOTTOM_50,Best factor: breakout 62
+2026-W24,2026-06-12,446,3MINDIA.NS,Diversified,27.5,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,447,SONATSOFTW.NS,Information Technology,27.24,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,448,CHOLAHLDNG.NS,Financial Services,27.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,449,LTFOODS.NS,Fast Moving Consumer Goods,26.7,D,LAGGARD,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,450,JKCEMENT.NS,Construction Materials,26.6,D,LAGGARD,BOTTOM_50,1.7x volume expansion
+2026-W24,2026-06-12,451,BATAINDIA.NS,Consumer Durables,26.32,D,LAGGARD,BOTTOM_50,Best factor: atr 60
+2026-W24,2026-06-12,452,KPITTECH.NS,Information Technology,26.28,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,453,RAMCOCEM.NS,Construction Materials,26.14,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,454,ITCHOTELS.NS,Consumer Services,25.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,455,IRCON.NS,Construction,25.76,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,456,RVNL.NS,Construction,25.76,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,457,SWIGGY.NS,Consumer Services,25.52,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,458,FIRSTCRY.NS,Consumer Services,25.46,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,459,DLF.NS,Realty,25.32,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,460,TECHNOE.NS,Construction,25.0,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,461,NAUKRI.NS,Consumer Services,24.82,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,462,IRCTC.NS,Consumer Services,24.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,463,DALBHARAT.NS,Construction Materials,24.08,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,464,HCLTECH.NS,Information Technology,24.0,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,465,GODREJPROP.NS,Realty,23.72,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,466,LTM.NS,Information Technology,23.64,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,467,WHIRLPOOL.NS,Consumer Durables,23.22,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,468,ABLBL.NS,Consumer Services,23.06,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,469,DCMSHRIRAM.NS,Diversified,23.0,D,LAGGARD,BOTTOM_50,Best factor: atr 60
+2026-W24,2026-06-12,470,NEWGEN.NS,Information Technology,22.78,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,471,BSOFT.NS,Information Technology,22.64,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,472,TCS.NS,Information Technology,22.64,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,473,INFY.NS,Information Technology,22.2,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,474,CYIENT.NS,Information Technology,21.56,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,475,SIGNATURE.NS,Realty,21.56,D,LAGGARD,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,476,DEVYANI.NS,Consumer Services,21.46,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,477,JUBLFOOD.NS,Consumer Services,21.46,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,478,ABFRL.NS,Consumer Services,20.96,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,479,LATENTVIEW.NS,Information Technology,20.88,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,480,ABREL.NS,Realty,20.72,D,LAGGARD,BOTTOM_50,Best factor: atr 80
+2026-W24,2026-06-12,481,LEMONTREE.NS,Consumer Services,20.46,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,482,WIPRO.NS,Information Technology,20.22,D,LAGGARD,BOTTOM_50,Best factor: liquidity 100
+2026-W24,2026-06-12,483,BRIGADE.NS,Realty,19.72,D,LAGGARD,BOTTOM_50,Best factor: liquidity 70
+2026-W24,2026-06-12,484,ZENSARTECH.NS,Information Technology,19.14,D,LAGGARD,BOTTOM_50,Best factor: liquidity 85
+2026-W24,2026-06-12,485,MAPMYINDIA.NS,Information Technology,18.14,D,LAGGARD,BOTTOM_50,Ideal volatility
+2026-W24,2026-06-12,486,EIHOTEL.NS,Consumer Services,16.96,D,LAGGARD,BOTTOM_50,Best factor: atr 60

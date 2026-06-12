@@ -6,7 +6,12 @@ __pycache__/
 .env
 .zerodha_session.json
 .kite_instruments.json
-HANDOFF.md
+
+# Screener caches (regenerated on demand — universe + bulk OHLCV)
+cache/
+
+# Generated screen exports (regenerated each run)
+reports/
 
 # Local journal data (user-specific)
 journal/alerts.log

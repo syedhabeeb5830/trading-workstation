@@ -1,0 +1,363 @@
+{
+  "generated_at": "2026-06-12T18:23:51",
+  "week_id": "2026-W24",
+  "universe_source": "cache_fresh",
+  "rows": [
+    {
+      "sector": "Capital Goods",
+      "rank": 1,
+      "score": 100.0,
+      "grade": "A+",
+      "status": "LEADING",
+      "r1m": 0.77,
+      "r3m": 15.82,
+      "r6m": 11.26,
+      "composite": 10.53,
+      "n_constituents": 63,
+      "n_valid": 63,
+      "rank_delta": null,
+      "reasons": [
+        "Strong across 1M/3M/6M",
+        "6M +11.3%, 3M +15.8%, 1M +0.8%"
+      ]
+    },
+    {
+      "sector": "Textiles",
+      "rank": 2,
+      "score": 93.8,
+      "grade": "A+",
+      "status": "LEADING",
+      "r1m": 4.35,
+      "r3m": 20.6,
+      "r6m": 4.09,
+      "composite": 9.1,
+      "n_constituents": 5,
+      "n_valid": 5,
+      "rank_delta": null,
+      "reasons": [
+        "Strong across 1M/3M/6M",
+        "6M +4.1%, 3M +20.6%, 1M +4.3%"
+      ]
+    },
+    {
+      "sector": "Metals & Mining",
+      "rank": 3,
+      "score": 91.6,
+      "grade": "A",
+      "status": "WEAKENING",
+      "r1m": -5.27,
+      "r3m": 4.96,
+      "r6m": 16.32,
+      "composite": 8.59,
+      "n_constituents": 18,
+      "n_valid": 18,
+      "rank_delta": null,
+      "reasons": [
+        "Recent leadership fading",
+        "6M +16.3%, 3M +5.0%, 1M -5.3%"
+      ]
+    },
+    {
+      "sector": "Power",
+      "rank": 4,
+      "score": 87.7,
+      "grade": "A",
+      "status": "WEAKENING",
+      "r1m": -3.29,
+      "r3m": 13.88,
+      "r6m": 8.35,
+      "composite": 7.68,
+      "n_constituents": 17,
+      "n_valid": 17,
+      "rank_delta": null,
+      "reasons": [
+        "Recent leadership fading",
+        "6M +8.3%, 3M +13.9%, 1M -3.3%"
+      ]
+    },
+    {
+      "sector": "Healthcare",
+      "rank": 5,
+      "score": 76.4,
+      "grade": "A",
+      "status": "LEADING",
+      "r1m": 0.13,
+      "r3m": 10.4,
+      "r6m": 3.82,
+      "composite": 5.06,
+      "n_constituents": 49,
+      "n_valid": 49,
+      "rank_delta": null,
+      "reasons": [
+        "Strong across 1M/3M/6M",
+        "6M +3.8%, 3M +10.4%, 1M +0.1%"
+      ]
+    },
+    {
+      "sector": "Media Entertainment & Publication",
+      "rank": 6,
+      "score": 73.5,
+      "grade": "B+",
+      "status": "IMPROVING",
+      "r1m": 6.96,
+      "r3m": 11.33,
+      "r6m": -0.8,
+      "composite": 4.39,
+      "n_constituents": 4,
+      "n_valid": 4,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M -0.8%, 3M +11.3%, 1M +7.0%"
+      ]
+    },
+    {
+      "sector": "Telecommunication",
+      "rank": 7,
+      "score": 71.9,
+      "grade": "B+",
+      "status": "IMPROVING",
+      "r1m": 3.46,
+      "r3m": 13.83,
+      "r6m": -1.6,
+      "composite": 4.04,
+      "n_constituents": 10,
+      "n_valid": 10,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M -1.6%, 3M +13.8%, 1M +3.5%"
+      ]
+    },
+    {
+      "sector": "Chemicals",
+      "rank": 8,
+      "score": 66.2,
+      "grade": "B+",
+      "status": "WEAKENING",
+      "r1m": -2.71,
+      "r3m": 7.68,
+      "r6m": 1.9,
+      "composite": 2.71,
+      "n_constituents": 26,
+      "n_valid": 26,
+      "rank_delta": null,
+      "reasons": [
+        "Recent leadership fading",
+        "6M +1.9%, 3M +7.7%, 1M -2.7%"
+      ]
+    },
+    {
+      "sector": "Automobile and Auto Components",
+      "rank": 9,
+      "score": 63.3,
+      "grade": "B+",
+      "status": "WEAKENING",
+      "r1m": -0.78,
+      "r3m": 3.87,
+      "r6m": 2.09,
+      "composite": 2.05,
+      "n_constituents": 38,
+      "n_valid": 38,
+      "rank_delta": null,
+      "reasons": [
+        "Recent leadership fading",
+        "6M +2.1%, 3M +3.9%, 1M -0.8%"
+      ]
+    },
+    {
+      "sector": "Services",
+      "rank": 10,
+      "score": 62.7,
+      "grade": "B+",
+      "status": "IMPROVING",
+      "r1m": 1.12,
+      "r3m": 4.8,
+      "r6m": 0.49,
+      "composite": 1.91,
+      "n_constituents": 14,
+      "n_valid": 14,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M +0.5%, 3M +4.8%, 1M +1.1%"
+      ]
+    },
+    {
+      "sector": "Oil Gas & Consumable Fuels",
+      "rank": 11,
+      "score": 52.9,
+      "grade": "B",
+      "status": "IMPROVING",
+      "r1m": 0.71,
+      "r3m": 1.29,
+      "r6m": -1.77,
+      "composite": -0.36,
+      "n_constituents": 17,
+      "n_valid": 17,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M -1.8%, 3M +1.3%, 1M +0.7%"
+      ]
+    },
+    {
+      "sector": "Financial Services",
+      "rank": 12,
+      "score": 40.3,
+      "grade": "B",
+      "status": "NEUTRAL",
+      "r1m": -1.35,
+      "r3m": 1.63,
+      "r6m": -7.0,
+      "composite": -3.28,
+      "n_constituents": 101,
+      "n_valid": 101,
+      "rank_delta": null,
+      "reasons": [
+        "6M -7.0%, 3M +1.6%, 1M -1.4%"
+      ]
+    },
+    {
+      "sector": "Diversified",
+      "rank": 13,
+      "score": 39.3,
+      "grade": "B",
+      "status": "WEAKENING",
+      "r1m": -5.33,
+      "r3m": 7.11,
+      "r6m": -9.15,
+      "composite": -3.51,
+      "n_constituents": 3,
+      "n_valid": 3,
+      "rank_delta": null,
+      "reasons": [
+        "Recent leadership fading",
+        "6M -9.2%, 3M +7.1%, 1M -5.3%"
+      ]
+    },
+    {
+      "sector": "Construction",
+      "rank": 14,
+      "score": 35.6,
+      "grade": "B",
+      "status": "NEUTRAL",
+      "r1m": -2.07,
+      "r3m": 2.96,
+      "r6m": -9.67,
+      "composite": -4.36,
+      "n_constituents": 13,
+      "n_valid": 13,
+      "rank_delta": null,
+      "reasons": [
+        "6M -9.7%, 3M +3.0%, 1M -2.1%"
+      ]
+    },
+    {
+      "sector": "Fast Moving Consumer Goods",
+      "rank": 15,
+      "score": 35.3,
+      "grade": "B",
+      "status": "NEUTRAL",
+      "r1m": -2.2,
+      "r3m": -0.03,
+      "r6m": -7.96,
+      "composite": -4.43,
+      "n_constituents": 28,
+      "n_valid": 28,
+      "rank_delta": null,
+      "reasons": [
+        "6M -8.0%, 3M -0.0%, 1M -2.2%"
+      ]
+    },
+    {
+      "sector": "Consumer Durables",
+      "rank": 16,
+      "score": 32.9,
+      "grade": "C",
+      "status": "NEUTRAL",
+      "r1m": -1.49,
+      "r3m": -1.21,
+      "r6m": -8.67,
+      "composite": -5.0,
+      "n_constituents": 16,
+      "n_valid": 16,
+      "rank_delta": null,
+      "reasons": [
+        "6M -8.7%, 3M -1.2%, 1M -1.5%"
+      ]
+    },
+    {
+      "sector": "Construction Materials",
+      "rank": 17,
+      "score": 19.7,
+      "grade": "C",
+      "status": "LAGGING",
+      "r1m": -4.02,
+      "r3m": -4.5,
+      "r6m": -11.8,
+      "composite": -8.05,
+      "n_constituents": 11,
+      "n_valid": 11,
+      "rank_delta": null,
+      "reasons": [
+        "Weak across all periods",
+        "6M -11.8%, 3M -4.5%, 1M -4.0%"
+      ]
+    },
+    {
+      "sector": "Consumer Services",
+      "rank": 18,
+      "score": 9.1,
+      "grade": "C",
+      "status": "IMPROVING",
+      "r1m": -0.68,
+      "r3m": 1.24,
+      "r6m": -21.45,
+      "composite": -10.49,
+      "n_constituents": 29,
+      "n_valid": 29,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M -21.4%, 3M +1.2%, 1M -0.7%"
+      ]
+    },
+    {
+      "sector": "Realty",
+      "rank": 19,
+      "score": 5.4,
+      "grade": "C",
+      "status": "LAGGING",
+      "r1m": -3.82,
+      "r3m": 0.41,
+      "r6m": -21.41,
+      "composite": -11.35,
+      "n_constituents": 11,
+      "n_valid": 11,
+      "rank_delta": null,
+      "reasons": [
+        "Weak across all periods",
+        "6M -21.4%, 3M +0.4%, 1M -3.8%"
+      ]
+    },
+    {
+      "sector": "Information Technology",
+      "rank": 20,
+      "score": 0.0,
+      "grade": "C",
+      "status": "IMPROVING",
+      "r1m": 1.04,
+      "r3m": 3.03,
+      "r6m": -27.43,
+      "composite": -12.6,
+      "n_constituents": 27,
+      "n_valid": 27,
+      "rank_delta": null,
+      "reasons": [
+        "Short-term momentum building",
+        "6M -27.4%, 3M +3.0%, 1M +1.0%"
+      ]
+    }
+  ]
+}

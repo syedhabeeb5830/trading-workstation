@@ -1,0 +1,134 @@
+{
+  "generated_at": "2026-06-12T00:09:20",
+  "horizon": "20",
+  "n_records": 2824,
+  "n_screen_dates": 6,
+  "grade_perf": {
+    "A+": {
+      "avg_return": 1.48,
+      "n": 6
+    },
+    "A": {
+      "avg_return": 0.7,
+      "n": 127
+    },
+    "B+": {
+      "avg_return": -1.84,
+      "n": 367
+    },
+    "B": {
+      "avg_return": -0.68,
+      "n": 465
+    },
+    "C": {
+      "avg_return": -2.05,
+      "n": 416
+    },
+    "D": {
+      "avg_return": -1.67,
+      "n": 1443
+    }
+  },
+  "rs_perf": {
+    "MARKET_LEADER": {
+      "avg_return": -0.12,
+      "n": 289
+    },
+    "SECTOR_LEADER": {
+      "avg_return": -1.16,
+      "n": 284
+    },
+    "EMERGING_LEADER": {
+      "avg_return": -2.86,
+      "n": 187
+    },
+    "NEUTRAL": {
+      "avg_return": -0.77,
+      "n": 817
+    },
+    "LAGGARD": {
+      "avg_return": -2.11,
+      "n": 1247
+    }
+  },
+  "sector_perf": {
+    "Top 5 sectors": {
+      "avg_return": -0.95,
+      "n": 1009
+    },
+    "Middle sectors": {
+      "avg_return": -1.23,
+      "n": 1413
+    },
+    "Bottom sectors": {
+      "avg_return": -3.62,
+      "n": 402
+    }
+  },
+  "action_perf": {
+    "ACTION_NOW": {
+      "avg_return": 2.2,
+      "win_rate": 0.714,
+      "n": 7
+    },
+    "WATCHLIST": {
+      "avg_return": -1.18,
+      "win_rate": 0.413,
+      "n": 492
+    },
+    "EXTENDED": {
+      "avg_return": -1.76,
+      "win_rate": 0.388,
+      "n": 49
+    },
+    "AVOID": {
+      "avg_return": -1.54,
+      "win_rate": 0.394,
+      "n": 2276
+    }
+  },
+  "regime_perf": {
+    "BULL": {
+      "avg_return": -1.28,
+      "win_rate": 0.403,
+      "profit_factor": 0.66,
+      "n": 1888
+    },
+    "NEUTRAL": {
+      "avg_return": 0.93,
+      "win_rate": 0.511,
+      "profit_factor": 1.35,
+      "n": 474
+    },
+    "STRONG_BULL": {
+      "avg_return": -4.72,
+      "win_rate": 0.262,
+      "profit_factor": 0.22,
+      "n": 462
+    }
+  },
+  "adaptive_vs_composite": {
+    "composite_alpha": 2.12,
+    "adaptive_alpha": 2.24,
+    "improvement": 0.12,
+    "universe_avg": -1.47
+  },
+  "portfolio": {
+    "avg_return": 1.61,
+    "win_rate": 0.5,
+    "sharpe": 0.33,
+    "sortino": 0.98,
+    "max_drawdown": -4.3,
+    "n_trades": 6,
+    "basis": "Top-5 by actionability (no ACTION_NOW)"
+  },
+  "edge_score": 34.0,
+  "edge_components": {
+    "bucket_separation": 11.4,
+    "actionability_edge": 11.7,
+    "regime_edge": 0.0,
+    "adaptive_improvement": 7.7,
+    "portfolio_performance": 3.2
+  },
+  "verdict": "NO EDGE"
+}

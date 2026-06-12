@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-06-12T12:19:01",
+  "week_id": "2026-W24",
+  "regime": "WEAK_BEAR",
+  "summary": {
+    "HOLD": 3,
+    "ADD": 0,
+    "REDUCE": 0,
+    "EXIT": 0,
+    "ROTATE": 0
+  },
+  "theme_exposure": {
+    "INDUSTRIAL_COMPLEX": 20.0,
+    "MATERIALS_COMPLEX": 5.0
+  },
+  "theme_warnings": {},
+  "positions": [
+    {
+      "ticker": "DATAPATTNS.NS",
+      "symbol": "DATAPATTNS",
+      "sector": "Capital Goods",
+      "theme": "INDUSTRIAL_COMPLEX",
+      "allocation": 10.0,
+      "status": "HOLD",
+      "reason": "RS strong, trend intact, no better replacement",
+      "action": "BUY_NOW",
+      "rs_status": "MARKET_LEADER",
+      "grade": "A+",
+      "conviction": 100.0,
+      "pnl_pct": -0.0,
+      "current_price": 4353.8,
+      "entry_context": "TREND_CONTINUATION",
+      "rotate_to": null
+    },
+    {
+      "ticker": "RRKABEL.NS",
+      "symbol": "RRKABEL",
+      "sector": "Capital Goods",
+      "theme": "INDUSTRIAL_COMPLEX",
+      "allocation": 10.0,
+      "status": "HOLD",
+      "reason": "RS strong, trend intact, no better replacement",
+      "action": "BUY_NOW",
+      "rs_status": "MARKET_LEADER",
+      "grade": "A",
+      "conviction": 98.4,
+      "pnl_pct": 0.0,
+      "current_price": 2167.5,
+      "entry_context": "TREND_CONTINUATION",
+      "rotate_to": null
+    },
+    {
+      "ticker": "DEEPAKFERT.NS",
+      "symbol": "DEEPAKFERT",
+      "sector": "Chemicals",
+      "theme": "MATERIALS_COMPLEX",
+      "allocation": 5.0,
+      "status": "HOLD",
+      "reason": "RS strong, trend intact, no better replacement",
+      "action": "BUY_NOW",
+      "rs_status": "MARKET_LEADER",
+      "grade": "A",
+      "conviction": 97.1,
+      "pnl_pct": 0.0,
+      "current_price": 1494.9,
+      "entry_context": "TREND_CONTINUATION",
+      "rotate_to": null
+    }
+  ]
+}

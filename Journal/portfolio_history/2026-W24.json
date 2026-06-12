@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-06-12T12:03:08",
+  "week_id": "2026-W24",
+  "regime": "WEAK_BEAR",
+  "recommended_exposure": 25.0,
+  "deployed": 25.0,
+  "cash": 75.0,
+  "positions": [
+    {
+      "ticker": "DATAPATTNS",
+      "allocation": 10.0,
+      "sector": "Capital Goods",
+      "conviction": 100.0,
+      "rr": 4.0,
+      "entry": 4353.8,
+      "stop": 3938.96,
+      "risk_pct": 9.53,
+      "risk_contribution": 0.953,
+      "rs_status": "MARKET_LEADER",
+      "classification": "ACTION_NOW",
+      "cluster": "DATAPATTNS.NS"
+    },
+    {
+      "ticker": "RRKABEL",
+      "allocation": 10.0,
+      "sector": "Capital Goods",
+      "conviction": 98.4,
+      "rr": 5.33,
+      "entry": 2167.5,
+      "stop": 1993.24,
+      "risk_pct": 8.04,
+      "risk_contribution": 0.804,
+      "rs_status": "MARKET_LEADER",
+      "classification": "ACTION_NOW",
+      "cluster": "RRKABEL.NS"
+    },
+    {
+      "ticker": "DEEPAKFERT",
+      "allocation": 5.0,
+      "sector": "Chemicals",
+      "conviction": 97.1,
+      "rr": 3.87,
+      "entry": 1494.9,
+      "stop": 1381.61,
+      "risk_pct": 7.58,
+      "risk_contribution": 0.379,
+      "rs_status": "MARKET_LEADER",
+      "classification": "ACTION_NOW",
+      "cluster": "DEEPAKFERT.NS"
+    }
+  ],
+  "clusters": {},
+  "metrics": {
+    "expected_rr": 4.51,
+    "avg_conviction": 98.8,
+    "sector_concentration": 20.0,
+    "cluster_concentration": 10.0,
+    "n_positions": 3,
+    "portfolio_risk_pct": 2.14,
+    "avg_risk_per_trade": 0.712,
+    "sector_exposure": {
+      "Capital Goods": 20.0,
+      "Chemicals": 5.0
+    }
+  }
+}

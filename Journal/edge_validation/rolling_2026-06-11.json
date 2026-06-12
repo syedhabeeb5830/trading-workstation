@@ -1,0 +1,367 @@
+{
+  "generated_at": "2026-06-11T23:49:58",
+  "n_dates": 103,
+  "n_obs": 11556,
+  "date_range": "2024-06-14 \u2192 2026-05-29",
+  "regimes": {
+    "BULL": 4985,
+    "STRONG_BEAR": 2970,
+    "NEUTRAL": 2705,
+    "WEAK_BEAR": 896
+  },
+  "horizons": [
+    "5",
+    "10",
+    "20",
+    "60"
+  ],
+  "edge_score": 36.2,
+  "edge_components": {
+    "bucket_separation": 9.9,
+    "actionability_edge": 9.8,
+    "regime_edge": 5.6,
+    "adaptive_improvement": 7.5,
+    "portfolio_performance": 3.4
+  },
+  "verdict": "NO EDGE",
+  "grade_perf": {
+    "A+": {
+      "avg_return": 2.6,
+      "n": 30
+    },
+    "A": {
+      "avg_return": 1.12,
+      "n": 499
+    },
+    "B+": {
+      "avg_return": 1.55,
+      "n": 1249
+    },
+    "B": {
+      "avg_return": 0.81,
+      "n": 1737
+    },
+    "C": {
+      "avg_return": 0.97,
+      "n": 1924
+    },
+    "D": {
+      "avg_return": 0.68,
+      "n": 5760
+    }
+  },
+  "action_perf": {
+    "ACTION_NOW": {
+      "avg_return": 3.9,
+      "win_rate": 0.654,
+      "n": 26
+    },
+    "WATCHLIST": {
+      "avg_return": 1.28,
+      "win_rate": 0.529,
+      "n": 1491
+    },
+    "EXTENDED": {
+      "avg_return": 1.38,
+      "win_rate": 0.516,
+      "n": 368
+    },
+    "AVOID": {
+      "avg_return": 0.78,
+      "win_rate": 0.5,
+      "n": 9314
+    }
+  },
+  "rs_perf": {
+    "MARKET_LEADER": {
+      "avg_return": 1.66,
+      "n": 1109
+    },
+    "SECTOR_LEADER": {
+      "avg_return": 1.31,
+      "n": 985
+    },
+    "EMERGING_LEADER": {
+      "avg_return": 1.02,
+      "n": 900
+    },
+    "NEUTRAL": {
+      "avg_return": 0.73,
+      "n": 4062
+    },
+    "LAGGARD": {
+      "avg_return": 0.66,
+      "n": 4143
+    }
+  },
+  "questions": {
+    "5": {
+      "grade": {
+        "question": "A-tier (A+/A) beats D-tier (C/D)",
+        "top_label": "A+/A",
+        "bottom_label": "C/D",
+        "mean_top": 0.04,
+        "mean_bottom": 0.18,
+        "diff": -0.14,
+        "t_stat": -0.58,
+        "significant": false,
+        "n_top": 537,
+        "n_bottom": 7931,
+        "verdict": "no edge"
+      },
+      "rs": {
+        "question": "MARKET_LEADER beats LAGGARD",
+        "top_label": "MARKET_LEADER",
+        "bottom_label": "LAGGARD",
+        "mean_top": 0.38,
+        "mean_bottom": 0.21,
+        "diff": 0.17,
+        "t_stat": 0.84,
+        "significant": false,
+        "n_top": 1141,
+        "n_bottom": 4238,
+        "verdict": "positive but not significant"
+      },
+      "actionability": {
+        "question": "ACTION_NOW beats AVOID",
+        "top_label": "ACTION_NOW",
+        "bottom_label": "AVOID",
+        "mean_top": 0.77,
+        "mean_bottom": 0.2,
+        "diff": 0.57,
+        "t_stat": 0.45,
+        "significant": false,
+        "n_top": 27,
+        "n_bottom": 9626,
+        "verdict": "positive but not significant"
+      },
+      "persistence": {
+        "question": "Persistent leaders (\u22658w) beat transient (\u22642w)",
+        "top_label": "\u22658w TOP_10",
+        "bottom_label": "\u22642w TOP_10",
+        "mean_top": 0.47,
+        "mean_bottom": -0.13,
+        "diff": 0.6,
+        "t_stat": 1.37,
+        "significant": false,
+        "n_top": 414,
+        "n_bottom": 397,
+        "verdict": "positive but not significant"
+      },
+      "adaptive": {
+        "question": "Adaptive beats Composite (Top-20)",
+        "top_label": "adaptive",
+        "bottom_label": "composite",
+        "mean_top": null,
+        "mean_bottom": null,
+        "diff": 0.02,
+        "t_stat": 0.43,
+        "significant": false,
+        "n_top": 103,
+        "n_bottom": 103,
+        "verdict": "positive but not significant"
+      }
+    },
+    "10": {
+      "grade": {
+        "question": "A-tier (A+/A) beats D-tier (C/D)",
+        "top_label": "A+/A",
+        "bottom_label": "C/D",
+        "mean_top": 0.65,
+        "mean_bottom": 0.47,
+        "diff": 0.18,
+        "t_stat": 0.51,
+        "significant": false,
+        "n_top": 532,
+        "n_bottom": 7841,
+        "verdict": "positive but not significant"
+      },
+      "rs": {
+        "question": "MARKET_LEADER beats LAGGARD",
+        "top_label": "MARKET_LEADER",
+        "bottom_label": "LAGGARD",
+        "mean_top": 1.18,
+        "mean_bottom": 0.48,
+        "diff": 0.7,
+        "t_stat": 2.55,
+        "significant": true,
+        "n_top": 1131,
+        "n_bottom": 4210,
+        "verdict": "WORKS (significant +)"
+      },
+      "actionability": {
+        "question": "ACTION_NOW beats AVOID",
+        "top_label": "ACTION_NOW",
+        "bottom_label": "AVOID",
+        "mean_top": 2.4,
+        "mean_bottom": 0.52,
+        "diff": 1.88,
+        "t_stat": 1.21,
+        "significant": false,
+        "n_top": 26,
+        "n_bottom": 9520,
+        "verdict": "positive but not significant"
+      },
+      "persistence": {
+        "question": "Persistent leaders (\u22658w) beat transient (\u22642w)",
+        "top_label": "\u22658w TOP_10",
+        "bottom_label": "\u22642w TOP_10",
+        "mean_top": 0.9,
+        "mean_bottom": 1.37,
+        "diff": -0.47,
+        "t_stat": -0.75,
+        "significant": false,
+        "n_top": 411,
+        "n_bottom": 394,
+        "verdict": "no edge"
+      },
+      "adaptive": {
+        "question": "Adaptive beats Composite (Top-20)",
+        "top_label": "adaptive",
+        "bottom_label": "composite",
+        "mean_top": null,
+        "mean_bottom": null,
+        "diff": 0.06,
+        "t_stat": 1.12,
+        "significant": false,
+        "n_top": 102,
+        "n_bottom": 102,
+        "verdict": "positive but not significant"
+      }
+    },
+    "20": {
+      "grade": {
+        "question": "A-tier (A+/A) beats D-tier (C/D)",
+        "top_label": "A+/A",
+        "bottom_label": "C/D",
+        "mean_top": 1.21,
+        "mean_bottom": 0.75,
+        "diff": 0.46,
+        "t_stat": 1.01,
+        "significant": false,
+        "n_top": 529,
+        "n_bottom": 7684,
+        "verdict": "positive but not significant"
+      },
+      "rs": {
+        "question": "MARKET_LEADER beats LAGGARD",
+        "top_label": "MARKET_LEADER",
+        "bottom_label": "LAGGARD",
+        "mean_top": 1.66,
+        "mean_bottom": 0.66,
+        "diff": 1.0,
+        "t_stat": 2.65,
+        "significant": true,
+        "n_top": 1109,
+        "n_bottom": 4143,
+        "verdict": "WORKS (significant +)"
+      },
+      "actionability": {
+        "question": "ACTION_NOW beats AVOID",
+        "top_label": "ACTION_NOW",
+        "bottom_label": "AVOID",
+        "mean_top": 3.9,
+        "mean_bottom": 0.78,
+        "diff": 3.12,
+        "t_stat": 1.4,
+        "significant": false,
+        "n_top": 26,
+        "n_bottom": 9314,
+        "verdict": "positive but not significant"
+      },
+      "persistence": {
+        "question": "Persistent leaders (\u22658w) beat transient (\u22642w)",
+        "top_label": "\u22658w TOP_10",
+        "bottom_label": "\u22642w TOP_10",
+        "mean_top": 0.87,
+        "mean_bottom": 2.12,
+        "diff": -1.25,
+        "t_stat": -1.54,
+        "significant": false,
+        "n_top": 404,
+        "n_bottom": 387,
+        "verdict": "no edge"
+      },
+      "adaptive": {
+        "question": "Adaptive beats Composite (Top-20)",
+        "top_label": "adaptive",
+        "bottom_label": "composite",
+        "mean_top": null,
+        "mean_bottom": null,
+        "diff": 0.0,
+        "t_stat": 0.07,
+        "significant": false,
+        "n_top": 100,
+        "n_bottom": 100,
+        "verdict": "no edge"
+      }
+    },
+    "60": {
+      "grade": {
+        "question": "A-tier (A+/A) beats D-tier (C/D)",
+        "top_label": "A+/A",
+        "bottom_label": "C/D",
+        "mean_top": 1.88,
+        "mean_bottom": 1.82,
+        "diff": 0.06,
+        "t_stat": 0.09,
+        "significant": false,
+        "n_top": 493,
+        "n_bottom": 7008,
+        "verdict": "positive but not significant"
+      },
+      "rs": {
+        "question": "MARKET_LEADER beats LAGGARD",
+        "top_label": "MARKET_LEADER",
+        "bottom_label": "LAGGARD",
+        "mean_top": 2.08,
+        "mean_bottom": 1.5,
+        "diff": 0.58,
+        "t_stat": 0.85,
+        "significant": false,
+        "n_top": 1014,
+        "n_bottom": 3842,
+        "verdict": "positive but not significant"
+      },
+      "actionability": {
+        "question": "ACTION_NOW beats AVOID",
+        "top_label": "ACTION_NOW",
+        "bottom_label": "AVOID",
+        "mean_top": 2.58,
+        "mean_bottom": 1.79,
+        "diff": 0.79,
+        "t_stat": 0.21,
+        "significant": false,
+        "n_top": 22,
+        "n_bottom": 8499,
+        "verdict": "positive but not significant"
+      },
+      "persistence": {
+        "question": "Persistent leaders (\u22658w) beat transient (\u22642w)",
+        "top_label": "\u22658w TOP_10",
+        "bottom_label": "\u22642w TOP_10",
+        "mean_top": 0.67,
+        "mean_bottom": 3.73,
+        "diff": -3.06,
+        "t_stat": -2.07,
+        "significant": true,
+        "n_top": 378,
+        "n_bottom": 354,
+        "verdict": "INVERTED (significant \u2212)"
+      },
+      "adaptive": {
+        "question": "Adaptive beats Composite (Top-20)",
+        "top_label": "adaptive",
+        "bottom_label": "composite",
+        "mean_top": null,
+        "mean_bottom": null,
+        "diff": 0.04,
+        "t_stat": 0.23,
+        "significant": false,
+        "n_top": 92,
+        "n_bottom": 92,
+        "verdict": "positive but not significant"
+      }
+    }
+  }
+}
