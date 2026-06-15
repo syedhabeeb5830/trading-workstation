@@ -1,0 +1,28 @@
+# config/deployment.yaml — Deployment configuration
+# Edit this file to match your account. All values are applied at runtime.
+
+# Total capital in INR (e.g. 500000 = ₹5,00,000)
+capital: 500000
+
+# Maximum concurrent open positions
+target_positions: 5
+
+# Maximum NEW positions to open in any single weekly review
+# (avoids deploying everything in one shot)
+max_new_per_week: 3
+
+# Time-stop: exit a position that has been flat for this many weeks
+# (prevents capital being locked in non-performing names)
+time_stop_weeks: 12
+
+# Deployment posture:
+#   paper — no real money; card is for planning only (safe default)
+#   small — ≤25% of capital (live but limited exposure)
+#   full  — full capital deployment (only after Trust re-score supports it)
+posture: paper
+
+# Minimum trade value in INR — skip orders below this (avoids dust orders)
+min_trade_value: 5000
+
+# Rebalance only when a position drifts more than this % from its target
+rebalance_threshold_pct: 2.0

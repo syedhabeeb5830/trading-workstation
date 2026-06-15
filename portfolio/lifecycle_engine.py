@@ -552,9 +552,14 @@ def run_review_portfolio(force_refresh: bool = False) -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
-    from screen.screen_runner import build_screen
+    from screen.screen_runner import (build_screen, BenchmarkUnavailableError,
+                                       render_benchmark_abort)
     print("\n  Reviewing portfolio (screen → assess holdings → lifecycle status)...")
-    res = build_screen(force_refresh=force_refresh, persist=True)
+    try:
+        res = build_screen(force_refresh=force_refresh, persist=True)
+    except BenchmarkUnavailableError as exc:
+        render_benchmark_abort(exc)
+        return 2
     holdings, source = resolve_holdings(res.universe.sector_map)
     print(f"  Holdings source: {source} ({len(holdings)} positions)")
     snap = LifecycleManager().review(holdings, res, persist=True)

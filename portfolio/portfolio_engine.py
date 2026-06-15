@@ -449,9 +449,14 @@ def run_portfolio(force_refresh: bool = False) -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
-    from screen.screen_runner import build_screen
+    from screen.screen_runner import (build_screen, BenchmarkUnavailableError,
+                                       render_benchmark_abort)
     print("\n  Building portfolio (screen → regime → conviction → allocation)...")
-    res = build_screen(force_refresh=force_refresh, persist=True)
+    try:
+        res = build_screen(force_refresh=force_refresh, persist=True)
+    except BenchmarkUnavailableError as exc:
+        render_benchmark_abort(exc)
+        return 2
     snap = PortfolioConstructor().construct(res.act_snap, res.regime, res.feed.data,
                                             persist=True)
     render_portfolio(snap)

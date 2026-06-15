@@ -1,19 +1,19 @@
 {
-  "date": "2026-06-12",
+  "date": "2026-06-14",
   "week_id": "2026-W24",
   "regime": "NEUTRAL",
-  "regime_score": 52.6,
+  "regime_score": 53.9,
   "trend_score": 15.0,
-  "breadth_score": 39.9,
-  "leadership_score": 95.0,
-  "participation_score": 61.0,
+  "breadth_score": 51.1,
+  "leadership_score": 80.0,
+  "participation_score": 70.8,
   "volatility_score": 100.0,
   "trend_state": "DOWN",
   "volatility_state": "NORMAL",
   "summary": [
-    "42% of stocks above EMA50 (35% > EMA20, 42% > EMA200)",
-    "Sector leadership: Capital Goods, Textiles, Healthcare",
-    "4 ACTION_NOW setups, 27 A/A+ grades",
+    "52% of stocks above EMA50 (52% > EMA20, 48% > EMA200)",
+    "Sector leadership: Capital Goods, Media Entertainment & Publication, Textiles",
+    "1 ACTION_NOW setups, 34 A/A+ grades",
     "Volatility NORMAL (India VIX 14.7)",
     "Index trend DOWN"
   ],
@@ -38,14 +38,14 @@
       }
     },
     "breadth": {
-      "score": 39.9,
+      "score": 51.1,
       "metrics": {
-        "above_ema20": 35.0,
-        "above_ema50": 41.6,
-        "above_ema200": 42.5,
+        "above_ema20": 52.4,
+        "above_ema50": 52.4,
+        "above_ema200": 48.2,
         "sample": 500
       },
-      "reason": "35% > EMA20, 42% > EMA50, 42% > EMA200"
+      "reason": "52% > EMA20, 52% > EMA50, 48% > EMA200"
     },
     "volatility": {
       "state": "NORMAL",
@@ -56,33 +56,32 @@
       "vix": 14.7
     },
     "participation": {
-      "score": 61.0,
+      "score": 70.8,
       "leaders": [
         "Capital Goods",
-        "Textiles",
-        "Healthcare"
+        "Media Entertainment & Publication",
+        "Textiles"
       ],
       "improving": [
-        "Media Entertainment & Publication",
         "Telecommunication",
         "Services",
-        "Oil Gas & Consumable Fuels",
         "Consumer Services",
         "Information Technology"
       ],
       "lagging": [
+        "Consumer Durables",
         "Construction Materials",
         "Realty"
       ],
-      "reason": "8/20 sectors positive (6M), 3 leading, 6 improving"
+      "reason": "11/20 sectors positive (6M), 3 leading, 4 improving"
     },
     "leadership": {
-      "score": 95.0,
+      "score": 80.0,
       "market_leaders": 50,
       "sector_leaders": 50,
-      "a_grades": 27,
-      "action_now": 4,
-      "reason": "50 market leaders, 27 A/A+ grades, 4 ACTION_NOW"
+      "a_grades": 34,
+      "action_now": 1,
+      "reason": "50 market leaders, 34 A/A+ grades, 1 ACTION_NOW"
     }
   }
 }

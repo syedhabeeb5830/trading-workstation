@@ -98,8 +98,54 @@ def _percentiles(pairs: list[tuple[str, Optional[float]]]) -> dict[str, float]:
     return {k: (1.0 if n <= 1 else 1 - i / (n - 1)) for i, (k, _) in enumerate(vals)}
 
 
-def fetch_nifty(period: str = "1y", ticker: str = "^NSEI") -> Optional[pd.DataFrame]:
-    """Convenience benchmark fetch (kept separate from the bulk OHLCV cache)."""
+# ─────────────────────────────────────────────────────────────────────────────
+# BENCHMARK FETCH + RESILIENCE CACHE  (Phase: Data Resilience Hardening)
+# ─────────────────────────────────────────────────────────────────────────────
+# Benchmarks (^NSEI / ^CRSLDX / ^INDIAVIX) now mirror the stock-OHLCV resilience
+# pattern: a live download is cached write-through; if the live fetch fails we
+# serve the last good cache; only if BOTH fail do we report "missing" so callers
+# can degrade gracefully — never crash, and never silently treat a download
+# hiccup as a bearish market.
+_BENCH_CACHE_DIR = Path("cache/benchmarks")
+
+
+@dataclass
+class BenchmarkResult:
+    """A benchmark fetch outcome: the frame plus where it came from."""
+    ticker: str
+    df:     Optional[pd.DataFrame]
+    status: str            # "live" | "cache" | "missing"
+
+
+def _bench_cache_path(ticker: str, period: str) -> Path:
+    safe = ticker.replace("^", "").replace("/", "_").replace("\\", "_")
+    return _BENCH_CACHE_DIR / f"{safe}_{period}.csv"
+
+
+def _save_bench_cache(ticker: str, period: str, df: pd.DataFrame) -> None:
+    try:
+        _BENCH_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        f = df.copy()
+        f.index.name = "Date"
+        f.reset_index().to_csv(_bench_cache_path(ticker, period),
+                               index=False, encoding="utf-8")
+    except Exception as exc:
+        _log.warning("Could not write benchmark cache for %s: %s", ticker, exc)
+
+
+def _load_bench_cache(ticker: str, period: str) -> Optional[pd.DataFrame]:
+    path = _bench_cache_path(ticker, period)
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_csv(path, parse_dates=["Date"]).set_index("Date").sort_index()
+        return df if df is not None and not df.empty else None
+    except Exception as exc:
+        _log.warning("Could not read benchmark cache for %s: %s", ticker, exc)
+        return None
+
+
+def _download_benchmark(period: str, ticker: str) -> Optional[pd.DataFrame]:
     try:
         import yfinance as yf
         df = yf.download(ticker, period=period, interval="1d",
@@ -110,8 +156,39 @@ def fetch_nifty(period: str = "1y", ticker: str = "^NSEI") -> Optional[pd.DataFr
             df.columns = df.columns.get_level_values(0)
         return df.dropna()
     except Exception as exc:
-        _log.warning("Could not fetch Nifty benchmark: %s", exc)
+        _log.warning("Could not fetch benchmark %s: %s", ticker, exc)
         return None
+
+
+def fetch_benchmark(period: str = "1y", ticker: str = "^NSEI") -> BenchmarkResult:
+    """Resilient benchmark fetch:
+
+        live download  →  write-through cache  →  status="live"
+             ↓ on failure
+        latest cache                            →  status="cache"
+             ↓ on failure
+        df=None                                 →  status="missing"
+
+    Benchmarks always try live first (one cheap download); the cache is a
+    disaster-recovery fallback, not a same-day speed cache, so the healthy path
+    is byte-identical to the previous behaviour.
+    """
+    live = _download_benchmark(period, ticker)
+    if live is not None and not live.empty:
+        _save_bench_cache(ticker, period, live)
+        return BenchmarkResult(ticker, live, "live")
+    cached = _load_bench_cache(ticker, period)
+    if cached is not None and not cached.empty:
+        _log.warning("Benchmark %s live fetch failed — serving cached data.", ticker)
+        return BenchmarkResult(ticker, cached, "cache")
+    _log.warning("Benchmark %s unavailable (live AND cache both failed).", ticker)
+    return BenchmarkResult(ticker, None, "missing")
+
+
+def fetch_nifty(period: str = "1y", ticker: str = "^NSEI") -> Optional[pd.DataFrame]:
+    """Backward-compatible benchmark fetch — returns the DataFrame (or None).
+    Now cache-backed via fetch_benchmark; existing callers are unchanged."""
+    return fetch_benchmark(period=period, ticker=ticker).df
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -168,8 +245,15 @@ class RelativeStrengthCalculator:
         else:
             comp = comp_n if comp_n is not None else comp_s
 
+        # Data-resilience: a stock is eligible if it has its own history AND a
+        # composite RS — which is benchmark-blended when the Nifty benchmark is
+        # available, else the sector-relative fallback (comp_s, computed above).
+        # A missing benchmark must NOT make every stock ineligible: that forced
+        # the whole board to NEUTRAL and read as a false bearish regime.
+        # NOTE: when the benchmark IS present, nifty_returns[_MIN_ANCHOR] is not
+        # None for every stock, so dropping that clause changes nothing — the
+        # behaviour difference is confined entirely to the benchmark-missing path.
         eligible = (stock.get(_MIN_ANCHOR) is not None
-                    and self.nifty_returns.get(_MIN_ANCHOR) is not None
                     and comp is not None)
 
         return RSMetrics(
@@ -213,6 +297,8 @@ class RelativeStrengthSnapshot:
     generated_at:    str
     week_id:         str
     benchmark:       str = "^NSEI"
+    rs_mode:         str = "FULL"            # FULL | SECTOR_FALLBACK (benchmark missing)
+    benchmark_status: str = "OK"            # OK | MISSING
 
     # ── Lookups (consumed by Phase 4+) ───────────────────────────────────────
     def by_symbol(self) -> dict[str, RSRow]:
@@ -248,14 +334,17 @@ class RelativeStrengthSnapshot:
     def to_dict(self) -> dict:
         return {
             "generated_at": self.generated_at, "week_id": self.week_id,
-            "benchmark": self.benchmark, "rows": [asdict(r) for r in self.rows],
+            "benchmark": self.benchmark, "rs_mode": self.rs_mode,
+            "benchmark_status": self.benchmark_status,
+            "rows": [asdict(r) for r in self.rows],
         }
 
     @classmethod
     def from_dict(cls, d: dict) -> "RelativeStrengthSnapshot":
         rows = [RSRow(**r) for r in d.get("rows", [])]
         return cls(rows, d.get("generated_at", ""), d.get("week_id", ""),
-                   d.get("benchmark", "^NSEI"))
+                   d.get("benchmark", "^NSEI"),
+                   d.get("rs_mode", "FULL"), d.get("benchmark_status", "OK"))
 
     def save(self, history_dir: Path = _HISTORY_DIR,
              history_csv: Path = _HISTORY_CSV) -> Path:
@@ -384,8 +473,12 @@ class RelativeStrengthRanker:
                 None, ["Insufficient history for RS"],
             ))
 
+        # Benchmark availability drives the mode flags surfaced to the cockpit.
+        bench_ok = compute_stock_returns(self.nifty_df).get(_MIN_ANCHOR) is not None
         snap = RelativeStrengthSnapshot(
-            rows, datetime.now().isoformat(timespec="seconds"), wk, self.benchmark)
+            rows, datetime.now().isoformat(timespec="seconds"), wk, self.benchmark,
+            rs_mode=("FULL" if bench_ok else "SECTOR_FALLBACK"),
+            benchmark_status=("OK" if bench_ok else "MISSING"))
         if persist:
             snap.save()
         return snap

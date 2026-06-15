@@ -1,0 +1,87 @@
+{
+  "date": "2026-06-15",
+  "week_id": "2026-W25",
+  "regime": "BULL",
+  "regime_score": 66.0,
+  "trend_score": 50.0,
+  "breadth_score": 64.3,
+  "leadership_score": 71.5,
+  "participation_score": 70.8,
+  "volatility_score": 100.0,
+  "trend_state": "NEUTRAL",
+  "volatility_state": "NORMAL",
+  "summary": [
+    "66% of stocks above EMA50 (73% > EMA20, 53% > EMA200)",
+    "Sector leadership: Capital Goods, Services",
+    "No ACTION_NOW setups (50 market leaders, 18 A/A+ grades)",
+    "Volatility NORMAL (India VIX 14.0)",
+    "Index trend NEUTRAL"
+  ],
+  "detail": {
+    "trend": {
+      "score": 50.0,
+      "state": "NEUTRAL",
+      "reason": "Index trend: Nifty50 DOWN, Nifty500 UP",
+      "detail": {
+        "Nifty50": {
+          "state": "DOWN",
+          "above_ema50": true,
+          "above_ema200": false,
+          "golden_cross": false
+        },
+        "Nifty500": {
+          "state": "UP",
+          "above_ema50": true,
+          "above_ema200": true,
+          "golden_cross": false
+        }
+      }
+    },
+    "breadth": {
+      "score": 64.3,
+      "metrics": {
+        "above_ema20": 72.8,
+        "above_ema50": 66.2,
+        "above_ema200": 53.4,
+        "sample": 500
+      },
+      "reason": "73% > EMA20, 66% > EMA50, 53% > EMA200"
+    },
+    "volatility": {
+      "state": "NORMAL",
+      "score": 100.0,
+      "is_extreme": false,
+      "reason": "India VIX 14.0 \u2192 NORMAL",
+      "atr_pct": 1.24,
+      "vix": 14.0
+    },
+    "participation": {
+      "score": 70.8,
+      "leaders": [
+        "Capital Goods",
+        "Services"
+      ],
+      "improving": [
+        "Telecommunication",
+        "Oil Gas & Consumable Fuels",
+        "Financial Services",
+        "Realty",
+        "Consumer Services",
+        "Information Technology"
+      ],
+      "lagging": [
+        "Consumer Durables",
+        "Diversified"
+      ],
+      "reason": "11/20 sectors positive (6M), 2 leading, 6 improving"
+    },
+    "leadership": {
+      "score": 71.5,
+      "market_leaders": 50,
+      "sector_leaders": 50,
+      "a_grades": 18,
+      "action_now": 0,
+      "reason": "50 market leaders, 18 A/A+ grades, 0 ACTION_NOW"
+    }
+  }
+}

@@ -878,6 +878,20 @@ def _print_footer(n_ready: int, n_watch: int, near_misses: list,
 
 # ── MAIN ENTRY POINT ───────────────────────────────────────────────────────────
 
+def _print_deprecation_banner() -> None:
+    """RC1 retirement-audit demotion notice — DISPLAY ONLY. No scoring/logic changed.
+    `--today` is RS-secondary and structurally blind to most validated leaders
+    (0% of the screen's Top-10). Discovery now lives in `--screen`. See RETIREMENT_AUDIT.md."""
+    print()
+    print(_y("  " + "─" * 72))
+    print(f"  {_y('⚠  --today is DEPRECATED for stock discovery')}  {_d('(RC1 retirement audit)')}")
+    print(_d("     It sees only 101 static names — 0% of the validated screen's Top-10 leaders."))
+    print(f"     {_d('Discovery →')} {_b('python run.py --screen')}   "
+          f"{_d('Sizing →')} {_b('--portfolio')}   {_d('Holdings →')} {_b('--review-portfolio')}")
+    print(_d("     Kept only as a legacy/execution shell. Evidence: RETIREMENT_AUDIT.md"))
+    print(_y("  " + "─" * 72))
+
+
 def run_daily_mode(journal_dir: str = "journal", profile: str = "balanced") -> None:
     """python run.py --today [--profile tight|balanced|aggressive|discovery]"""
     try:
@@ -912,6 +926,7 @@ def run_daily_mode(journal_dir: str = "journal", profile: str = "balanced") -> N
         f"  {_d('Profile: ' + profile.upper() + '  —  ' + profile_description(profile))}\n"
         if profile != "balanced" else ""
     )
+    _print_deprecation_banner()
     print(f"\n{profile_note}  {_d('Scanning...')}  ", end="\r", flush=True)
 
     # Load portfolio state FIRST — passes open_risk_inr to scanner

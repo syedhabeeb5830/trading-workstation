@@ -1,6 +1,11 @@
 """
 run.py — Swing Trading Workstation
 ====================================
+NOTE (RC1 retirement audit, 2026-06-12): `--today` is DEPRECATED for stock discovery —
+it is RS-secondary and saw 0% of the validated screen's Top-10 leaders. Use `--screen`
+for discovery, `--portfolio` for sizing, `--review-portfolio` for holdings. `--today` and
+its execution commands remain only as a legacy/execution shell. See RETIREMENT_AUDIT.md.
+
 Three commands cover 95% of daily use:
 
   MORNING (pre-market):
@@ -66,7 +71,7 @@ def main() -> None:
     parser.add_argument(
         "--today",
         action="store_true",
-        help="Daily execution cockpit (primary workflow)",
+        help="[DEPRECATED for discovery — use --screen] Legacy daily cockpit / execution shell",
     )
     parser.add_argument(
         "--positions",
@@ -198,6 +203,24 @@ def main() -> None:
         action="store_true",
         dest="review_portfolio",
         help="Portfolio lifecycle review: HOLD/ADD/REDUCE/EXIT/ROTATE per holding + theme/action labels",
+    )
+    parser.add_argument(
+        "--sync-portfolio",
+        action="store_true",
+        dest="sync_portfolio",
+        help="Sync live holdings + cash from Zerodha (or state/holdings.csv) → state/portfolio_state.json",
+    )
+    parser.add_argument(
+        "--orders",
+        action="store_true",
+        help="Build capital-aware order card: current state → target portfolio → BUY/SELL/HOLD instructions",
+    )
+    parser.add_argument(
+        "--capital",
+        type=float,
+        default=None,
+        metavar="INR",
+        help="Total capital in INR for --orders / --sync-portfolio (overrides config/deployment.yaml)",
     )
     parser.add_argument(
         "--validate-edge",
@@ -354,6 +377,14 @@ def main() -> None:
         import sys as _sys
         _sys.exit(_cmd_review_portfolio(force_refresh=args.refresh))
 
+    elif args.sync_portfolio:
+        import sys as _sys
+        _sys.exit(_cmd_sync_portfolio(capital=args.capital))
+
+    elif args.orders:
+        import sys as _sys
+        _sys.exit(_cmd_orders(capital=args.capital, force_refresh=args.refresh))
+
     elif args.validate_edge:
         import sys as _sys
         _sys.exit(_cmd_validate_edge())
@@ -456,6 +487,74 @@ def _cmd_review_portfolio(force_refresh: bool = False) -> int:
     """Portfolio lifecycle review — HOLD/ADD/REDUCE/EXIT/ROTATE (Phase 10B)."""
     from portfolio.lifecycle_engine import run_review_portfolio
     return run_review_portfolio(force_refresh=force_refresh)
+
+
+def _cmd_sync_portfolio(capital: float = None) -> int:
+    """Sync live holdings + cash from Zerodha (or CSV fallback) → state/portfolio_state.json."""
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from portfolio.portfolio_state import sync_and_save, load_deployment_config
+    from deploy.order_card import render_state_summary
+
+    cfg = load_deployment_config()
+    cap = capital if capital is not None else float(cfg.get("capital", 500_000))
+
+    print(f"\n  Syncing portfolio state  (capital: ₹{cap:,.0f})...")
+    state, path = sync_and_save(cap)
+    render_state_summary(state)
+    print(f"  Saved → {path}\n")
+    return 0
+
+
+def _cmd_orders(capital: float = None, force_refresh: bool = False) -> int:
+    """
+    Capital-aware order card:
+      screen → target portfolio → current broker state → BUY / SELL / HOLD delta.
+    """
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from screen.screen_runner import build_screen, BenchmarkUnavailableError, render_benchmark_abort
+    from portfolio.portfolio_engine import PortfolioConstructor
+    from portfolio.lifecycle_engine import LifecycleManager
+    from portfolio.portfolio_state import (load_state, load_deployment_config,
+                                           state_to_lifecycle_holdings)
+    from deploy.order_card import build_order_card, render_order_card
+
+    cfg     = load_deployment_config()
+    cap     = capital if capital is not None else float(cfg.get("capital", 500_000))
+    posture = str(cfg.get("posture", "paper"))
+
+    print(f"\n  Building order card  (capital: ₹{cap:,.0f}  |  posture: {posture.upper()})...")
+    print("  Running screen → portfolio construction → lifecycle review...")
+
+    try:
+        res = build_screen(force_refresh=force_refresh, persist=True)
+    except BenchmarkUnavailableError as exc:
+        render_benchmark_abort(exc)
+        return 2
+
+    # Target portfolio (what the system recommends)
+    snap = PortfolioConstructor().construct(res.act_snap, res.regime, res.feed.data,
+                                            persist=True)
+
+    # Current account state (Kite → CSV → simulated)
+    state = load_state(cap)
+    print(f"  Holdings source: {state.source}  ({len(state.holdings)} positions)")
+
+    # Lifecycle review for EXISTING holdings (EXIT/REDUCE/ADD/ROTATE signals)
+    lc_holdings = state_to_lifecycle_holdings(state)
+    lc_snap     = LifecycleManager().review(lc_holdings, res, persist=False)
+
+    # Compute and render
+    card = build_order_card(snap, state, cap, lc_snap=lc_snap, posture=posture)
+    render_order_card(card)
+    return 0
 
 
 def _cmd_validate_edge() -> int:

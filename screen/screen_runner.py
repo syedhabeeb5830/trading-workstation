@@ -18,7 +18,7 @@ Entry point: `run_screen()` — invoked by `python run.py --screen`.
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Optional
@@ -29,7 +29,7 @@ from scanner.universe_builder import build_universe, Universe
 from scanner.data_feed import get_ohlcv, FetchResult
 from scanner.sector_engine import SectorRanker, SectorSnapshot
 from scanner.relative_strength_engine import (
-    RelativeStrengthRanker, RelativeStrengthSnapshot, fetch_nifty)
+    RelativeStrengthRanker, RelativeStrengthSnapshot, fetch_nifty, fetch_benchmark)
 from scanner.composite_engine import CompositeRanker, CompositeSnapshot
 from scanner.actionability_engine import ActionabilityRanker, ActionabilitySnapshot
 from scanner.regime_engine import RegimeClassifier, RegimeSnapshot
@@ -40,6 +40,18 @@ from portfolio.lifecycle_engine import action_label
 _REPORTS_DIR = Path("reports")
 
 G, R, Y, B, D, RST = ("\033[92m", "\033[91m", "\033[93m", "\033[1m", "\033[2m", "\033[0m")
+
+
+class BenchmarkUnavailableError(RuntimeError):
+    """Raised by build_screen when the market benchmark (^NSEI) is unavailable from
+    BOTH live download AND cache. Fail-loud per the data-resilience policy: a screen
+    without the benchmark cannot produce a trustworthy regime/leadership read, so we
+    refuse rather than emit a false-bearish board. Pass allow_degraded=True to force
+    sector-relative fallback instead."""
+
+    def __init__(self, benches: dict):
+        self.benches = benches or {}
+        super().__init__("Market benchmark ^NSEI unavailable (live + cache both failed)")
 
 
 @dataclass
@@ -53,20 +65,31 @@ class ScreenResult:
     act_snap:     ActionabilitySnapshot
     adaptive_snap: AdaptiveSnapshot
     leader_weeks: dict
+    data_quality: dict = field(default_factory=dict)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PIPELINE
 # ─────────────────────────────────────────────────────────────────────────────
 def build_screen(period: str = "1y", force_refresh: bool = False,
-                 persist: bool = True) -> ScreenResult:
+                 persist: bool = True, allow_degraded: bool = False) -> ScreenResult:
     uni = build_universe(force_refresh=force_refresh)
     sector_map = uni.sector_map
 
     feed = get_ohlcv(uni.tickers, period=period, force_refresh=force_refresh, min_bars=30)
-    nifty = fetch_nifty(period=period)                       # ^NSEI
-    nifty500 = fetch_nifty(period=period, ticker="^CRSLDX")  # Nifty 500 (optional)
-    vix = fetch_nifty(period=period, ticker="^INDIAVIX")     # India VIX (optional)
+    nifty_res    = fetch_benchmark(period=period, ticker="^NSEI")       # market benchmark (required)
+    nifty500_res = fetch_benchmark(period=period, ticker="^CRSLDX")     # Nifty 500 (optional)
+    vix_res      = fetch_benchmark(period=period, ticker="^INDIAVIX")   # India VIX (optional)
+
+    # FAIL LOUD: the market benchmark is required for a trustworthy regime/leadership
+    # read. If it is gone from BOTH live and cache, refuse rather than emit a
+    # false-bearish board. allow_degraded=True forces sector-relative fallback instead.
+    if nifty_res.status == "missing" and not allow_degraded:
+        raise BenchmarkUnavailableError(
+            {"Nifty50": nifty_res.status, "Nifty500": nifty500_res.status,
+             "IndiaVIX": vix_res.status})
+
+    nifty, nifty500, vix = nifty_res.df, nifty500_res.df, vix_res.df
 
     sector_snap = SectorRanker(sector_map, feed.data, uni.source).rank(persist=persist)
     rs_snap = RelativeStrengthRanker(feed.data, sector_map, nifty, sector_snap).rank(persist=persist)
@@ -84,8 +107,28 @@ def build_screen(period: str = "1y", force_refresh: bool = False,
     adaptive_snap = AdaptiveScorer().score(comp_snap, regime, persist=persist)
     leader_weeks = LeaderPersistenceTracker().from_history(rs_snap)
 
+    data_quality = _assess_data_quality(feed, nifty_res, nifty500_res, vix_res, rs_snap)
     return ScreenResult(uni, feed, regime, sector_snap, rs_snap, comp_snap,
-                        act_snap, adaptive_snap, leader_weeks)
+                        act_snap, adaptive_snap, leader_weeks, data_quality)
+
+
+def _assess_data_quality(feed, nifty_res, nifty500_res, vix_res, rs_snap) -> dict:
+    """Summarise stock + benchmark coverage into a single HEALTHY/DEGRADED/FAILED
+    verdict for the cockpit. Reporting only — changes no scores."""
+    benches = {"Nifty50": nifty_res.status, "Nifty500": nifty500_res.status,
+               "IndiaVIX": vix_res.status}
+    nifty_missing = nifty_res.status == "missing"          # the critical benchmark
+    any_degraded = any(s != "live" for s in benches.values()) \
+        or rs_snap.benchmark_status != "OK"
+    overall = ("FAILED" if nifty_missing
+               else "DEGRADED" if any_degraded else "HEALTHY")
+    return {
+        "stocks_pct": round(feed.coverage * 100, 0),
+        "benchmarks": benches,
+        "rs_mode": rs_snap.rs_mode,
+        "benchmark_status": rs_snap.benchmark_status,
+        "status": overall,
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -100,6 +143,35 @@ def _class_color(c: str) -> str:
     return {"ACTION_NOW": G, "WATCHLIST": Y, "EXTENDED": D, "AVOID": R}.get(c, "")
 
 
+def _bench_color(status: str) -> str:
+    return {"live": G, "OK": G, "cache": Y, "missing": R, "MISSING": R}.get(status, "")
+
+
+def _render_data_quality(dq: dict) -> None:
+    """Per-source coverage + an overall HEALTHY/DEGRADED/FAILED verdict, plus a
+    loud degraded-mode banner when the benchmark is unavailable. Display only."""
+    if not dq:
+        return
+    benches = dq.get("benchmarks", {})
+    overall = dq.get("status", "HEALTHY")
+    oc = {"HEALTHY": G, "DEGRADED": Y, "FAILED": R}.get(overall, "")
+    cells = "   ".join(f"{name} {_bench_color(st)}{st.upper()}{RST}"
+                       for name, st in benches.items())
+    print(f"\n  {B}DATA QUALITY{RST}   {oc}{B}{overall}{RST}")
+    print(f"  {D}Stocks {dq.get('stocks_pct', 0):.0f}%{RST}   {cells}")
+    if dq.get("benchmark_status") != "OK" or dq.get("rs_mode") == "SECTOR_FALLBACK":
+        print(f"  {R}{'─'*72}{RST}")
+        print(f"  {R}⚠  BENCHMARK DATA UNAVAILABLE — DEGRADED MODE{RST}")
+        print(f"  {Y}   RS computed using sector-relative fallback only. "
+              f"Regime confidence: LOW.{RST}")
+        print(f"  {Y}   Missing data is NOT bearish — treat regime / ACTION_NOW "
+              f"with caution.{RST}")
+        print(f"  {R}{'─'*72}{RST}")
+    elif overall != "HEALTHY":
+        print(f"  {Y}   ⚠ Some benchmarks served from cache (stale). "
+              f"Regime uses last-known values.{RST}")
+
+
 def render_cockpit(res: ScreenResult) -> None:
     today = date.today().isoformat()
     print(f"\n{B}{'═'*100}{RST}")
@@ -107,6 +179,10 @@ def render_cockpit(res: ScreenResult) -> None:
           f"universe={res.universe.symbol_count} ({res.universe.source})  "
           f"data={res.feed.coverage*100:.0f}%{RST}")
     print(f"{B}{'═'*100}{RST}")
+
+    # 0) Data quality (benchmark resilience) — surfaced BEFORE regime, because a
+    #    missing benchmark makes the regime/leadership read untrustworthy.
+    _render_data_quality(res.data_quality)
 
     # 1) Market regime (multi-dimensional)
     reg = res.regime
@@ -239,6 +315,23 @@ def export_reports(res: ScreenResult, reports_dir: Path = _REPORTS_DIR) -> dict[
 # ─────────────────────────────────────────────────────────────────────────────
 # ENTRY POINT
 # ─────────────────────────────────────────────────────────────────────────────
+def render_benchmark_abort(exc: "BenchmarkUnavailableError") -> None:
+    """Fail-loud abort screen: no regime, no board — the benchmark is gone."""
+    print(f"\n  {R}{'═'*72}{RST}")
+    print(f"  {R}{B}  ^NSEI UNAVAILABLE — SCREEN ABORTED{RST}")
+    print(f"  {R}{'═'*72}{RST}")
+    print(f"  {Y}  Reason: market benchmark unavailable (live download AND cache both failed).{RST}")
+    print(f"  {Y}          Leadership / relative-strength / regime analysis would be invalid.{RST}")
+    print(f"  {D}  No regime. No ACTION_NOW. No board. Re-run when data returns.{RST}")
+    bs = getattr(exc, "benches", {}) or {}
+    if bs:
+        cells = "   ".join(f"{k} {_bench_color(v)}{v.upper()}{RST}" for k, v in bs.items())
+        print(f"  {D}  Benchmarks:{RST} {cells}")
+    print(f"  {D}  (Override for research only: build_screen(allow_degraded=True) "
+          f"→ sector-relative fallback.){RST}")
+    print(f"  {R}{'═'*72}{RST}\n")
+
+
 def run_screen(period: str = "1y", force_refresh: bool = False) -> int:
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -246,7 +339,11 @@ def run_screen(period: str = "1y", force_refresh: bool = False) -> int:
         pass
     print(f"\n  {D}Building swing screen (universe → sector → RS → composite → "
           f"actionability)...{RST}")
-    res = build_screen(period=period, force_refresh=force_refresh, persist=True)
+    try:
+        res = build_screen(period=period, force_refresh=force_refresh, persist=True)
+    except BenchmarkUnavailableError as exc:
+        render_benchmark_abort(exc)
+        return 2
     render_cockpit(res)
     paths = export_reports(res)
     print(f"  {D}Exports: {paths['json']} · {paths['csv']} · {paths['md']}{RST}\n")
