@@ -429,7 +429,6 @@ def run_positions_mode(journal_dir: str = "journal", quiet: bool = False) -> Non
             check_and_notify_unprotected,
             check_and_notify_heat,
         )
-        from config.config import CONFIG
         cap        = float(CONFIG.get("account_capital", 100_000))
         max_heat   = float(CONFIG.get("max_portfolio_heat", 0.03)) * 100
         risk_inr   = sum(

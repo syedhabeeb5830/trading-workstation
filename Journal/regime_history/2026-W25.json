@@ -1,20 +1,20 @@
 {
-  "date": "2026-06-15",
+  "date": "2026-06-18",
   "week_id": "2026-W25",
   "regime": "BULL",
-  "regime_score": 66.0,
+  "regime_score": 67.7,
   "trend_score": 50.0,
-  "breadth_score": 64.3,
-  "leadership_score": 71.5,
+  "breadth_score": 68.2,
+  "leadership_score": 75.0,
   "participation_score": 70.8,
   "volatility_score": 100.0,
   "trend_state": "NEUTRAL",
   "volatility_state": "NORMAL",
   "summary": [
-    "66% of stocks above EMA50 (73% > EMA20, 53% > EMA200)",
-    "Sector leadership: Capital Goods, Services",
-    "No ACTION_NOW setups (50 market leaders, 18 A/A+ grades)",
-    "Volatility NORMAL (India VIX 14.0)",
+    "71% of stocks above EMA50 (76% > EMA20, 57% > EMA200)",
+    "Sector leadership: Capital Goods, Textiles, Media Entertainment & Publication",
+    "No ACTION_NOW setups (50 market leaders, 26 A/A+ grades)",
+    "Volatility NORMAL (India VIX 12.8)",
     "Index trend NEUTRAL"
   ],
   "detail": {
@@ -38,50 +38,55 @@
       }
     },
     "breadth": {
-      "score": 64.3,
+      "score": 68.2,
       "metrics": {
-        "above_ema20": 72.8,
-        "above_ema50": 66.2,
-        "above_ema200": 53.4,
+        "above_ema20": 76.0,
+        "above_ema50": 70.8,
+        "above_ema200": 56.9,
         "sample": 500
       },
-      "reason": "73% > EMA20, 66% > EMA50, 53% > EMA200"
+      "reason": "76% > EMA20, 71% > EMA50, 57% > EMA200"
     },
     "volatility": {
       "state": "NORMAL",
       "score": 100.0,
       "is_extreme": false,
-      "reason": "India VIX 14.0 \u2192 NORMAL",
-      "atr_pct": 1.24,
-      "vix": 14.0
+      "reason": "India VIX 12.8 \u2192 NORMAL",
+      "atr_pct": 1.09,
+      "vix": 12.8
     },
     "participation": {
       "score": 70.8,
       "leaders": [
         "Capital Goods",
-        "Services"
+        "Textiles",
+        "Media Entertainment & Publication"
       ],
       "improving": [
+        "Automobile and Auto Components",
         "Telecommunication",
         "Oil Gas & Consumable Fuels",
         "Financial Services",
-        "Realty",
+        "Construction",
+        "Consumer Durables",
+        "Realty"
+      ],
+      "lagging": [
+        "Fast Moving Consumer Goods",
+        "Construction Materials",
+        "Diversified",
         "Consumer Services",
         "Information Technology"
       ],
-      "lagging": [
-        "Consumer Durables",
-        "Diversified"
-      ],
-      "reason": "11/20 sectors positive (6M), 2 leading, 6 improving"
+      "reason": "11/20 sectors positive (6M), 3 leading, 7 improving"
     },
     "leadership": {
-      "score": 71.5,
+      "score": 75.0,
       "market_leaders": 50,
       "sector_leaders": 50,
-      "a_grades": 18,
+      "a_grades": 26,
       "action_now": 0,
-      "reason": "50 market leaders, 18 A/A+ grades, 0 ACTION_NOW"
+      "reason": "50 market leaders, 26 A/A+ grades, 0 ACTION_NOW"
     }
   }
 }

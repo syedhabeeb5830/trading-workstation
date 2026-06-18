@@ -216,6 +216,11 @@ def main() -> None:
         help="Build capital-aware order card: current state → target portfolio → BUY/SELL/HOLD instructions",
     )
     parser.add_argument(
+        "--deploy",
+        action="store_true",
+        help="Alias for --orders (G7)",
+    )
+    parser.add_argument(
         "--capital",
         type=float,
         default=None,
@@ -334,6 +339,12 @@ def main() -> None:
         default="journal",
         help="Journal directory (default: journal/)",
     )
+    parser.add_argument(
+        "--trades",
+        action="store_true",
+        help="Live trade-journal dashboard: real executions, rolling expectancy, "
+             "win rate, profit factor, drawdown, by regime/sector/tier",
+    )
 
     args = parser.parse_args()
 
@@ -369,6 +380,10 @@ def main() -> None:
         import sys as _sys
         _sys.exit(_cmd_swing_screen(force_refresh=args.refresh))
 
+    elif args.trades:
+        import sys as _sys
+        _sys.exit(_cmd_trades())
+
     elif args.portfolio:
         import sys as _sys
         _sys.exit(_cmd_portfolio(force_refresh=args.refresh))
@@ -381,7 +396,7 @@ def main() -> None:
         import sys as _sys
         _sys.exit(_cmd_sync_portfolio(capital=args.capital))
 
-    elif args.orders:
+    elif args.orders or args.deploy:
         import sys as _sys
         _sys.exit(_cmd_orders(capital=args.capital, force_refresh=args.refresh))
 
@@ -526,9 +541,10 @@ def _cmd_orders(capital: float = None, force_refresh: bool = False) -> int:
                                            state_to_lifecycle_holdings)
     from deploy.order_card import build_order_card, render_order_card
 
-    cfg     = load_deployment_config()
-    cap     = capital if capital is not None else float(cfg.get("capital", 500_000))
-    posture = str(cfg.get("posture", "paper"))
+    cfg            = load_deployment_config()
+    cap            = capital if capital is not None else float(cfg.get("capital", 500_000))
+    posture        = str(cfg.get("posture", "paper"))
+    time_stop_wks  = int(cfg.get("time_stop_weeks", 12))
 
     print(f"\n  Building order card  (capital: ₹{cap:,.0f}  |  posture: {posture.upper()})...")
     print("  Running screen → portfolio construction → lifecycle review...")
@@ -549,11 +565,61 @@ def _cmd_orders(capital: float = None, force_refresh: bool = False) -> int:
 
     # Lifecycle review for EXISTING holdings (EXIT/REDUCE/ADD/ROTATE signals)
     lc_holdings = state_to_lifecycle_holdings(state)
-    lc_snap     = LifecycleManager().review(lc_holdings, res, persist=False)
+    lc_snap     = LifecycleManager(time_stop_weeks=time_stop_wks).review(
+        lc_holdings, res, persist=False)
 
     # Compute and render
     card = build_order_card(snap, state, cap, lc_snap=lc_snap, posture=posture)
     render_order_card(card)
+    return 0
+
+
+def _cmd_trades() -> int:
+    """Live trade-journal dashboard — your real executions + rolling analytics."""
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from analytics import trade_journal as tj
+    G, R, Y, B, D, RST = ("\033[92m", "\033[91m", "\033[93m", "\033[1m", "\033[2m", "\033[0m")
+
+    print(f"\n  {D}Syncing live holdings + resolving outcomes...{RST}")
+    sync = tj.sync_from_kite()
+    res = tj.resolve_open()
+    a = tj.analytics()
+
+    print(f"\n  {B}{'═'*64}{RST}")
+    print(f"  {B}  LIVE TRADE JOURNAL{RST}   {D}{sync.get('note','')}{RST}")
+    print(f"  {B}{'═'*64}{RST}")
+    print(f"  {D}  {a['n_total']} trades · {a['n_open']} open · {a['n_closed']} closed"
+          f"  (synced {sync.get('synced',0)}, resolved {res} this run){RST}")
+
+    if not a["n_closed"]:
+        print(f"\n  {Y}  No closed trades yet — analytics populate as your trades resolve.{RST}")
+        print(f"  {D}  Every BUY-TODAY fill is journaled with its full decision context "
+              f"(regime, edge mode, conviction, tier, calibrated levels).{RST}\n")
+        return 0
+
+    exp = a["expectancy_R"]; ec = G if (exp or 0) > 0 else R
+    print(f"\n  {B}  PERFORMANCE (realized){RST}")
+    print(f"  {D}  Win rate {a['win_rate']}%  ·  Expectancy {ec}{exp:+.2f}R{RST}"
+          f"{D}  ·  Rolling-20 {a['rolling20_expectancy_R']:+.2f}R  ·  "
+          f"Profit factor {a['profit_factor']}{RST}")
+    print(f"  {D}  Avg win {a.get('avg_win_R')}R · avg loss {a.get('avg_loss_R')}R · "
+          f"max drawdown {a['max_dd_pct']}% · avg hold {a['avg_hold']}d{RST}")
+
+    for label, key in (("BY CONVICTION TIER", "by_tier"),
+                       ("BY REGIME", "by_regime"), ("BY SECTOR", "by_sector")):
+        g = a.get(key, {})
+        if not g:
+            continue
+        print(f"\n  {B}  {label}{RST}")
+        for k, v in sorted(g.items(), key=lambda kv: -kv[1]["exp_R"]):
+            col = G if v["exp_R"] > 0 else R
+            print(f"  {D}  {k:<22s} n={v['n']:>3}  exp {col}{v['exp_R']:+.2f}R{RST}"
+                  f"{D}  win {v['win%']:.0f}%{RST}")
+    print()
     return 0
 
 

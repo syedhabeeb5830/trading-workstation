@@ -44,7 +44,11 @@ class TradeInstruction:
     stop_price:      Optional[float]
     estimated_value: float          # abs(quantity) × limit_price
     reason:          str
-    pnl_pct:         float = 0.0   # for SELL/HOLD lines (display only)
+    pnl_pct:         float = 0.0          # for SELL/HOLD lines (display only)
+    target1:         Optional[float] = None   # G4: T1 from actionability engine
+    target2:         Optional[float] = None   # G4: T2 = T1 + (T1 − entry) × 0.5
+    risk_inr:        float = 0.0             # G4: ₹ risk = (entry − stop) × qty
+    weeks_held:      Optional[int]  = None   # G5: weeks since entry_date
 
 
 @dataclass
@@ -120,6 +124,11 @@ def build_order_card(
         tgt_val = tgt.allocation / 100.0 * capital
         tgt_qty = int(tgt_val / price) if price > 0 else 0
         stop    = tgt.stop if (tgt.stop and tgt.stop > 0) else None
+        # G4: T1/T2 targets and ₹ risk (reused by all BUY instructions in this slot)
+        _tgt_t = getattr(tgt, "target", 0.0) or 0.0
+        _t1 = round(_tgt_t, 2) if _tgt_t > price > 0 else None
+        _t2 = round(_t1 + (_t1 - price) * 0.5, 2) if _t1 else None
+        _risk_ps = max(0.0, price - stop) if stop else 0.0   # per share
 
         cur = cur_map.get(sym)
         lc  = lc_map.get(sym)
@@ -134,6 +143,8 @@ def build_order_card(
                     estimated_value=round(tgt_qty * price, 2),
                     reason=f"New — {tgt.allocation:.0f}% target  ≈ ₹{tgt_val:,.0f}  |  "
                            f"{tgt.rs_status}  {tgt.classification}",
+                    target1=_t1, target2=_t2,
+                    risk_inr=round(_risk_ps * tgt_qty, 2),
                 ))
             continue
 
@@ -164,7 +175,8 @@ def build_order_card(
                 ))
             else:
                 holds.append(_make_hold(sym, tgt.ticker, cur, cur_p, stop,
-                                        lc.reason or "REDUCE — already at/below target"))
+                                        lc.reason or "REDUCE — already at/below target",
+                                        weeks_held=lc.weeks_held if lc else None))
 
         elif lc and lc.status == "ADD":
             add_qty = max(0, tgt_qty - cur.quantity)
@@ -176,10 +188,13 @@ def build_order_card(
                     estimated_value=round(add_qty * price, 2),
                     reason=lc.reason,
                     pnl_pct=cur.unrealized_pnl_pct,
+                    target1=_t1, target2=_t2,
+                    risk_inr=round(_risk_ps * add_qty, 2),
                 ))
             else:
                 holds.append(_make_hold(sym, tgt.ticker, cur, cur_p, stop,
-                                        "ADD — already at/above target size"))
+                                        "ADD — already at/above target size",
+                                        weeks_held=lc.weeks_held if lc else None))
 
         elif lc and lc.status == "ROTATE":
             # Exit the held name; the replacement will appear as a BUY if it's
@@ -207,6 +222,8 @@ def build_order_card(
                         estimated_value=round(delta * price, 2),
                         reason=f"Rebalance — drift {drift:.1f}% above {_DRIFT_THRESHOLD:.0f}% threshold",
                         pnl_pct=cur.unrealized_pnl_pct,
+                        target1=_t1, target2=_t2,
+                        risk_inr=round(_risk_ps * delta, 2),
                     ))
                 elif delta < 0 and abs(delta) * cur_p >= _DUST_VALUE:
                     sells.append(TradeInstruction(
@@ -219,10 +236,12 @@ def build_order_card(
                     ))
                 else:
                     holds.append(_make_hold(sym, tgt.ticker, cur, cur_p, stop,
-                                            lc.reason if lc else "HOLD — within drift tolerance"))
+                                            lc.reason if lc else "HOLD — within drift tolerance",
+                                            weeks_held=lc.weeks_held if lc else None))
             else:
                 holds.append(_make_hold(sym, tgt.ticker, cur, cur_p, stop,
-                                        lc.reason if lc else "HOLD — RS strong, trend intact"))
+                                        lc.reason if lc else "HOLD — RS strong, trend intact",
+                                        weeks_held=lc.weeks_held if lc else None))
 
     # ── 2. Held positions NOT in target ──────────────────────────────────────
     for sym, cur in cur_map.items():
@@ -233,7 +252,8 @@ def build_order_card(
 
         if lc and lc.status == "HOLD":
             holds.append(_make_hold(sym, cur.ticker, cur, cur_p, cur.stop_price,
-                                    "Not in new target — lifecycle says HOLD, keeping"))
+                                    "Not in new target — lifecycle says HOLD, keeping",
+                                    weeks_held=lc.weeks_held if lc else None))
         elif cur.quantity > 0:
             sells.append(TradeInstruction(
                 symbol=sym, ticker=cur.ticker, action="SELL",
@@ -321,6 +341,10 @@ def render_order_card(card: OrderCard) -> None:
                   f"{b.quantity:>5d} sh  @  {inr(b.limit_price):>10s}   "
                   f"≈  {G}{inr(b.estimated_value)}{RST}"
                   f"{D}{stop_tag}{RST}")
+            if b.target1:
+                t2_tag = f"  ·  T2 {inr(b.target2)}" if b.target2 else ""
+                risk_tag = f"  ·  Risk {inr(b.risk_inr)}" if b.risk_inr else ""
+                print(f"       {D}T1 {inr(b.target1)}{t2_tag}{risk_tag}{RST}")
             print(f"       {D}{b.reason}{RST}")
     else:
         print(f"\n  {D}No BUY orders this review — cash stays.{RST}")
@@ -344,9 +368,10 @@ def render_order_card(card: OrderCard) -> None:
         print(f"  {D}{thin}{RST}")
         for h in card.holds:
             stop_tag = f"  stop {inr(h.stop_price)}" if h.stop_price else ""
+            wh_tag = f"  held {h.weeks_held}w" if h.weeks_held is not None else ""
             print(f"  {D}{h.symbol:<12s}  "
                   f"{h.quantity:>5d} sh  ·  {inr(h.estimated_value):>10s}  "
-                  f"·  P&L {pnl_str(h.pnl_pct)}{stop_tag}{RST}")
+                  f"·  P&L {pnl_str(h.pnl_pct)}{stop_tag}{wh_tag}{RST}")
     elif not card.buys and not card.sells:
         print(f"\n  {D}No open positions. Book is empty.{RST}")
 
@@ -390,6 +415,7 @@ def render_order_card(card: OrderCard) -> None:
     print(f"  {D}  Next review:      {card.next_review_date} (EOD){RST}")
     print(f"  {D}  Max positions:    {card.n_positions_after}{RST}")
     print(f"  {D}  Holding horizon:  4–12 weeks per position{RST}")
+    print(f"  {D}  Partial exit:     Book 50% at T1 — trail stop to breakeven{RST}")
     print(f"  {B}{bar}{RST}\n")
 
 
@@ -414,6 +440,10 @@ def render_state_summary(state: PortfolioState) -> None:
     print(f"  {D}Cash:      {RST}{inr(state.available_cash)} ({state.cash_pct:.1f}%)")
     pnl_col = G if state.unrealized_pnl >= 0 else R
     print(f"  {D}Unrealised P&L: {RST}{pnl_col}{inr(state.unrealized_pnl)}{RST}")
+    if getattr(state, "realized_pnl", 0.0):
+        rpnl_col = G if state.realized_pnl >= 0 else R
+        print(f"  {D}Realised P&L:   {RST}{rpnl_col}{inr(state.realized_pnl)}{RST}  "
+              f"{D}(session){RST}")
 
     if state.holdings:
         print(f"\n  {B}{'SYMBOL':12s}  {'QTY':>5}  {'AVG':>10}  {'LTP':>10}  "
@@ -443,7 +473,8 @@ def render_state_summary(state: PortfolioState) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _make_hold(symbol: str, ticker: str, cur: LiveHolding,
-               cur_p: float, stop: Optional[float], reason: str) -> TradeInstruction:
+               cur_p: float, stop: Optional[float], reason: str,
+               weeks_held: Optional[int] = None) -> TradeInstruction:
     return TradeInstruction(
         symbol=symbol, ticker=ticker, action="HOLD",
         quantity=cur.quantity, limit_price=round(cur_p, 2),
@@ -451,6 +482,7 @@ def _make_hold(symbol: str, ticker: str, cur: LiveHolding,
         estimated_value=round(cur.quantity * cur_p, 2),
         reason=reason,
         pnl_pct=cur.unrealized_pnl_pct,
+        weeks_held=weeks_held,
     )
 
 

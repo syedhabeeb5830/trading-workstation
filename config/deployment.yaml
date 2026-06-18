@@ -2,7 +2,14 @@
 # Edit this file to match your account. All values are applied at runtime.
 
 # Total capital in INR (e.g. 500000 = ₹5,00,000)
+# Used only as a FALLBACK — when a live Zerodha session exists, the screen sizes
+# against your real broker equity instead (run: python run.py --kite-login).
 capital: 500000
+
+# Risk per trade — % of capital you are willing to LOSE if the stop hits on a
+# MAX-conviction trade. This sizes every position: size = risk% / stop-distance%.
+# 1.0 = professional standard. Lower = more conservative. (Your profile setting.)
+risk_per_trade_pct: 1.0
 
 # Maximum concurrent open positions
 target_positions: 5

@@ -62,6 +62,22 @@ ELIGIBLE_CLASSES = {"ACTION_NOW", "WATCHLIST"}   # EXTENDED/AVOID get no capital
 RISK_PER_TRADE_MAX = 1.0       # % capital risked on a max-conviction trade
 MIN_STOP_PCT = 1.0             # floor on stop distance to avoid blow-up sizing
 
+# ── Theme cap (G8) — mirrors lifecycle_engine; enforced here in construction ─
+MAX_THEME_EXPOSURE = 40.0      # % of capital in any one macro-theme complex
+_THEME_PATH_PE = Path("config/theme_map.yaml")
+_DEFAULT_THEME_MAP_PE = {
+    "INDUSTRIAL_COMPLEX": ["Capital Goods", "Construction", "Construction Materials"],
+    "POWER_COMPLEX": ["Power", "Oil Gas & Consumable Fuels"],
+    "FINANCIAL_COMPLEX": ["Financial Services"],
+    "TECH_COMPLEX": ["Information Technology", "Telecommunication",
+                     "Media Entertainment & Publication"],
+    "CONSUMPTION_COMPLEX": ["Fast Moving Consumer Goods", "Consumer Services",
+                             "Consumer Durables", "Automobile and Auto Components",
+                             "Realty", "Services"],
+    "MATERIALS_COMPLEX": ["Metals & Mining", "Chemicals", "Textiles"],
+    "HEALTHCARE_COMPLEX": ["Healthcare"],
+}
+
 # ── Conviction component maps ────────────────────────────────────────────────
 _RS_SCORE = {"MARKET_LEADER": 100, "SECTOR_LEADER": 85, "EMERGING_LEADER": 65,
              "NEUTRAL": 40, "LAGGARD": 10}
@@ -75,11 +91,42 @@ def _clamp(x, lo=0.0, hi=100.0):
     return max(lo, min(hi, x))
 
 
+def _load_theme_sector_map() -> dict[str, str]:
+    """Return {sector_name: theme_name} for theme-cap enforcement in the allocator.
+    Standalone loader — does NOT import from lifecycle_engine (avoids circular import)."""
+    try:
+        text = _THEME_PATH_PE.read_text(encoding="utf-8") if _THEME_PATH_PE.exists() else ""
+        if text:
+            data: dict[str, list[str]] = {}
+            cur: Optional[str] = None
+            for raw in text.splitlines():
+                line = raw.split("#", 1)[0].rstrip()
+                if not line.strip():
+                    continue
+                if not line.startswith((" ", "\t")) and line.rstrip().endswith(":"):
+                    cur = line.strip()[:-1].strip()
+                    data[cur] = []
+                elif line.strip().startswith("- ") and cur is not None:
+                    data[cur].append(line.strip()[2:].strip())
+            if data:
+                return {s: th for th, secs in data.items() for s in secs}
+    except Exception:
+        pass
+    return {s: th for th, secs in _DEFAULT_THEME_MAP_PE.items() for s in secs}
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # POSITION SIZER
 # ═════════════════════════════════════════════════════════════════════════════
 class PositionSizer:
-    """Conviction (RS-anchored) → desired position size %. Independent."""
+    """Conviction (RS-anchored) → desired position size %. Independent.
+
+    `risk_per_trade` is the % of capital risked on a MAX-conviction trade (the
+    trader's profile setting; default RISK_PER_TRADE_MAX). Every position's size
+    derives from it: size% = (conviction-scaled risk%) / stop-distance%."""
+
+    def __init__(self, risk_per_trade: float = RISK_PER_TRADE_MAX):
+        self.risk_per_trade = float(risk_per_trade)
 
     def conviction(self, rs_status: str, actionability_score: float,
                    rr: float, grade: str) -> float:
@@ -90,10 +137,10 @@ class PositionSizer:
         return round(_clamp(base + grade_mod), 1)
 
     def risk_budget(self, conviction: float) -> float:
-        """% of capital to RISK on this trade, scaled by conviction (≤ RISK_PER_TRADE_MAX)."""
+        """% of capital to RISK on this trade, scaled by conviction (≤ risk_per_trade)."""
         if conviction < 30:
             return 0.0
-        return round((conviction / 100.0) * RISK_PER_TRADE_MAX, 3)
+        return round((conviction / 100.0) * self.risk_per_trade, 3)
 
     def size_by_risk(self, conviction: float, stop_pct: float) -> float:
         """position % = risk_budget% / stop_distance% (capped). Wide stop → small size."""
@@ -114,10 +161,13 @@ class RiskBudgetAllocator:
     def allocate(self, candidates: list["PortfolioCandidate"], exposure: float,
                  max_sector: float = MAX_SECTOR_EXPOSURE,
                  max_cluster: float = MAX_CLUSTER_EXPOSURE,
-                 max_positions: int = MAX_POSITIONS) -> tuple[list, float]:
+                 max_positions: int = MAX_POSITIONS,
+                 sector_to_theme: Optional[dict] = None,
+                 max_theme: float = MAX_THEME_EXPOSURE) -> tuple[list, float]:
         total = 0.0
         sector_exp: dict[str, float] = {}
         cluster_exp: dict[str, float] = {}
+        theme_exp: dict[str, float] = {}
         chosen: list[PortfolioCandidate] = []
 
         for c in candidates:                 # already sorted by conviction desc
@@ -125,17 +175,21 @@ class RiskBudgetAllocator:
                 break
             if c.desired_size <= 0:
                 continue
+            theme = (sector_to_theme or {}).get(c.sector, c.sector)
             room = min(c.desired_size,
                        max_sector - sector_exp.get(c.sector, 0.0),
                        max_cluster - cluster_exp.get(c.cluster_id, 0.0),
+                       max_theme  - theme_exp.get(theme, 0.0),
                        exposure - total)
             if room < MIN_POSITION_SIZE:
                 continue                     # capped out by a limit → skip
             c.allocation = round(room, 2)
+            c.theme = theme                  # store for downstream display
             chosen.append(c)
             total += c.allocation
             sector_exp[c.sector] = sector_exp.get(c.sector, 0.0) + c.allocation
             cluster_exp[c.cluster_id] = cluster_exp.get(c.cluster_id, 0.0) + c.allocation
+            theme_exp[theme] = theme_exp.get(theme, 0.0) + c.allocation
         return chosen, round(total, 2)
 
 
@@ -160,8 +214,10 @@ class PortfolioCandidate:
     entry:               float = 0.0
     stop:                float = 0.0
     stop_pct:            float = 0.0    # risk % = (entry − stop) / entry
+    target:              float = 0.0    # T1 from actionability engine (G4)
     allocation:          float = 0.0
     risk_contribution:   float = 0.0    # allocation × stop_pct / 100 (capital at risk)
+    theme:               str   = ""     # macro-theme complex (G8)
 
 
 @dataclass
@@ -185,9 +241,10 @@ class PortfolioSnapshot:
             "positions": [
                 {"ticker": p.symbol, "allocation": p.allocation, "sector": p.sector,
                  "conviction": p.conviction, "rr": p.rr, "entry": p.entry, "stop": p.stop,
-                 "risk_pct": p.stop_pct, "risk_contribution": p.risk_contribution,
+                 "target": p.target, "risk_pct": p.stop_pct,
+                 "risk_contribution": p.risk_contribution,
                  "rs_status": p.rs_status, "classification": p.classification,
-                 "cluster": p.cluster_id}
+                 "cluster": p.cluster_id, "theme": p.theme}
                 for p in self.positions],
             "clusters": self.clusters, "metrics": self.metrics,
         }
@@ -199,8 +256,10 @@ class PortfolioSnapshot:
         rows = [{"ticker": p.symbol, "sector": p.sector, "allocation_pct": p.allocation,
                  "risk_pct": p.stop_pct, "risk_contribution": p.risk_contribution,
                  "conviction": p.conviction, "rr": p.rr, "entry": p.entry, "stop": p.stop,
-                 "rs_status": p.rs_status, "classification": p.classification,
-                 "grade": p.grade, "cluster": p.cluster_id} for p in self.positions]
+                 "target": p.target, "rs_status": p.rs_status,
+                 "classification": p.classification,
+                 "grade": p.grade, "cluster": p.cluster_id,
+                 "theme": p.theme} for p in self.positions]
         return pd.DataFrame(rows).to_csv(index=False)
 
     def to_markdown(self) -> str:
@@ -212,12 +271,13 @@ class PortfolioSnapshot:
              f"· Portfolio risk {m.get('portfolio_risk_pct')}% "
              f"· Sector concentration {m.get('sector_concentration')}%", "",
              "## Allocations", "",
-             "| Ticker | Sector | Alloc % | Risk % | Capital@Risk % | Conviction | RR | RS | Class |",
-             "|--------|--------|--------:|-------:|---------------:|-----------:|---:|----|-------|"]
+             "| Ticker | Sector | Alloc % | Risk % | Capital@Risk % | Entry | Stop | T1 | Conviction | RR | RS | Class |",
+             "|--------|--------|--------:|-------:|---------------:|------:|-----:|---:|-----------:|---:|----|-------|"]
         for p in self.positions:
+            t1 = f"{p.target:.2f}" if p.target else "—"
             L.append(f"| {p.symbol} | {p.sector} | {p.allocation} | {p.stop_pct} | "
-                     f"{p.risk_contribution} | {p.conviction} | {p.rr} | {p.rs_status} | "
-                     f"{p.classification} |")
+                     f"{p.risk_contribution} | {p.entry:.2f} | {p.stop:.2f} | {t1} | "
+                     f"{p.conviction} | {p.rr} | {p.rs_status} | {p.classification} |")
         if self.clusters:
             L += ["", "## Correlation clusters (60D corr > 0.80 — treat as one trade)"]
             for cid, members in self.clusters.items():
@@ -257,8 +317,9 @@ class PortfolioConstructor:
     """Builds the best portfolio (not the top-N) from Phase-5/6 outputs."""
 
     def __init__(self, max_sector=MAX_SECTOR_EXPOSURE, max_cluster=MAX_CLUSTER_EXPOSURE,
-                 max_positions=MAX_POSITIONS, candidate_pool=30):
-        self.sizer = PositionSizer()
+                 max_positions=MAX_POSITIONS, candidate_pool=30,
+                 risk_per_trade=RISK_PER_TRADE_MAX):
+        self.sizer = PositionSizer(risk_per_trade=risk_per_trade)
         self.allocator = RiskBudgetAllocator()
         self.max_sector = max_sector
         self.max_cluster = max_cluster
@@ -277,6 +338,8 @@ class PortfolioConstructor:
         clusters = _correlation_clusters([r.ticker for r in eligible], ohlcv,
                                          CORRELATION_THRESHOLD)
 
+        sector_to_theme = _load_theme_sector_map()
+
         cands: list[PortfolioCandidate] = []
         for r in eligible:
             atr_pct = _atr_pct(ohlcv.get(r.ticker))
@@ -288,11 +351,13 @@ class PortfolioConstructor:
                 r.actionability_score, r.composite_score, r.grade, r.rr_ratio, atr_pct,
                 clusters.get(r.ticker, r.ticker),
                 self.sizer.size_by_risk(conv, stop_pct),     # RISK-based desired size
-                entry=r.entry, stop=r.stop, stop_pct=stop_pct))
+                entry=r.entry, stop=r.stop, stop_pct=stop_pct,
+                target=getattr(r, "target", 0.0)))
 
         cands.sort(key=lambda c: (-c.conviction, -c.actionability_score, c.ticker))
         chosen, deployed = self.allocator.allocate(
-            cands, exposure, self.max_sector, self.max_cluster, self.max_positions)
+            cands, exposure, self.max_sector, self.max_cluster, self.max_positions,
+            sector_to_theme=sector_to_theme, max_theme=MAX_THEME_EXPOSURE)
 
         for c in chosen:                                     # capital actually at risk
             c.risk_contribution = round(c.allocation * c.stop_pct / 100.0, 3)

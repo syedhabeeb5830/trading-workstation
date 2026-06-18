@@ -1,0 +1,47 @@
+{
+  "ACUTAAS": {
+    "date": "2026-06-17",
+    "sector": "Healthcare",
+    "regime": "BULL",
+    "edge_mode": "MIXED",
+    "risk_mode": "MIXED",
+    "conviction": 95.0,
+    "tier": "A",
+    "entry": 2996.5,
+    "stop": 2636.92,
+    "t1": 3236.22,
+    "t2": 3416.01,
+    "qty": 1,
+    "risk_inr": 360.0
+  },
+  "WOCKPHARMA": {
+    "date": "2026-06-17",
+    "sector": "Healthcare",
+    "regime": "BULL",
+    "edge_mode": "MIXED",
+    "risk_mode": "MIXED",
+    "conviction": 94.0,
+    "tier": "A",
+    "entry": 1919.2,
+    "stop": 1688.9,
+    "t1": 2072.74,
+    "t2": 2187.89,
+    "qty": 2,
+    "risk_inr": 461.0
+  },
+  "ADANIPOWER": {
+    "date": "2026-06-17",
+    "sector": "Power",
+    "regime": "BULL",
+    "edge_mode": "MIXED",
+    "risk_mode": "MIXED",
+    "conviction": 92.0,
+    "tier": "A",
+    "entry": 222.6,
+    "stop": 199.41,
+    "t1": 238.06,
+    "t2": 249.66,
+    "qty": 16,
+    "risk_inr": 371.0
+  }
+}

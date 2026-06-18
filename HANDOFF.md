@@ -23,6 +23,27 @@
 > deployable edge. Next: de-dilution (E1/E2) + a transaction-cost model, then re-score Trust. The
 > numbered sections below (`## 1. Project Purpose` … `## 10`) are the original RC1 handoff detail.
 
+> **DEPLOYMENT BUILD — Phase M (2026-06-15 → 17).** Development was reopened: an iterative
+> world-class-trader review drove the conversion of `--screen` from a research board into a
+> **capital-preservation-first decision engine**. **The scoring / ranking / regime / composite /
+> actionability MATH is still unchanged** — Phase M is a DISPLAY + RISK + EXECUTION + ANALYTICS
+> layer on top, plus bug fixes. Headlines: **(1)** targets are no longer geometric outliers —
+> replaced by **ATR-calibrated** stop 3R / T1 2R / T2 3.5R, **OOS-validated** fill T1≈59% (~8d) /
+> T2≈42% (~17d), stops stable OOS (`analytics/target_calibration.py`). **(2)** **RR proven
+> NON-predictive** (corr −0.02, `analytics/rr_validation.py`) and **path-EV ranking FAILED OOS**
+> (Spearman −0.14, `analytics/path_intelligence.py`) — both demoted to context-only, never used to
+> rank / filter / size. **(3)** `--screen` now ends with a **ZERO-DECISION TRADE PLAN**: live
+> Zerodha ACCOUNT → adaptive **RISK MODE** (edge-health scales risk 1.0/0.5/0.25%) → **kill-switch**
+> check → **BUY TODAY** (sector-capped, conviction-tier-sized, calibrated levels, earnings warnings)
+> → WAIT alerts → **LIVE TRADE JOURNAL** → **EDGE HEALTH**. **(4)** New survival layer: adaptive
+> risk + kill switch + live trade journal (`python run.py --trades`). **Bugs fixed:** Kite cash
+> field (settled `available.cash` → `net`/`live_balance`), RVOL partial-intraday-candle, `--positions`
+> CONFIG crash. **OPEN GAP:** `--orders` execution path still uses the OLD geometric targets and
+> sizing — NOT yet calibrated; the `--screen` BUY TODAY plan is the authoritative, manually-executable
+> output. **User account:** live Zerodha (user_id ZTJ763), funded **₹1,00,000**, base risk 1%/trade.
+> Full detail: **§2 Phase M**. The independent trader verdict on the final build: *"8/10 tradability;
+> deploy 10–20% and start collecting live results"* — matching the system's own Trust 53/100.
+
 ## 1. Original Goal
 
 A Python CLI swing-trading workstation for NSE equities (Nifty 500 universe), built
@@ -300,7 +321,7 @@ date-clustered bootstrap CIs + weekly equity-curve metrics reuse `trust_audit` v
 - **Measurement only — no production scoring/regime/ranking/factor logic changed; the gate was applied
   in the analytics replay, not in `build_screen`. Nothing tuned, searched or optimised.**
 
-### Phase L — Real Portfolio State Layer (2026-06-14, production deployment layer)
+### Phase L — Real Portfolio State Layer + Deployment Engine Audit (2026-06-14/15)
 New modules `portfolio/portfolio_state.py` + `deploy/order_card.py`; config `config/deployment.yaml`;
 two new CLI flags `--sync-portfolio` and `--orders [--capital N]`. **No scoring, regime, ranking, or
 factor logic changed.** This is a pure read-and-render layer sitting above the existing engines.
@@ -331,6 +352,196 @@ factor logic changed.** This is a pure read-and-render layer sitting above the e
   (paper/small/full), min_trade_value, rebalance_threshold_pct. Posture defaults to `paper` (safe); card
   shows `[PAPER MODE — do not place real orders]` warning when posture ≠ full.
 - **No scoring/regime/factor/ranking/portfolio math changed.**
+
+**Phase L — Deployment Engine Audit (2026-06-15, analysis only):**
+Report `reports/deployment_engine_audit.md`. Full gap analysis between current system and
+a real Zerodha retail trader. **9 gaps identified; 4 ranked Must-Fix:**
+- **G2 (HIGH):** Capital is hardcoded in deployment.yaml, not pulled from Kite NAV → allocation ratios wrong when account has grown.
+- **G4 (MEDIUM):** Order card shows no T1/T2 targets and no ₹ risk amount → trader cannot execute a partial-exit model.
+- **G5 (MEDIUM):** `entry_date` not tracked; `time_stop_weeks=12` is dead config, never enforced in lifecycle.
+- **G6 (LOW):** Adaptive scoring section in screen output is unproven noise (Phase G: "≈0%, not significant") — should be removed.
+**Key analytical finding (does NOT change code):** EXTENDED class outperforms all other classes
+in-sample (t=8.41, +3.85% 20D) but is currently EXCLUDED from the portfolio's `ELIGIBLE_CLASSES`.
+OOS status unknown; a formal A/B pre-registration is required before changing this. The
+most important sizing finding: the 10% per-position cap binds for nearly all high-conviction
+setups; conviction ordering is the real differentiator (who gets in), not size differentiation.
+ACTION_NOW is creating scarcity (0.8/week) without statistically proven return over WATCHLIST.
+RR calculation is sound; add T1/T2 model. Screen output: remove adaptive scoring section
+(30–40 lines of noise). Deployment posture: paper mode is safe today; small-live after 8–12
+weeks paper validation; full-live requires Trust re-score ≥65 after de-dilution experiments.
+**Phase L — Gap Fixes (2026-06-15, implemented):**
+All 9 gaps from the audit fixed gracefully across 6 files. No scoring/ranking/regime/factor logic
+changed — these are display, state, and workflow improvements only.
+- **G2 DONE:** `StateLoader.from_kite()` — actual NAV (`holdings_value + available_cash`) used as
+  capital when it exceeds deployment.yaml config by >5%; `realized_pnl` added from `tradebook()`.
+- **G3 DONE:** Session realized P&L fetched via `kc._kite.tradebook()`, stored in `PortfolioState.realized_pnl`, shown in `render_state_summary()`.
+- **G4 DONE:** `PortfolioCandidate.target` ← `ActionabilityRow.target`; `TradeInstruction` now carries `target1`, `target2` (T1 + 0.5×R extension), `risk_inr`; order card renders T1/T2/risk; footer adds "Book 50% at T1, trail stop to breakeven."
+- **G5 DONE:** `entry_date` flows `portfolio_state → Holding → PositionState`; `ExitAnalyzer.__init__(time_stop_weeks=12)` enforces a time stop; `LifecycleRow.weeks_held` shown on HOLD lines; `run_review_portfolio()` and `_cmd_orders()` both read `time_stop_weeks` from deployment.yaml.
+- **G6 DONE:** `_render_adaptive()` call removed from `render_cockpit()`; replaced by a compact one-liner showing weights.
+- **G7 DONE:** `--deploy` added as alias for `--orders` in run.py.
+- **G8 DONE:** `_load_theme_sector_map()` added to portfolio_engine.py; `RiskBudgetAllocator.allocate()` now accepts `sector_to_theme` + `max_theme` params and enforces the 40% theme cap; `PortfolioConstructor.construct()` wires it in.
+- **G9 DONE:** EXTENDED class note added to `render_cockpit()` — shows top-5 EXTENDED names with evidence summary (t=8.41, +3.85% 20D) and "monitor for pullback entry" framing.
+- **G1 (EXTENDED in portfolio): deliberately NOT implemented** — requires OOS A/B validation first. See §4.
+
+### Phase M — Deployable Trading Engine Build (2026-06-15 → 17)
+Development reopened. An iterative world-class-trader review drove the conversion of `--screen` from a
+research board into a **capital-preservation-first decision engine**. **Invariant preserved:** NO
+scoring / ranking / regime / composite / actionability / RS / sector math was changed. Phase M is a
+DISPLAY + RISK + EXECUTION + ANALYTICS layer on top of the frozen engines, plus three bug fixes.
+Everything below either lives in `screen/screen_runner._render_zero_decision_plan` (display/plan) or in
+new `analytics/*` + `scanner/*` modules. Validations were run BEFORE wiring (the project's evidence-first rule).
+
+**New `--screen` output (top → bottom):** DATA QUALITY → MARKET REGIME → TOP SECTORS → TOP 20 BOARD
+(now with an **RVOL** column) → EXTENDED PULLBACK ALERTS → ADAPTIVE SCORING → **ZERO-DECISION TRADE
+PLAN** (the new authoritative block) → EDGE HEALTH → SETUP EVIDENCE footer. The legacy "TOP 5
+ACTIONABLE / No ACTION_NOW setups today" section was **removed** (it contradicted BUY TODAY — one truth only).
+
+**ZERO-DECISION TRADE PLAN structure (live path):**
+1. **ACCOUNT** — real Zerodha state: equity / cash / holdings / deployed%. LIVE / STALE SESSION / EMPTY tag.
+   **Live-only capital:** sizes ONLY against real broker equity; when empty/stale shows a loud block +
+   a no-sizing WATCH list — never config/phantom capital.
+2. **RISK MODE** (adaptive) — risk%/trade + max book heat scaled by edge health (see Adaptive Risk below).
+3. **Kill-switch** check — if triggered: "② NO TRADE TODAY — STRATEGY PAUSED" + reasons + recovery; no buys.
+4. **② BUY TODAY: N trade(s)** — genuine entries only (leaders at a real, non-extended entry; RR NOT a
+   gate). Per name: conviction **TIER** (A/B/C), qty, entry, **calibrated** stop/T1/T2 (₹ + %), ₹ risk,
+   OOS fill rates (T1 59% ~8d / T2 42% ~17d), R-allocation, "bank ½ at T1 trail rest", earnings ⚠, high-ATR ⚠.
+   **PORTFOLIO RISK** line: book heat % + largest-sector exposure (sector cap = 2/sector).
+5. **③ WAIT — SET PRICE ALERTS** — extended/base-building names + sector-cap deferrals, with trigger prices.
+6. **LIVE TRADE JOURNAL** summary · **EDGE HEALTH** dashboard · SETUP EVIDENCE + reliability caveat.
+
+**New modules / what they proved:**
+- `analytics/rr_validation.py` — reconstructs the real production RR on 8k point-in-time samples, joins to
+  fwd20. **RR is NON-predictive (corr −0.02, mildly inverse: RR<1 +2.49% vs RR5+ +1.83%).** Action: RR
+  removed as a gate in `_is_genuine_entry` (it was selecting the WORSE half) and in `_wait_trigger`; labeled
+  non-predictive on screen. **Still in upstream ACTION_NOW classifier + conviction model — NOT yet removed.**
+- `analytics/setup_stats.py` — per-class / per-RS reference stats from the 94,637-obs replay (cached
+  `reports/validation/setup_stats.json`). **Win rates 53–57% ALL classes; ACTION_NOW 53.1% — WORSE than
+  WATCHLIST 54.7% and EXTENDED 57.2%.** Median 20d move +1–2.5%; typical MAE −5% to −12%.
+- `analytics/path_intelligence.py` — simulates the real forward PATH from `cache/ohlcv/*_5y.csv` per analog;
+  P(+5/10/15/20% before a 1.5×ATR stop), EV, hold, MFE/MAE per cohort (regime × RS × ATR-tercile; breakout/
+  volume deliberately EXCLUDED as proven noise). **OOS gate FAILED: predicted-EV → realized Spearman −0.14
+  (35k test rows) — EV ranking inverts OOS.** Wired DESCRIPTIVE-only (`reports/validation/path_cohorts.json`),
+  never ranks. CLI: `python -m analytics.path_intelligence build|oos|cache`.
+- `analytics/target_calibration.py` — **the target/stop fix.** Calibrates ATR-multiple stop/T1/T2 to the real
+  excursion distribution: stop beyond winner-heat (3R, ~85% of winners survive), T1 = ~65%-reach (→2R), T2 =
+  ~45%-reach capped 3.5R. **OOS-validated** (train <2025 → test ≥2025): stop-out stable 44→47%; T1 fill
+  67→59%; T2 53→42%. Cached `reports/validation/calibrated_targets.json`. Wired into BUY TODAY via
+  `apply_levels`; **ATR ceiling 4%** caps jumpy names (e.g. WOCKPHARMA 7.4% ATR → stop capped −22%→−12% + ⚠).
+- `analytics/edge_health.py` — walk-forward MARKET_LEADER 20d excess BY YEAR + recent-8wk + decay driver +
+  verdict (cached `reports/validation/edge_health.json`). **2022 +0.8 / 2023 +3.3 / 2024 +1.1 / 2025 −0.1 /
+  2026 +0.1; recent-8wk +2.5%; BULL share 0.73→0.17; verdict MIXED.** Answers "is the edge alive/dying/dead"
+  and "why 2025 failed" (regime shift). CLI: `python -m analytics.edge_health`.
+- `analytics/adaptive_risk.py` — **(a) `risk_mode`**: risk%/trade + max heat = MOST CONSERVATIVE of {recent
+  edge excess, structural verdict, regime}. STRONG 1.0%/6% · MIXED 0.5%/3% · NEGATIVE 0.25%/1.5% (× config
+  base). **(b) `kill_switch`**: pauses NEW entries when rolling-20 expectancy <0 (≥10 trades) OR realized
+  maxDD ≤−10% OR edge DYING+recent≤0; returns reasons + recovery criteria.
+- `analytics/trade_journal.py` — **live trade journal** (`Journal/live_trades.csv` + context snapshot
+  `Journal/plan_context.json`). Records each trade with full decision context (regime, edge_mode, conviction,
+  tier, sector, calibrated levels); `snapshot_plan` (screen) + `sync_from_kite` (new holdings→entries) +
+  `resolve_open` (auto-close vs plan: ½ at T1, trail to T2/stop/60d-time-stop via yfinance) + `analytics`
+  (win rate, expectancy R, rolling-20, profit factor, maxDD, avg hold, by tier/regime/sector). Feeds the kill
+  switch. **New CLI: `python run.py --trades`** (dashboard; `--journal` was taken as the dir arg).
+- `scanner/earnings_calendar.py` — next-earnings via yfinance `.calendar` (cached `cache/earnings.json` daily
+  TTL, only for BUY-TODAY names, fails silently). `earnings_warning()` → "⚠ earnings in Nd — gap risk" in BUY TODAY.
+
+**Portfolio-risk + sizing additions (in `_render_zero_decision_plan`):** sector cap (max 2 names/sector →
+overflow deferred to WAIT); book-heat summary + warning at adaptive `max_heat`; **conviction-tier sizing** —
+budget = (conviction/100) × adaptive-risk% × equity → "size winners bigger" (tier A ≈ 0.9R at STRONG, 0.5R at MIXED).
+
+**Bug fixes (real bugs, not cosmetic):**
+- **Kite cash** (`portfolio/portfolio_state.from_kite`): read `margins.available.cash` (the **settled** balance,
+  ₹0 for a same-day transfer) → now prefers `net` → `live_balance` → `available_cash`. Symptom: a freshly-funded
+  ₹1L account read as ₹0.
+- **RVOL partial candle** (`screen/screen_runner._volume_context`): divided today's **partial intraday** volume
+  by full-day averages → every RVOL ≈ 0.1x. Fix: `_drop_partial_today` removes today's still-forming candle
+  (date==today AND now<16:00 IST) before volume math. Now realistic (MAHABANK 2.4x, BHARATFORG 1.8x).
+- **`--positions` crash** (`scanner/positions.py`): duplicate `from config.config import CONFIG` inside a try
+  shadowed the module-level import → `UnboundLocalError`. Removed the duplicate.
+
+**Config:** `config/deployment.yaml` gained `risk_per_trade_pct: 1.0` (the adaptive engine scales DOWN from this
+base by edge health). `portfolio_engine.PositionSizer`/`PortfolioConstructor` accept a `risk_per_trade` param.
+
+**Open gaps / next steps (ranked):** **(1)** Wire calibrated targets + adaptive risk + sizing through the
+`--orders` execution path (still geometric) — touches live GTT placement, needs careful testing. **(2)** Remove
+RR from the upstream ACTION_NOW classifier + conviction model (validated non-predictive). **(3)** The live trade
+journal is empty until real trades accumulate — it is the single most important forward validation. **(4)** Kite
+session expires ~6am IST daily → `python run.py --kite-login` before each live run. **(5)** Survivorship caveat in
+the path/calibration analytics (forward bars from the current universe file) — stated on-screen, mildly optimistic.
+
+### Phase N — Decision-Layer Quality Gates (2026-06-17)
+Three graceful fixes to the `--screen` BUY TODAY decision, all in
+`screen/screen_runner.py` (display/decision/execution layer). **No scoring / regime
+label / RS / sector / composite / actionability MATH changed** — these apply the
+system's OWN already-validated findings to the live commit-capital decision, which
+previously ignored them. Verified offline (regime postures, gate truth table, stop
+reconciliation math).
+- **N1 — Regime gate on NEW entries (wires the validated E4 overlay).** `_regime_posture(regime)`
+  → DEPLOY (BULL family) · CAUTION (NEUTRAL/RANGE) · STAND_ASIDE (BEAR/VOLATILE). In a
+  STAND_ASIDE tape `--screen` now shows **② NO NEW LONGS — <regime> REGIME** + a watch
+  list instead of issuing fresh leader buys (leaders REVERSE in bear, t≈−3.3 OOS; the
+  BULL-only gate ~halves max DD — Phase K). EXIT/HOLD management still runs in every
+  regime; CAUTION prints a half-size banner. Previously `risk_mode` only shrank size to
+  0.25% in bear but still bought.
+- **N2 — BUY TODAY now requires the proven edge.** `_is_genuine_entry` gains two
+  evidence gates: (a) `rs_status ∈ {MARKET/SECTOR/EMERGING_LEADER}` — a high composite
+  with NEUTRAL/LAGGARD RS is deferred to WAIT (RS leadership is the only directionally-
+  proven edge, t=5.01); (b) leadership-exhaustion — 8+ wk TOP_10 names mean-revert
+  (Phase 8) so they are deferred, not bought at the top. `_defer_reason()` surfaces the
+  WHY ("not an RS leader yet" / "mature leader N wks — mean-reversion risk").
+- **N3 — Structure-aware stops.** BUY TODAY reconciles the calibrated pure-ATR stop with
+  the engine's structural invalidation stop (below swing low / EMA20 / base): takes the
+  SAFER (lower) of the two so the stop clears BOTH noise AND structure, capped at
+  `_MAX_STOP_PCT=12%` per share. Prevents getting wicked on a normal support test;
+  fill-rate stats stay conservative (final stop ≤ ATR stop ⇒ realized P(reach)≥shown).
+- **Net effect:** in BULL the buy list is the proven-leader subset at structure-aware
+  stops; in NEUTRAL it half-sizes; in BEAR it stands aside. No new picks are "random."
+
+### Phase O — Trade Quality Intelligence Layer (2026-06-17)
+A professional RISK-MANAGER overlay that **surfaces and prices risk — it does NOT hide
+trades.** The trader makes the final call, so every genuine candidate stays VISIBLE, is
+GRADED, and is SIZED DOWN as quality falls (floored so it's always actionable). New module
+`analytics/trade_quality.py` (self-contained, OHLCV-structure-only — **no RSI/MACD/
+sentiment/forecasts, no new indicators**) wired into `--screen` BUY TODAY as a grader/sizer/
+annotator. **No frozen scoring / regime / RS / composite / actionability math changed**; it
+reads price-volume structure + the system's OWN validated analytics (calibrated fill rates,
+path-analog reach curve, 5y move distribution, earnings calendar, regime/sector/RS context).
+Tested on real cached OHLCV (150 names, 0 exceptions, nothing hidden).
+**Design note (2026-06-17, user directive):** an earlier draft HARD-REJECTED below-threshold
+setups (empty buy list on choppy days). Per the user — *"better to have some stocks and their
+risk than filter them out"* — it was changed to **visible + tiered + size-scaled**: PRIME
+(take with confidence) / CAUTION (your-call, smaller) / HIGH_RISK (loud flags, smallest), all
+shown.
+- **Eight assessments** → one decision: **(1) Stop quality** (swing-low/round-number/ATR-
+  noise/sweep-zone → GOOD/ACCEPTABLE/CROWDED/DANGEROUS_STOP; suggests a safer stop, sizes
+  down, or rejects). **(2) Entry quality** (chasing >5%/gap-up/expansion-candles/overhead/
+  compressed-RR penalised; pullback/contraction/low-vol-retrace/fresh-base rewarded →
+  IDEAL/GOOD/LATE/FOMO; **FOMO rejected**). **(3) Target quality** (T1/T2 from the calibrated
+  analog-excursion levels — NOT arbitrary R — with **real reach probabilities** (T1≈59%/
+  T2≈42% OOS, cross-checked vs cohort reach-curve & overhead supply); targets analogs rarely
+  reach are flagged/vetoed). **(4) Death-zone** (breakout-into-supply / weak-vol breakout /
+  already-extended / sector weakening / participation deteriorating / earnings ≤7d → LOW/MED/
+  **HIGH excluded**). **(5) Liquidity-trap** (declining-vol breakout / repeated resistance-
+  shelf rejections / upper-wick exhaustion / weak relative participation / narrow leadership
+  → HIGH ⇒ smaller size). **(6) Structure quality** (base tightness / vol contraction / trend
+  cleanliness / higher-low integrity → ELITE/GOOD/AVERAGE/POOR; feeds the PRIME tier + size).
+  **(7) Management plan** (invalidation / scale-½-at-T1→breakeven / trail EMA20-close /
+  exit-on-close-below-EMA20, each with a WHY). **(8) Final score** = mean(structure, entry,
+  stop, target) − death/trap penalties → **A 80+ / B 70-79 / C 60-69 / D <60** plus a **risk
+  tier**: PRIME (A/B grade + GOOD/ELITE structure + good entry + no severe risk) / CAUTION /
+  HIGH_RISK (FOMO / dangerous stop / HIGH death-zone / D-grade / T1<20%). **Size factor** =
+  grade_mult(A1.0/B.85/C.6/D.4) × stop × death × trap, **floored at 0.25** so the lowest-
+  quality name is still small-but-actionable, never zero.
+- **Wiring (`screen/screen_runner.py`):** every genuine BUY-TODAY candidate is assessed and
+  SHOWN — PRIME names under **② BUY TODAY** (full size), the rest under **②b ALSO ON THE TABLE
+  — lower quality, smaller size (your call)** with the risk surfaced + size pre-scaled down.
+  Each row adopts the quality-improved (safer) stop and renders a per-line **QUALITY grade +
+  tier + explicit risk flags + management plan**. PORTFOLIO RISK shows book heat "if you take
+  all shown" (prime vs lower-quality split); cash check splits prime-cost vs all-shown.
+  Optional/graceful: if the module is unavailable the plan still renders.
+- **HONEST STATUS:** the eight scores are transparent STRUCTURAL RISK HEURISTICS, **not
+  OOS-validated alpha** (only the probabilities they cite are validated). They grade/size/
+  annotate — they never rank the universe, inflate conviction, or hide a trade. Forward result
+  tracking via the live journal remains the real validation.
 
 ## 3. Evidence Strong Enough To Treat As Fact
 Supported by the 5-year validation/attribution:
@@ -415,12 +626,13 @@ Why-it-failed (Phase H forensics):
   **System Repair Lab (Phase I / Phase 6 — DESIGN ONLY; repair plan written, nothing implemented)** ·
   **ATR Alpha-vs-Beta Audit (Phase J / Phase 6A — verdict E) Mixed; E5 DONE)** ·
   **Regime-Gated Leader Model (Phase K / Repair-Lab E4 — verdict B) Small improvement; E4 DONE)** ·
-  **Real Portfolio State Layer (Phase L — capital-aware deployment engine; no scoring changes).**
-- **Pending / next:** **Phase L (deployment layer) is now DONE.** The system can now output capital-aware
-  order cards with exact share quantities, stops in ₹, cash required vs available, and a "IGNORE ALL
-  OTHER STOCKS" weekly workflow via `--sync-portfolio` + `--orders --capital N`. **Immediate next steps
-  (no scoring change, ship now):** (1) set capital in `config/deployment.yaml`; (2) run
-  `--sync-portfolio` weekly after Kite login; (3) run `--orders` to get the week's trade list.
+  **Real Portfolio State Layer (Phase L — capital-aware deployment engine; no scoring changes)** ·
+  **Deployment Engine Audit (Phase L audit — 9 gaps identified; `reports/deployment_engine_audit.md`)** ·
+  **Phase L gap fixes (2026-06-15 — G2/G3/G4/G5/G6/G7/G8/G9 all implemented; G1 deferred pending OOS A/B).**
+- **Pending / next (ranked by impact):**
+  1. **Paper trading:** Run `--sync-portfolio` + `--orders` weekly for 8–12 weeks (paper mode safe); confirm T1/T2/risk_inr values look sane on real screen output.
+  2. **E1/E2 de-dilution:** Drop Breakout (E1) → Drop Liquidity (E2) → OOS A/B vs frozen holdout.
+  3. **G1 (EXTENDED in portfolio):** After OOS A/B proves EXTENDED OOS edge; add to ELIGIBLE_CLASSES.
   **Research critical path (unchanged):** de-dilution hygiene (E1 drop-Breakout → E2 drop-Liquidity
   → E3 drop-Trend/Freshness) to try to lift the gated OOS edge CI off zero, then a
   **transaction-cost / turnover model**, then **re-run the Trust Audit** on the gated+de-diluted model.
@@ -672,12 +884,23 @@ E4 criterion FAILS on the CI condition).
 
 **New screener (validated path):**
 ```
-python run.py --screen              # cockpit: regime, sectors, Top 20, Top 5 actionable
+python run.py --screen              # cockpit + ZERO-DECISION TRADE PLAN (Phase M; live Zerodha sizing)
 python run.py --screen --refresh    # force-refresh universe + OHLCV cache
+python run.py --kite-login          # refresh daily Kite session (REQUIRED before live --screen/--trades)
+python run.py --trades              # Phase M: live trade-journal dashboard (real executions + analytics)
+python run.py --orders [--capital N]# capital-aware order card (NB: still GEOMETRIC targets — see §2 Phase M open gaps)
 python run.py --portfolio           # conviction-weighted, risk-based allocation
 python run.py --review-portfolio    # lifecycle: HOLD/ADD/REDUCE/EXIT/ROTATE (Kite or last portfolio)
 python run.py --validate-edge       # quick walk-forward edge analytics + EDGE_SCORE
 python run.py --validate-rolling [--years 2 --every 1 --rsample N]   # full rolling significance (SLOW)
+```
+**Phase M analytics (rebuild cached evidence; all read existing data, change no scores):**
+```
+python -m analytics.setup_stats         # per-class/RS reference stats  → setup_stats.json
+python -m analytics.rr_validation 8000  # prove RR (non-)predictive on N samples
+python -m analytics.path_intelligence build|oos|cache   # path-analog EV engine (+ OOS gate)
+python -m analytics.target_calibration cache            # ATR-calibrated stop/T1/T2 (+ OOS gate)
+python -m analytics.edge_health         # walk-forward leader excess by year → edge_health.json
 ```
 **Old workstation (LEGACY — `--today` DEMOTED to research/debug, RC1 retirement audit):**
 `--today --positions --place --morning --backtest --algo --orb-screen --kite-login

@@ -69,6 +69,28 @@ def _load_portfolio_stops() -> dict[str, float]:
         return {}
 
 
+def _find_entry_dates() -> dict[str, str]:
+    """Scan portfolio_history/*.json to find the first date each symbol appeared.
+    Returns {symbol_without_NS: ISO-date-string}.
+    """
+    if not _PORTFOLIO_HIST.exists():
+        return {}
+    out: dict[str, str] = {}
+    for path in sorted(_PORTFOLIO_HIST.glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            when = (data.get("generated_at") or "")[:10]
+            if not when:
+                continue
+            for p in data.get("positions", []):
+                sym = str(p.get("ticker", "")).upper().replace(".NS", "")
+                if sym and sym not in out:
+                    out[sym] = when
+        except Exception:
+            continue
+    return out
+
+
 def _fetch_prices_yf(tickers: list[str]) -> dict[str, float]:
     """Last close price per ticker via yfinance. Falls back gracefully."""
     out: dict[str, float] = {}
@@ -137,6 +159,7 @@ class LiveHolding:
     unrealized_pnl_pct: float
     allocation_pct:     float          # current_value / total_capital × 100
     stop_price:         Optional[float]
+    entry_date:         Optional[str] = None   # ISO date of first appearance in portfolio
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -173,6 +196,7 @@ class PortfolioState:
     holdings:       list[LiveHolding]
     open_orders:    list[OpenOrder]
     unrealized_pnl: float          # Σ unrealized_pnl across holdings
+    realized_pnl:   float = 0.0   # session-level realized P&L (from tradebook, best-effort)
 
     # ── serialisation ────────────────────────────────────────────────────────
 
@@ -189,6 +213,7 @@ class PortfolioState:
             "holdings":       [h.to_dict() for h in self.holdings],
             "open_orders":    [o.to_dict() for o in self.open_orders],
             "unrealized_pnl": self.unrealized_pnl,
+            "realized_pnl":   self.realized_pnl,
         }
 
     def save(self, path: Path = _STATE_FILE) -> Path:
@@ -214,6 +239,7 @@ class PortfolioState:
                 cash_pct=float(d["cash_pct"]),
                 holdings=holdings, open_orders=orders,
                 unrealized_pnl=float(d.get("unrealized_pnl", 0)),
+                realized_pnl=float(d.get("realized_pnl", 0.0)),
             )
         except Exception as exc:
             _log.warning("Could not load state file %s: %s", path, exc)
@@ -248,8 +274,22 @@ class StateLoader:
         except Exception:
             return None
 
-        sector_map = _load_sector_map()
-        stops      = _load_portfolio_stops()
+        sector_map  = _load_sector_map()
+        stops       = _load_portfolio_stops()
+        entry_dates = _find_entry_dates()
+
+        # Enrich stops from live Kite GTTs (overrides snapshot-derived stops)
+        try:
+            for gtt in (kc.list_gtts() or []):
+                if str(gtt.get("status", "")).lower() not in ("active", "triggered"):
+                    continue
+                cond = gtt.get("condition", {}) or {}
+                sym = str(cond.get("tradingsymbol", "")).upper()
+                triggers = cond.get("trigger_values") or []
+                if sym and triggers:
+                    stops[sym] = float(triggers[0])   # first trigger = stop price
+        except Exception:
+            pass
 
         try:
             df = kc.holdings_df()
@@ -258,8 +298,16 @@ class StateLoader:
             return None
 
         try:
-            margins        = kc.margins_equity()
-            available_cash = float(margins.get("available_cash", 0.0) or 0.0)
+            margins = kc.margins_equity()
+            # Deployable buying power = Kite "net" (live_balance + collateral − debits).
+            # NOTE: do NOT use available.cash — that is the *settled* opening balance and
+            # reads ₹0 for a same-day fund transfer (which lands as live_balance / payin).
+            # Prefer net → live_balance → available_cash (the `or` chain skips 0/falsy).
+            available_cash = float(
+                margins.get("net")
+                or margins.get("live_balance")
+                or margins.get("available_cash")
+                or 0.0)
         except Exception:
             available_cash = 0.0
 
@@ -267,6 +315,14 @@ class StateLoader:
             raw_orders = kc.orders()
         except Exception:
             raw_orders = []
+
+        # G3: session-level realized P&L from tradebook (best-effort)
+        realized_pnl = 0.0
+        try:
+            trades = kc._kite.tradebook() or []
+            realized_pnl = round(sum(float(t.get("pnl", 0) or 0) for t in trades), 2)
+        except Exception:
+            pass
 
         holdings: list[LiveHolding] = []
         holdings_value = 0.0
@@ -300,8 +356,16 @@ class StateLoader:
                     unrealized_pnl_pct=round(upnl_pct, 2),
                     allocation_pct=0.0,
                     stop_price=stops.get(symbol),
+                    entry_date=entry_dates.get(symbol),
                 ))
                 holdings_value += cur_val
+
+        # G2: use actual broker NAV if it substantially exceeds the configured capital
+        actual_nav = holdings_value + available_cash
+        if actual_nav > capital * 1.05:
+            _log.warning("Kite NAV ₹%.0f > config capital ₹%.0f — using Kite NAV.",
+                         actual_nav, capital)
+            capital = actual_nav
 
         for h in holdings:
             h.allocation_pct = round(h.current_value / capital * 100, 2) if capital else 0.0
@@ -319,6 +383,7 @@ class StateLoader:
             holdings=holdings,
             open_orders=_parse_kite_orders(raw_orders),
             unrealized_pnl=round(sum(h.unrealized_pnl for h in holdings), 2),
+            realized_pnl=realized_pnl,
         )
 
     # ── B) Manual CSV ────────────────────────────────────────────────────────
@@ -351,10 +416,14 @@ class StateLoader:
         df["ticker"] = (df["ticker"].str.strip().str.upper()
                         .apply(lambda t: t if t.endswith((".NS", ".BO")) else f"{t}.NS"))
 
-        tickers    = df["ticker"].tolist()
-        prices     = _fetch_prices_yf(tickers)
-        sector_map = _load_sector_map()
-        stops      = _load_portfolio_stops()
+        tickers     = df["ticker"].tolist()
+        prices      = _fetch_prices_yf(tickers)
+        sector_map  = _load_sector_map()
+        stops       = _load_portfolio_stops()
+        entry_dates = _find_entry_dates()
+
+        # Also accept optional entry_date column from the CSV itself
+        has_date_col = "entry_date" in df.columns
 
         holdings: list[LiveHolding] = []
         holdings_value = 0.0
@@ -371,6 +440,8 @@ class StateLoader:
             cost    = qty * avg_p
             upnl    = cur_val - cost
             upnl_pct = (upnl / cost * 100) if cost else 0.0
+            edate = (str(row.get("entry_date", "") or "").strip() or None) if has_date_col else None
+            edate = edate or entry_dates.get(symbol)
 
             holdings.append(LiveHolding(
                 ticker=ticker, symbol=symbol,
@@ -384,6 +455,7 @@ class StateLoader:
                 unrealized_pnl_pct=round(upnl_pct, 2),
                 allocation_pct=0.0,
                 stop_price=stops.get(symbol),
+                entry_date=edate,
             ))
             holdings_value += cur_val
 
@@ -414,8 +486,9 @@ class StateLoader:
         Always succeeds (returns an empty book if no history exists).
         """
         files = sorted(_PORTFOLIO_HIST.glob("*.json")) if _PORTFOLIO_HIST.exists() else []
-        sector_map = _load_sector_map()
-        stops      = _load_portfolio_stops()
+        sector_map  = _load_sector_map()
+        stops       = _load_portfolio_stops()
+        entry_dates = _find_entry_dates()
 
         if not files:
             return _empty_state(capital, "SIMULATED (no history)")
@@ -453,6 +526,7 @@ class StateLoader:
                 unrealized_pnl=0.0, unrealized_pnl_pct=0.0,
                 allocation_pct=round(val / capital * 100, 2) if capital else 0.0,
                 stop_price=round(stop, 2) if stop else None,
+                entry_date=entry_dates.get(symbol),
             ))
             holdings_value += val
 
@@ -530,6 +604,7 @@ def state_to_lifecycle_holdings(state: PortfolioState) -> list:
             entry_price=h.avg_price,
             stop_price=h.stop_price,
             prior_conviction=None,
+            entry_date=h.entry_date,
         )
         for h in state.holdings
     ]
@@ -560,6 +635,7 @@ def _empty_state(capital: float, source: str) -> PortfolioState:
 _DEPLOYMENT_CONFIG = Path("config/deployment.yaml")
 _DEFAULT_DEPLOY = {
     "capital":                500_000,
+    "risk_per_trade_pct":     1.0,
     "target_positions":       5,
     "max_new_per_week":       3,
     "time_stop_weeks":        12,

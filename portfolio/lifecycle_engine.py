@@ -124,6 +124,7 @@ class Holding:
     entry_price: float
     stop_price:  Optional[float] = None
     prior_conviction: Optional[float] = None
+    entry_date:  Optional[str]    = None   # ISO date first bought (G5)
 
 
 @dataclass
@@ -151,6 +152,7 @@ class PositionState:
     in_universe:    bool
     stop_hit:       bool
     trend_break:    bool
+    entry_date:     Optional[str] = None   # ISO date (G5)
 
 
 @dataclass
@@ -221,7 +223,8 @@ class PositionMonitor:
             h.entry_price, h.stop_price, round(current, 2), round(pnl, 2),
             rs_status, rs_bucket, grade, comp.score if comp else 0.0, act_score, rr,
             cls, ctx, action_label(ctx, cls), round(conv, 1), ext,
-            in_universe, stop_hit, trend_break)
+            in_universe, stop_hit, trend_break,
+            entry_date=h.entry_date)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -230,7 +233,19 @@ class PositionMonitor:
 class ExitAnalyzer:
     """Rule-based exits — never discretionary. Tightens with a weaker regime."""
 
+    def __init__(self, time_stop_weeks: int = 12):
+        self.time_stop_weeks = time_stop_weeks
+
     def check(self, s: PositionState, regime: str) -> Optional[str]:
+        if s.entry_date and self.time_stop_weeks:
+            try:
+                entry = date.fromisoformat(s.entry_date[:10])
+                weeks_held = (date.today() - entry).days // 7
+                if weeks_held >= self.time_stop_weeks:
+                    return (f"Time stop: held {weeks_held} weeks "
+                            f"≥ {self.time_stop_weeks}-week limit")
+            except Exception:
+                pass
         if s.stop_hit:
             return f"Stop hit (price {s.current_price} ≤ stop {s.stop_price})"
         if not s.in_universe:
@@ -304,6 +319,7 @@ class LifecycleRow:
     current_price:  float
     entry_context:  str
     rotate_to:      Optional[str] = None
+    weeks_held:     Optional[int] = None   # G5
 
 
 @dataclass
@@ -359,10 +375,10 @@ class LifecycleSnapshot:
 # MANAGER
 # ─────────────────────────────────────────────────────────────────────────────
 class LifecycleManager:
-    def __init__(self, max_theme: float = MAX_THEME_EXPOSURE):
+    def __init__(self, max_theme: float = MAX_THEME_EXPOSURE, time_stop_weeks: int = 12):
         self.theme = ThemeDiversifier(max_theme=max_theme)
         self.monitor = PositionMonitor()
-        self.exit = ExitAnalyzer()
+        self.exit = ExitAnalyzer(time_stop_weeks=time_stop_weeks)
         self.add = AddAnalyzer()
         self.rotation = RotationAnalyzer()
         self.sizer = PositionSizer()
@@ -416,10 +432,17 @@ class LifecycleManager:
                     status, reason = "ADD", add_reason
                 else:
                     status, reason = "HOLD", "RS strong, trend intact, no better replacement"
+            weeks_held = None
+            if s.entry_date:
+                try:
+                    entry = date.fromisoformat(s.entry_date[:10])
+                    weeks_held = (date.today() - entry).days // 7
+                except Exception:
+                    pass
             rows.append(LifecycleRow(
                 s.ticker, s.symbol, s.sector, s.theme, s.allocation, status, reason,
                 s.action, s.rs_status, s.grade, s.conviction, s.pnl_pct, s.current_price,
-                s.entry_context, rotate_to))
+                s.entry_context, rotate_to, weeks_held=weeks_held))
 
         summary: dict[str, int] = {}
         for r in rows:
@@ -438,6 +461,24 @@ class LifecycleManager:
 # ─────────────────────────────────────────────────────────────────────────────
 # HOLDINGS LOADING
 # ─────────────────────────────────────────────────────────────────────────────
+def _find_entry_dates(history_dir: Path = _PORTFOLIO_HISTORY) -> dict[str, str]:
+    """Return {symbol: first_seen_date} by scanning all portfolio_history JSON files."""
+    dates: dict[str, str] = {}
+    if not history_dir.exists():
+        return dates
+    for f in sorted(history_dir.glob("*.json")):
+        try:
+            data = json.loads(f.read_text())
+            snap_date = (data.get("generated_at", "") or "")[:10]
+            for p in data.get("positions", []):
+                sym = str(p.get("ticker", "")).upper()
+                if sym and sym not in dates:
+                    dates[sym] = snap_date
+        except Exception:
+            continue
+    return dates
+
+
 def load_holdings_from_portfolio(history_dir: Path = _PORTFOLIO_HISTORY) -> list[Holding]:
     """Reconstruct holdings from the most recent constructed portfolio snapshot."""
     if not history_dir.exists():
@@ -449,6 +490,7 @@ def load_holdings_from_portfolio(history_dir: Path = _PORTFOLIO_HISTORY) -> list
         data = json.loads(files[-1].read_text())
     except Exception:
         return []
+    entry_dates = _find_entry_dates(history_dir)
     out = []
     for p in data.get("positions", []):
         sym = str(p.get("ticker", "")).upper()
@@ -457,7 +499,8 @@ def load_holdings_from_portfolio(history_dir: Path = _PORTFOLIO_HISTORY) -> list
             sector=p.get("sector", "DIVERSIFIED"), allocation=float(p.get("allocation", 0)),
             entry_price=float(p.get("entry", 0) or 0),
             stop_price=float(p["stop"]) if p.get("stop") else None,
-            prior_conviction=p.get("conviction")))
+            prior_conviction=p.get("conviction"),
+            entry_date=entry_dates.get(sym)))
     return out
 
 
@@ -562,7 +605,14 @@ def run_review_portfolio(force_refresh: bool = False) -> int:
         return 2
     holdings, source = resolve_holdings(res.universe.sector_map)
     print(f"  Holdings source: {source} ({len(holdings)} positions)")
-    snap = LifecycleManager().review(holdings, res, persist=True)
+    time_stop_weeks = 12
+    try:
+        import yaml  # type: ignore
+        _cfg = yaml.safe_load(Path("config/deployment.yaml").read_text(encoding="utf-8"))
+        time_stop_weeks = int(_cfg.get("time_stop_weeks", 12))
+    except Exception:
+        pass
+    snap = LifecycleManager(time_stop_weeks=time_stop_weeks).review(holdings, res, persist=True)
     render_review(snap)
     paths = export_review(snap)
     print(f"  Exports: {paths['json']} · {paths['csv']} · {paths['md']}\n")
