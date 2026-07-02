@@ -9,13 +9,22 @@ breakout, miles from support, or carrying a lousy risk/reward. This layer sits
 entirely ON TOP of Phase 4 (it never recomputes RS, sector, or composite) and
 adds an independent judgement of entry location and trade geometry.
 
-    actionability = composite*0.70 + entry_quality*0.15 + risk_reward*0.15
+    actionability = composite*0.75 + entry_quality*0.25   (RR: weight 0 — disproven)
 
 Then every stock is labelled exactly one of:
-    ACTION_NOW   strong AND well-located AND RR ≥ 2   → trade today
-    WATCHLIST    strong but entry not ideal           → monitor
-    EXTENDED     strong but stretched above breakout  → wait for pullback
-    AVOID        weak setup or poor RR                → ignore
+    ACTION_NOW   strong AND well-located at a real setup → trade today
+    WATCHLIST    strong but entry not ideal              → monitor
+    EXTENDED     strong but stretched above breakout     → wait for pullback
+    AVOID        weak setup                              → ignore
+
+RR is NOT a gate anywhere in classification (2026-07-02 fix). analytics/
+rr_validation proved geometric RR is non-predictive OOS (corr ≈ 0, mildly
+inverse) — it was demoted from every buy/rank gate on 2026-06-15 but had
+survived inside the ACTION_NOW condition and the AVOID floor, silently
+vetoing 100% of triggers (high-composite momentum names structurally have
+low geometric RR, so `composite ≥ 80 AND rr ≥ 2` was a near-empty set —
+the "month of WAIT" deadlock). RR is still computed, displayed and warned
+about — it just cannot veto a trade.
 
 Scorers are independent (none references another). ActionabilityRanker
 orchestrates; ActionabilitySnapshot stores, persists, and exports the board.
@@ -43,16 +52,21 @@ from scanner.entry_context import EntryContext, EntryContextClassifier
 _log = logging.getLogger(__name__)
 
 # ── Actionability blend (composite stays dominant) ───────────────────────────
-ACT_WEIGHTS = {"composite": 0.70, "entry_quality": 0.15, "risk_reward": 0.15}
+# risk_reward carries ZERO weight (2026-07-02 consistency fix): analytics/
+# rr_validation proved geometric RR non-predictive OOS (corr ≈ 0, mildly
+# inverse). A disproven factor must not move any ranking — it previously held
+# 15% here and silently reordered the board vs the trade plan. RR is still
+# computed/displayed/warned about; it just cannot rank, gate or size.
+ACT_WEIGHTS = {"composite": 0.75, "entry_quality": 0.25, "risk_reward": 0.0}
 
 # ── Classification thresholds ────────────────────────────────────────────────
 ACTION_NOW_COMPOSITE = 80
 ACTION_NOW_ACT       = 80
-ACTION_NOW_RR        = 2.0
+ACTION_NOW_RR        = 2.0        # DISPLAY ONLY (driver line) — never a gate; RR is non-predictive OOS
 STRONG_COMPOSITE     = 65
 EXTENDED_DIST_THRESHOLD = 6.0     # legacy: % above breakout
 EXTENDED_EXT_THRESHOLD  = 8.0     # % stretched (above breakout OR above EMA20) → EXTENDED
-MIN_RR_FLOOR         = 1.0        # below this RR → AVOID
+MIN_RR_FLOOR         = 1.0        # DISPLAY ONLY ("Poor RR" warning) — never a veto
 # Contexts that represent a tradable entry right now (vs base-building / no-setup).
 TRADABLE_CONTEXTS = {"PULLBACK_SETUP", "BREAKOUT_SETUP", "TREND_CONTINUATION"}
 
@@ -364,17 +378,21 @@ class ActionabilityRanker:
 
     @staticmethod
     def _classify(composite: float, act: float, rr: float, ctx: "EntryContext") -> str:
-        # Weak strength, no constructive structure, or broken RR → never trade.
-        if composite < STRONG_COMPOSITE or ctx.context == "NO_SETUP" or rr < MIN_RR_FLOOR:
+        # Weak strength or no constructive structure → never trade.
+        # NOTE: RR is deliberately ABSENT from every branch (2026-07-02).
+        # rr_validation proved geometric RR non-predictive OOS; a disproven
+        # factor must never veto an otherwise valid trade. `rr` stays in the
+        # signature for call-site compatibility and the "Poor RR" warning.
+        if composite < STRONG_COMPOSITE or ctx.context == "NO_SETUP":
             return "AVOID"
         # Stretched (above breakout OR far above EMA20) → wait for a pullback, even if a
         # measured-move target makes RR look good. Checked BEFORE ACTION_NOW so we never
         # tag a chase as "buy now".
         if ctx.extension_pct > EXTENDED_EXT_THRESHOLD:
             return "EXTENDED"
-        # Strong + well-located + a real tradable setup + not stretched + RR ≥ 2.
+        # Strong + well-located + a real tradable setup + not stretched.
         if (composite >= ACTION_NOW_COMPOSITE and act >= ACTION_NOW_ACT
-                and rr >= ACTION_NOW_RR and ctx.context in TRADABLE_CONTEXTS):
+                and ctx.context in TRADABLE_CONTEXTS):
             return "ACTION_NOW"
         return "WATCHLIST"
 

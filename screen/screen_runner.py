@@ -1,15 +1,25 @@
 """
 screen/screen_runner.py — Swing-Trading Cockpit (Phase 5)
 =========================================================
-Orchestrates the full Phase 1-5 pipeline and renders a trader-facing dashboard:
+Orchestrates the full Phase 1-5 pipeline and renders a DECISION-FIRST cockpit:
 
-    1. Market Regime
-    2. Top Sectors
-    3. Top 20 Candidate Board
-    4. Top 5 Actionable Trades
+    1. Data quality → Market Regime → Top Sectors
+    2. Top 10 Candidate Board (top 20 with --research)
+    3. ZERO-DECISION TRADE PLAN:
+         ▶ COMMITTEE DECISION — exactly one of BUY NOW / BUY ON PULLBACK /
+           BUY ON BREAKOUT / WAIT FOR TRIGGER / STAY IN CASH (with proof)
+         ② confirmed BUY orders (entry/stop/T1/T2/qty/risk, calibrated)
+         ③ CONDITIONAL GTT orders for armed leaders (trigger/limit/stop/qty)
+         MANAGE — one mechanical exit ruleset (no discretion left)
+
+Explicit triggers (2026-07-02 deadlock fix): a trade fires on ACTION_NOW, a
+confirmed breakout bar (close > pivot on ≥1.2x volume), or a confirmed pullback
+reclaim bar (up-day close above prior high) — all computed on the last COMPLETE
+session. RR never gates anything (proven non-predictive OOS).
 
 Then exports the board to reports/screen_<date>.{json,csv,md} and persists a
-weekly snapshot to Journal/actionability_history/.
+weekly snapshot to Journal/actionability_history/. Research tables (adaptive
+promotions/demotions, extended monitor list) render only with --research.
 
 Entry point: `run_screen()` — invoked by `python run.py --screen`.
 `build_screen()` returns every snapshot for reuse (verification, future phases).
@@ -36,6 +46,9 @@ from scanner.regime_engine import RegimeClassifier, RegimeSnapshot
 from scanner.adaptive_scoring import AdaptiveScorer, AdaptiveSnapshot
 from scanner.leader_persistence import LeaderPersistenceTracker
 from portfolio.lifecycle_engine import action_label
+from portfolio.lifecycle_states import (is_signal_triggered as _lc_triggered,
+                                        is_armed as _lc_armed,
+                                        decide as _lc_decide)
 
 _REPORTS_DIR = Path("reports")
 
@@ -257,30 +270,112 @@ _EXHAUSTION_WEEKS = 8
 _MAX_STOP_PCT = 12.0
 
 
+# Breakout confirmation needs real participation. 1.2× is deliberately looser
+# than the 1.5× "fake-out" display heuristic: the trigger already requires an RS
+# leader at a tradable location — volume is the confirm, not the edge.
+_BREAKOUT_RVOL = 1.2
+
+
+def _entry_confirmation(row, df: "pd.DataFrame | None") -> dict:
+    """EXPLICIT price/volume trigger check, computed ONLY on the last COMPLETE
+    session (today's partial candle is dropped — same policy as RVOL).
+
+      breakout (BREAKOUT_SETUP):  close above the prior-20d pivot high on
+                                  RVOL ≥ 1.2 — a confirmed breakout bar.
+      reclaim  (PULLBACK_SETUP /
+                TREND_CONTINUATION): an up-day close ABOVE the prior bar's high
+                                  — the "1 up-day confirm" reversal bar the
+                                  alerts always asked for, now mechanical.
+
+    This is the 2026-07-02 deadlock fix: it converts ARMED leaders into
+    SIGNAL_TRIGGERED without any score threshold — no RR, no act ≥ 80.
+    Deterministic EOD logic; no intraday noise, no discretion."""
+    out = {"breakout": False, "reclaim": False, "why": "no data", "rvol": None,
+           "pivot": None}
+    if df is None or len(df) < 23:
+        return out
+    d = _drop_partial_today(df)
+    if len(d) < 22:
+        return out
+    close = float(d["Close"].iloc[-1])
+    prev_close = float(d["Close"].iloc[-2])
+    prev_high = float(d["High"].iloc[-2])
+    vol20 = float(d["Volume"].iloc[-21:-1].mean())
+    rvol = (float(d["Volume"].iloc[-1]) / vol20) if vol20 > 0 else 0.0
+    out["rvol"] = round(rvol, 2)
+    stop = float(getattr(row, "stop", 0) or 0)
+    if stop and close <= stop:                       # already through the stop
+        out["why"] = f"last close {_fmt_money(close)} at/below stop — setup broken"
+        return out
+
+    ctx = getattr(row, "entry_context", "")
+    if ctx == "BREAKOUT_SETUP":
+        pivot = float(d["High"].iloc[-21:-1].max())  # 20d pivot BEFORE the last bar
+        out["pivot"] = pivot
+        if close > pivot and rvol >= _BREAKOUT_RVOL:
+            out["breakout"] = True
+            out["why"] = (f"confirmed: closed {_fmt_money(close)} above pivot "
+                          f"{_fmt_money(pivot)} on {rvol:.1f}x volume")
+        else:
+            need = (f"close > {_fmt_money(pivot)}"
+                    if close <= pivot else f"volume ≥ {_BREAKOUT_RVOL:.1f}x")
+            out["why"] = f"awaiting breakout bar ({need}; last {rvol:.1f}x vol)"
+    elif ctx in ("PULLBACK_SETUP", "TREND_CONTINUATION"):
+        if close > prev_close and close > prev_high:
+            out["reclaim"] = True
+            out["why"] = (f"confirmed: up-day close {_fmt_money(close)} above prior "
+                          f"high {_fmt_money(prev_high)} — pullback reclaimed")
+        else:
+            out["why"] = (f"awaiting reversal bar (up-day close > prior high "
+                          f"{_fmt_money(prev_high)})")
+    else:
+        out["why"] = f"{ctx.lower() or 'no setup'} — no trigger defined"
+    return out
+
+
 def _is_genuine_entry(row, leader_weeks: "dict | None" = None) -> bool:
-    """A real entry to take TODAY: a PROVEN LEADER that is actually at a tradable
-    location now — a real setup, NOT extended/chasing, and NOT a mature
-    (exhaustion-risk) leader.
+    """A real entry to take TODAY: a PROVEN LEADER at a tradable location — not
+    extended/chasing, not a mature (exhaustion-risk) leader, RR never a gate.
 
-    Two evidence-based gates sit on top of entry geometry:
-      • RS leadership — the only directionally-proven edge (MARKET/SECTOR/EMERGING
-        leader). A strong composite that is NOT an RS leader is deferred to WAIT.
-      • Leadership exhaustion — 8+ consecutive weeks in TOP_10 mean-revert, so a
-        mature leader is deferred, not bought at the top.
-
-    RR is deliberately NOT a gate. analytics/rr_validation proved RR has ~zero
-    (mildly inverse) relationship with forward returns over 5y (corr ≈ −0.02);
-    gating on RR≥2 selected the *worse* half."""
+    SINGLE SOURCE OF TRUTH: this delegates entirely to lifecycle_states.
+    evaluate_trigger's setup gates (the exact same five checks used to arm and
+    trigger names) — the previous copy of these gates here had already started
+    to drift, which is how split-brain contradictions are born. `armed` in the
+    TriggerDecision means "passes every setup gate" (whether or not a
+    confirmation bar has printed), which is precisely "genuine entry"."""
     if row is None:
         return False
-    if row.classification in ("AVOID", "EXTENDED"):
-        return False
-    if row.rs_status not in _LEADER_TIERS:           # require the proven edge
-        return False
-    if leader_weeks and leader_weeks.get(row.ticker, 0) >= _EXHAUSTION_WEEKS:
-        return False                                  # mature leader → WAIT, don't chase
-    return (row.entry_context in _TRADABLE_CTX
-            and row.extension_pct <= _GENUINE_MAX_EXT)
+    d = _lc_decide(row, leader_weeks, None)
+    return d.armed
+
+
+def _is_signal_triggered(row, leader_weeks: "dict | None" = None,
+                         confirm: "dict | None" = None) -> bool:
+    """The execution-queue gate (state machine: WATCHLIST → SIGNAL_TRIGGERED).
+
+    A name is "entry-ready NOW" — i.e. it may emit a buy order TODAY — only when
+    it passes every setup gate AND an EXPLICIT trigger has fired: ACTION_NOW,
+    a confirmed breakout bar, or a confirmed pullback-reclaim bar (both computed
+    on the last COMPLETE session by _entry_confirmation). A pretty pullback with
+    no confirmation bar is ARMED, not triggered — it gets an exact CONDITIONAL
+    order instead of a market buy. ONE evaluation: portfolio/lifecycle_states.
+    """
+    return _lc_triggered(row, leader_weeks, confirm)
+
+
+def _is_armed(row, leader_weeks: "dict | None" = None,
+              confirm: "dict | None" = None) -> bool:
+    """Genuine leader setup that is WAITING for a trigger. Armed = passes every
+    setup gate but the confirmation bar hasn't printed yet → gets a fully-sized
+    CONDITIONAL order (GTT trigger/stop/targets/qty), never a chase."""
+    return _lc_armed(row, leader_weeks, confirm)
+
+
+def _armed_reason(row, confirm: "dict | None" = None) -> str:
+    """Accurate 'why not yet' line for an ARMED (untriggered) leader setup."""
+    why = (confirm or {}).get("why") or "no confirmation bar yet"
+    return (f"armed — proven leader at a {row.entry_context.replace('_', ' ').lower()} · "
+            f"{why}")
 
 
 def _regime_posture(regime: str) -> "tuple[str, str]":
@@ -490,18 +585,26 @@ def _render_watch_only(res: ScreenResult, stats) -> None:
     derived straight from the screen, with evidence — but zero phantom quantities."""
     rows = res.act_snap.top_n(20)
     lw = res.leader_weeks
-    genuine = [r for r in rows if _is_genuine_entry(r, lw)]
+    conf = {r.ticker: _entry_confirmation(r, res.feed.data.get(r.ticker)) for r in rows}
+    # State-machine consistent: "entry-ready" REQUIRES a fired trigger (ACTION_NOW
+    # or a confirmed breakout/reclaim bar). Armed leaders are alerts only.
+    triggered = [r for r in rows if _is_signal_triggered(r, lw, conf.get(r.ticker))]
+    armed = [r for r in rows if _is_armed(r, lw, conf.get(r.ticker))]
     waits = [r for r in rows if r.classification in ("WATCHLIST", "EXTENDED")
              and not _is_genuine_entry(r, lw)]
     print(f"\n  {B}WATCH — set price alerts{RST}  {D}(no capital to size — fund to trade){RST}")
-    if genuine:
-        print(f"  {G}  Entry-ready now (would buy once funded):{RST}")
-        for r in genuine[:6]:
+    if triggered:
+        print(f"  {G}  Entry-ready now — trigger fired (would buy once funded):{RST}")
+        for r in triggered[:6]:
             print(f"  {G}  {r.symbol:<12s}{RST}  {D}entry {r.entry_zone}  stop {r.stop_zone}"
                   f"  · {_entry_timing(r)}{RST}")
             ev = _evidence_note(stats, r.rs_status, r.classification)
             if ev:
                 print(f"  {D}       {ev}{RST}")
+    if armed:
+        print(f"  {Y}  Armed — proven setups WAITING for a trigger (alert only, don't buy):{RST}")
+        for r in armed[:6]:
+            print(f"  {Y}  {r.symbol:<12s}{RST}  {D}{_armed_reason(r, conf.get(r.ticker))}{RST}")
     for r in waits[:6]:
         print(f"  {Y}  {r.symbol:<12s}{RST}  {D}{_defer_reason(r, lw)}{RST}")
 
@@ -589,7 +692,9 @@ def _buy_table_header() -> None:
 
 def _render_buy_line(i: int, c: dict, cap: float, risk_pct: float, color: str = G) -> None:
     """One BUY-TODAY row + its detail/quality sub-lines. Reused by the PRIME and the
-    lower-quality ('also on the table') sections — same info, different colour."""
+    lower-quality ('also on the table') sections — same info, different colour.
+    `risk_pct` must be the EFFECTIVE (adaptive) risk %/trade — the same number
+    that sized the position — so the R-allocation shown is the R actually taken."""
     entry = c["entry"]
 
     def _lvl(p):
@@ -600,10 +705,17 @@ def _render_buy_line(i: int, c: dict, cap: float, risk_pct: float, color: str = 
           f"₹{entry:>6,.0f}  {_lvl(c['stop'])}  {_lvl(c['t1'])}  {_lvl(c['t2'])}  "
           f"₹{c['risk']:>5,.0f}{RST}")
     lv = c["lv"]
+    pos_val = c["qty"] * entry
     if lv:
         print(f"  {D}       ↳ T1 {lv['p_t1']*100:.0f}% hit ~{lv['days_t1']}d · "
               f"T2 {lv['p_t2']*100:.0f}% hit ~{lv['days_t2']}d · alloc {r_alloc:.1f}R "
               f"(tier {c['tier']}, conv {c['conv']:.0f}) · bank ½ at T1, trail rest{RST}")
+        hold_s = (f"expected hold ~{lv['days_t1']}–{lv['days_t2']}d · "
+                  f"hard time-stop: exit day 20 if T1 not hit")
+    else:
+        hold_s = "expected hold 20–60d (5y cohort) · hard time-stop: exit day 20 if T1 not hit"
+    print(f"  {D}       ↳ position {_fmt_money(pos_val)} "
+          f"({pos_val/cap*100:.1f}% of equity) · {hold_s}{RST}")
     print(f"  {D}       ↳ {_entry_timing(c['row'])}{RST}")
     _render_trade_quality(c.get("tq"))
     if c["warn"]:
@@ -638,14 +750,71 @@ def _render_evidence_footer(stats) -> None:
           f"Size small, honour every stop.{RST}")
 
 
+def _render_exit_rules(calib) -> None:
+    """The COMPLETE mechanical exit policy — one ruleset, first condition wins,
+    zero discretion left. Every number is measured, never invented: T1/T2 fill
+    odds and median times from target_calibration (OOS-validated), the
+    20-session time stop from the same calibration window (winners reach T1 in
+    ~8d median), the regime exit from the E4 validation (leader edge reverses
+    in BEAR, t≈−3.3 OOS)."""
+    p1 = f"{calib.get('p_t1_test', 0) * 100:.0f}%" if calib else "~59%"
+    p2 = f"{calib.get('p_t2_test', 0) * 100:.0f}%" if calib else "~42%"
+    d1 = calib.get("days_t1", 8) if calib else 8
+    d2 = calib.get("days_t2", 17) if calib else 17
+    print(f"\n  {B}  MANAGE — MECHANICAL EXIT RULES{RST}  "
+          f"{D}(first condition hit wins · no discretionary exits){RST}")
+    print(f"  {D}   on fill          → run `python run.py --positions` — auto-places the "
+          f"protective SL GTT at the stop{RST}")
+    print(f"  {D}   T1 hit ({p1} ~{d1}d)  → sell ½, stop → breakeven:  "
+          f"`python run.py --partial TICKER QTY`{RST}")
+    print(f"  {D}   T2 hit ({p2} ~{d2}d) → exit the rest — or trail 2×ATR only while "
+          f"regime is BULL and the name is still an RS leader{RST}")
+    print(f"  {D}   day 20, no T1    → exit next open — calibrated winners move by "
+          f"~{d1}d; stale capital is dead capital{RST}")
+    print(f"  {D}   regime flips BEAR/VOLATILE at the weekly screen → exit anything "
+          f"below T1 (E4: leader edge reverses, t≈−3.3 OOS){RST}")
+    print(f"  {D}   gap through stop → exit at the open — never widen a stop{RST}")
+
+
+def _render_cash_proof(res: ScreenResult, edge_h) -> None:
+    """STAY IN CASH must be EARNED (wait-policy): print the checks with MEASURED
+    values so cash is a proven position, never a lazy default. If any check had
+    failed, the plan above would contain an order instead."""
+    reg = res.regime
+    hostile = not ("BULL" in (reg.regime or "").upper())
+    top = res.act_snap.top_n(50)
+    n_leaders = sum(1 for r in top if r.rs_status in _LEADER_TIERS)
+    n_setup = sum(1 for r in top if r.rs_status in _LEADER_TIERS
+                  and r.entry_context in _TRADABLE_CTX)
+    re_ = (edge_h or {}).get("recent_excess")
+    re_s = f"{re_:+.1f}%" if re_ is not None else "unknown (dataset stale)"
+    print(f"\n  {B}  WHY CASH WINS TODAY{RST}  "
+          f"{D}(wait-policy checks — measured, not vibes){RST}")
+    print(f"  {D}   1. regime hostile?  "
+          f"{'YES — ' + reg.regime + ' (E4: no fresh leader longs)' if hostile else 'NO — ' + reg.regime + f' {reg.regime_score:.0f}/100 — regime is not the blocker'}{RST}")
+    print(f"  {D}   2. tradable candidates?  {n_leaders} RS leaders on the board, "
+          f"{n_setup} at a tradable location, 0 passed the entry gates "
+          f"(extension/exhaustion/structure) — the proven cohort is "
+          f"leader + location, and location is absent{RST}")
+    print(f"  {D}   3. recent edge health: {re_s} 8-week leader excess — "
+          f"the edge state is not the constraint, setup supply is{RST}")
+    print(f"  {D}   4. forcing an unconfirmed entry ≈ universe expectancy "
+          f"(+1.96% 20d, −5.4% median heat) minus costs — worse risk-adjusted "
+          f"than waiting one session for a trigger{RST}")
+    print(f"  {D}   5. therefore: cash. Re-run tomorrow — triggers and conditional "
+          f"orders appear mechanically when a confirmation bar prints.{RST}")
+
+
 def _render_zero_decision_plan(res: ScreenResult) -> None:
     """
-    Zero-decision trade plan appended to --screen. LIVE-ONLY capital:
-      • sizes ONLY against real Zerodha equity (fresh session + net_equity > 0);
-      • when the account is EMPTY or the session is STALE it says so loudly and
-        shows zero buys — never a config/phantom plan;
-      • BUY TODAY only for genuine entries (at support, RR≥2, not extended);
-      • every target is reality-checked against 5y forward-return evidence.
+    Zero-decision trade plan appended to --screen. REAL-broker capital only:
+      • sizes against real Zerodha equity — fresh session, or last-known equity
+        loudly flagged STALE (never config/phantom capital);
+      • BUY TODAY only for genuine entries with a fired trigger (RS leader at a
+        tradable location + confirmation bar; RR is never a gate — disproven);
+      • armed leaders become exact CONDITIONAL GTT orders, not vague alerts;
+      • every target is reality-checked against 5y forward-return evidence;
+      • ends with ONE mechanical exit ruleset — nothing left to decide.
 
     No scores changed. Pure display, consumes the already-built ScreenResult.
     """
@@ -665,6 +834,12 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
     cfg_cap    = float(cfg.get("capital", 500_000))   # used ONLY by load_state's NAV compare
     risk_pct   = float(cfg.get("risk_per_trade_pct", 1.0))
     time_stop  = int(cfg.get("time_stop_weeks", 12))
+    # ONE position-cap truth (config/deployment.yaml) — was three disagreeing
+    # hardcoded numbers (plan 3, yaml 5, constructor 8). Committee rule:
+    # never hold more than target_positions total, never open more than
+    # max_new_per_week fresh names in one review.
+    target_pos = int(cfg.get("target_positions", 5))
+    max_new    = int(cfg.get("max_new_per_week", 3))
     stats      = load_setup_stats()
     path_cache = load_cohort_cache()
     calib      = _load_calibrated()
@@ -703,17 +878,27 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
     print(f"  {B}{'═'*72}{RST}")
     _render_account_block(state, fresh, live)
 
-    # ── NOT LIVE → honest stop. No phantom sizing, no fake buys. ─────────────
+    # ── NOT LIVE → two honest cases. Phantom/config capital is still banned:
+    #    • real-but-STALE broker equity → produce the FULL plan sized on the
+    #      last-known equity, loudly flagged (a dated real number beats "no
+    #      plan" — zero-decision output needs quantities), placement blocked
+    #      behind --kite-login anyway;
+    #    • empty/unknown account → watch-only, no sizing, as before.
     if not live:
-        if "ZERODHA_LIVE" in (state.source or "") and not fresh:
+        stale_known = ("ZERODHA_LIVE" in (state.source or "")) and state.net_equity > 0
+        if stale_known:
             print(f"  {R}  ⚠ Kite session expired (last live sync "
-                  f"{(state.as_of or '?')[:10]}). Run: python run.py --kite-login{RST}")
-        if state.net_equity <= 0:
-            print(f"  {R}  ⚠ ₹0 deployable — fund your Zerodha account. "
-                  f"No buy plan until capital is live.{RST}")
-        _render_watch_only(res, stats)
-        _render_evidence_footer(stats)
-        return
+                  f"{(state.as_of or '?')[:10]}) — sizing uses LAST-KNOWN equity "
+                  f"{_fmt_money(state.net_equity)}.{RST}")
+            print(f"  {R}    Run `python run.py --kite-login` BEFORE placing any "
+                  f"order below (quantities re-check on live cash).{RST}")
+        else:
+            if state.net_equity <= 0:
+                print(f"  {R}  ⚠ ₹0 deployable — fund your Zerodha account. "
+                      f"No buy plan until capital is live.{RST}")
+            _render_watch_only(res, stats)
+            _render_evidence_footer(stats)
+            return
 
     # ── LIVE → size against REAL equity, ADAPTIVE risk by edge health ───────
     cap = state.net_equity
@@ -739,7 +924,8 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
         return
 
     try:
-        snap    = PortfolioConstructor(risk_per_trade=risk_pct).construct(
+        snap    = PortfolioConstructor(risk_per_trade=risk_pct,
+                                       max_positions=target_pos).construct(
                       res.act_snap, res.regime, res.feed.data, persist=False)
         lc      = state_to_lifecycle_holdings(state)
         lc_snap = LifecycleManager(time_stop_weeks=time_stop).review(lc, res, persist=False)
@@ -782,11 +968,22 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
     if posture == "CAUTION":
         print(f"\n  {Y}  ⚠ {posture_msg}{RST}")
 
-    # split into genuine-entry-now vs wait (leadership/exhaustion-gated)
+    # ── EXPLICIT TRIGGERS (2026-07-02 fix): compute the price/volume confirmation
+    #    for every buy candidate on the last COMPLETE session, then split into
+    #    TRIGGERED-entry-now vs armed/wait. STATE-MACHINE GATE: only a name with an
+    #    explicit trigger (ACTION_NOW / confirmed breakout bar / confirmed reclaim
+    #    bar) may enter the execution queue. Armed-but-untriggered leaders get an
+    #    exact CONDITIONAL order (GTT) below — placed, never chased.
+    confirm: dict[str, dict] = {}
+    for b in card.buys:
+        row = res.act_snap.get(b.ticker)
+        if row is not None:
+            confirm[b.ticker] = _entry_confirmation(row, res.feed.data.get(b.ticker))
     buy_now, wait = [], []
     for b in card.buys:
         row = res.act_snap.get(b.ticker)
-        (buy_now if _is_genuine_entry(row, res.leader_weeks) else wait).append((b, row))
+        (buy_now if _is_signal_triggered(row, res.leader_weeks, confirm.get(b.ticker))
+         else wait).append((b, row))
 
     # ② BUY TODAY — calibrated levels + portfolio-risk caps + conviction-tier sizing
     use_calib = bool(calib and calib.get("k_stop"))
@@ -808,10 +1005,12 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
     # sector grade map (for the death-zone "sector weakening" check)
     sector_grade_map = {r.sector: r.grade for r in res.sector_snap.rows}
 
-    # build sized candidates
-    cands = []
-    for b, row in buy_now:
-        entry = b.limit_price
+    # ── sized-candidate builder — shared by CONFIRMED buys (entry = today's
+    #    limit) and ARMED conditionals (entry = the GTT trigger price). Same
+    #    calibrated levels, structure-aware stop, quality sizing for both, so a
+    #    conditional order is exactly the order a fill would deserve.
+    def _sized_candidate(b, row, entry_override: "float | None" = None):
+        entry = entry_override or b.limit_price
         atr_raw = _atr_for(b.ticker, res.feed.data)
         atr_pct = (atr_raw / entry * 100) if (atr_raw and entry) else None
         warn, atr = "", atr_raw
@@ -895,21 +1094,71 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
                     warn = warn or f"size ×{tq.size_factor:.2f} — quality risk control"
 
         if not (qty and qty > 0):
-            continue
-        cands.append({"sym": b.symbol, "sector": sector, "conv": conv, "tier": _tier(conv),
-                      "qty": qty, "entry": entry, "stop": stop, "t1": t1, "t2": t2,
-                      "risk": max(entry - (stop or entry), 0) * qty, "lv": lv,
-                      "row": row, "warn": warn, "tq": tq})
+            return None
+        return {"sym": b.symbol, "sector": sector, "conv": conv, "tier": _tier(conv),
+                "qty": qty, "entry": entry, "stop": stop, "t1": t1, "t2": t2,
+                "risk": max(entry - (stop or entry), 0) * qty, "lv": lv,
+                "row": row, "warn": warn, "tq": tq}
 
-    # PORTFOLIO RISK: sector cap — keep highest-conviction per sector, defer the rest
+    sized_fail: set[str] = set()      # names whose risk budget sized to 0 shares
+    cands = []
+    for b, row in buy_now:
+        c = _sized_candidate(b, row)
+        if c:
+            cands.append(c)
+        elif row is not None:
+            sized_fail.add(row.ticker)
+
+    # PORTFOLIO RISK: new-position budget from the ONE config truth —
+    # min(max_new_per_week, target_positions − already held). Conviction
+    # concentrates; never diversify for its own sake. The caps are shared with
+    # the conditional orders below so the whole plan can never imply more than
+    # MAX_POSITIONS fresh names.
+    MAX_POSITIONS = max(0, min(max_new, target_pos - len(state.holdings)))
     cands.sort(key=lambda c: -c["conv"])
     selected, deferred, sec_count = [], [], {}
     for c in cands:
-        if sec_count.get(c["sector"], 0) >= SECTOR_CAP:
+        if len(selected) >= MAX_POSITIONS:
+            c["defer_why"] = f"committee cap: max {MAX_POSITIONS} positions"
+            deferred.append(c)
+        elif sec_count.get(c["sector"], 0) >= SECTOR_CAP:
+            c["defer_why"] = f"sector cap: {c['sector']} full"
             deferred.append(c)
         else:
             selected.append(c)
             sec_count[c["sector"]] = sec_count.get(c["sector"], 0) + 1
+
+    # ── ARMED leaders → EXACT CONDITIONAL ORDERS (the WAIT-killer). A proven
+    #    leader setup with no confirmation bar yet gets a GTT buy-stop AT its
+    #    trigger price, fully sized with the same calibrated stop/targets — so
+    #    "wait" leaves nothing to decide: place the order; the market decides.
+    armed_pairs = [(b, row) for b, row in wait
+                   if _is_armed(row, res.leader_weeks, confirm.get(b.ticker))]
+    # Rank by the VALIDATED criteria only: market leadership first (the proven
+    # cohort), then composite strength (Top-10 basket, +3.21% expectancy).
+    # Never by RR / analog-EV — both failed OOS.
+    armed_pairs.sort(key=lambda br: (0 if br[1].rs_status == "MARKET_LEADER" else 1,
+                                     -br[1].composite_score))
+    conditionals = []
+    for b, row in armed_pairs:
+        if len(selected) + len(conditionals) >= MAX_POSITIONS:
+            break
+        if sec_count.get(row.sector, 0) >= SECTOR_CAP:
+            continue
+        cf = confirm.get(b.ticker, {})
+        if row.entry_context == "BREAKOUT_SETUP":
+            base = cf.get("pivot") or row.entry
+            trig, kind = round(base * 1.001, 2), "BUY ON BREAKOUT"
+        else:
+            trig, kind = round(row.entry * 1.005, 2), "BUY ON PULLBACK"
+        c = _sized_candidate(b, row, entry_override=trig)
+        if not c:
+            sized_fail.add(row.ticker)
+            continue
+        c.update({"kind": kind, "trigger": trig, "limit": round(trig * 1.003, 2),
+                  "cf_why": cf.get("why", "")})
+        conditionals.append(c)
+        sec_count[row.sector] = sec_count.get(row.sector, 0) + 1
 
     # Split the visible book into PRIME (take with confidence) vs lower-quality
     # (your call, smaller size). SHOW EVERYTHING — nothing is filtered out; the
@@ -917,10 +1166,39 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
     prime    = [c for c in selected if c.get("tq") and c["tq"].recommended]
     marginal = [c for c in selected if not (c.get("tq") and c["tq"].recommended)]
 
-    if not selected:
-        print(f"\n  {Y}{B}  ② NO TRADE TODAY{RST}  "
-              f"{D}(no genuine leader entry at a tradable location today){RST}")
+    # ── ② COMMITTEE DECISION — ONE unambiguous verdict, then the exact orders.
+    #    The verdict and the sections below can never disagree: BUY NOW is said
+    #    only when a PRIME order actually follows (the old code said "BUY NOW —
+    #    execute below" and then printed "NO PRIME SETUP TODAY" beneath it).
+    if prime:
+        verdict, vcol = "BUY NOW", G
+        vwhy = (f"{len(prime)} prime setup(s) printed their confirmation bar on the last "
+                f"complete session — execute the order card below, then stop thinking")
+    elif selected:
+        verdict, vcol = "BUY — LOWER QUALITY (YOUR CALL)", Y
+        vwhy = (f"{len(selected)} confirmed trigger(s), but none is A/B-grade PRIME — "
+                f"risk is surfaced and size is pre-cut below; take or skip is the one "
+                f"call the committee leaves to you")
+    elif conditionals:
+        kinds = sorted({c["kind"] for c in conditionals})
+        verdict = kinds[0] if len(kinds) == 1 else "WAIT FOR TRIGGER"
+        vcol = Y
+        vwhy = (f"proven leader setup(s), confirmation bar not printed yet — place the "
+                f"{len(conditionals)} conditional GTT(s) below and walk away: a fill IS "
+                f"the trigger; no fill = no trade = no loss")
+    elif MAX_POSITIONS == 0 and (cands or armed_pairs):
+        verdict, vcol = "BOOK FULL — NO NEW SLOTS", Y
+        vwhy = (f"{len(state.holdings)} positions held vs target_positions={target_pos} "
+                f"(config/deployment.yaml) — qualified candidates exist but the book has "
+                f"no room; manage exits first, the trace below names what's queued")
     else:
+        verdict, vcol = "STAY IN CASH", R
+        vwhy = "nothing armed, nothing confirmed — numerical proof below, cash is the position"
+    stale_tag = "" if live else f"   {R}⚠ stale session — --kite-login before placing{RST}"
+    print(f"\n  {vcol}{B}  ▶ COMMITTEE DECISION: {verdict}{RST}{stale_tag}")
+    print(f"  {D}    {vwhy}{RST}")
+
+    if selected:
         heat = sum(c["risk"] for c in selected) / cap * 100
         sec_val = {}
         for c in selected:
@@ -936,7 +1214,7 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
         print(f"  {D}  PORTFOLIO RISK (if you take all shown): book heat {hc}{heat:.1f}%{RST}{D} "
               f"of capital  ·  largest sector {lsec} {lval/cap*100:.0f}% "
               f"({sec_count.get(lsec,0)}/{SECTOR_CAP} cap)  ·  {len(selected)} on the table "
-              f"({len(prime)} prime · {len(marginal)} lower-quality){RST}")
+              f"({len(prime)} prime · {len(marginal)} lower-quality) · max {MAX_POSITIONS} positions{RST}")
         if heat > MAX_BOOK_HEAT:
             print(f"  {R}  ⚠ Book heat {heat:.1f}% > {MAX_BOOK_HEAT:.0f}% cap if you take "
                   f"everything — prefer the prime names / size the rest down{RST}")
@@ -944,53 +1222,181 @@ def _render_zero_decision_plan(res: ScreenResult) -> None:
         if prime:
             _buy_table_header()
             for i, c in enumerate(prime, 1):
-                _render_buy_line(i, c, cap, risk_pct, color=G)
+                _render_buy_line(i, c, cap, eff_risk, color=G)
 
         if marginal:
             print(f"\n  {Y}{B}  ②b ALSO ON THE TABLE — lower quality, smaller size (your call){RST}"
                   f"  {D}(shown on purpose — risk is surfaced + pre-sized down; you decide){RST}")
             _buy_table_header()
             for i, c in enumerate(marginal, 1):
-                _render_buy_line(i, c, cap, risk_pct, color=Y)
+                _render_buy_line(i, c, cap, eff_risk, color=Y)
 
-    # ③ WAIT — sector-capped deferrals + strong-but-not-ready names
-    wait_lines = [(c["sym"], f"sector cap: {c['sector']} full — higher-conviction names "
-                             f"kept (conv {c['conv']:.0f})") for c in deferred]
-    wait_lines += [(b.symbol, _defer_reason(row, res.leader_weeks)) for b, row in wait]
-    if wait_lines:
-        print(f"\n  {Y}{B}  ③ WAIT — SET PRICE ALERTS{RST}  "
-              f"{D}(strong, but let price come to you — no chasing){RST}")
-        for sym, msg in wait_lines[:10]:
-            print(f"  {Y}  {sym:<12s}{RST}  {D}{msg}{RST}")
+    # ── ③ CONDITIONAL ORDERS — armed leaders as exact, pre-sized GTT buy-stops.
+    #    This kills "a month of WAIT": waiting is now an ORDER, not a feeling.
+    if conditionals:
+        print(f"\n  {Y}{B}  ③ CONDITIONAL ORDERS — place these GTTs now, they execute "
+              f"themselves{RST}  {D}({note}){RST}")
+        for i, c in enumerate(conditionals, 1):
+            lv = c["lv"] or {}
+            entry = c["entry"]
+
+            def _lvl(p):
+                return (f"{_fmt_money(p)} ({(p / entry - 1) * 100:+.1f}%)" if p else "—")
+
+            print(f"\n  {Y}  {i}  {c['sym'][:12]:12s}  {c['kind']}  ·  tier {c['tier']} "
+                  f"(conv {c['conv']:.0f})  ·  {c['sector']}{RST}")
+            print(f"  {D}       order:  GTT BUY  trigger {_fmt_money(c['trigger'])} · "
+                  f"limit {_fmt_money(c['limit'])} (max slippage 0.3%) · qty {c['qty']} "
+                  f"≈ {_fmt_money(c['qty'] * entry)} · risk ₹{c['risk']:,.0f} "
+                  f"({c['risk'] / cap * 100:.2f}% of equity){RST}")
+            t1_tail = (f" · {lv.get('p_t1', 0) * 100:.0f}% hit ~{lv.get('days_t1', '?')}d"
+                       if lv else "")
+            t2_tail = (f" · {lv.get('p_t2', 0) * 100:.0f}% hit ~{lv.get('days_t2', '?')}d"
+                       if lv else "")
+            print(f"  {D}       levels: stop {_lvl(c['stop'])} · T1 {_lvl(c['t1'])}{t1_tail} "
+                  f"· T2 {_lvl(c['t2'])}{t2_tail}{RST}")
+            if lv:
+                print(f"  {D}       hold:   expected ~{lv.get('days_t1', '?')}–"
+                      f"{lv.get('days_t2', '?')}d after fill · hard time-stop: exit "
+                      f"day 20 if T1 not hit{RST}")
+            print(f"  {D}       stop basis: structural support (swing low/EMA20) reconciled "
+                  f"with the 3×ATR noise floor — ~85% of winning analogs never touch it{RST}")
+            print(f"  {D}       status: {c['cf_why']}{RST}")
+            print(f"  {D}       cancel-if: closes below stop before filling · unfilled after "
+                  f"5 sessions · regime turns BEAR/VOLATILE at the weekly screen{RST}")
+            _render_trade_quality(c.get("tq"))
+            if c["warn"]:
+                print(f"  {Y}       ⚠ {c['warn']}{RST}")
+            try:
+                from scanner.earnings_calendar import earnings_warning
+                ew = earnings_warning(f"{c['sym']}.NS")
+                if ew:
+                    print(f"  {R}       {ew}{RST}")
+            except Exception:
+                pass
+
+    # ── STAY IN CASH must be EARNED — wait-policy proof with measured values ──
+    #    (skipped when the blocker is a full book — that proof would be false)
+    if not selected and not conditionals and not (MAX_POSITIONS == 0
+                                                  and (cands or armed_pairs)):
+        _render_cash_proof(res, edge_h)
+
+    # one mechanical exit policy for everything above — zero discretion left
+    if selected or conditionals:
+        _render_exit_rules(calib)
+
+    # ④ DECISION TRACE — the full audit chain from board to plan. ONE line per
+    #    name: board rank → scores → gate/trigger outcome → final plan status,
+    #    printed from the SAME evaluation that gated the trade (lifecycle
+    #    decide()), never a re-derived approximation. Covers every visible board
+    #    name AND every name the plan touched (even if it ranks below the board
+    #    cut) — so "why did X appear / why did Y lose" is never a mystery.
+    plan_state: dict[str, str] = {}
+    for i, c in enumerate(selected, 1):
+        tag = ("PRIME BUY" if (c.get("tq") and c["tq"].recommended)
+               else "BUY, lower quality")
+        plan_state[c["row"].ticker] = (f"{G}SELECTED #{i}{RST}{D} — {tag} · qty "
+                                       f"{c['qty']} @ {_fmt_money(c['entry'])}{RST}")
+    for i, c in enumerate(conditionals, 1):
+        plan_state[c["row"].ticker] = (f"{Y}CONDITIONAL #{i}{RST}{D} — GTT trigger "
+                                       f"{_fmt_money(c['trigger'])} · qty {c['qty']}{RST}")
+    for c in deferred:
+        plan_state[c["row"].ticker] = (f"{Y}DEFERRED{RST}{D} — "
+                                       f"{c.get('defer_why', 'capped')} (conv "
+                                       f"{c['conv']:.0f} ranked lower){RST}")
+
+    alloc_skips = (snap.metrics or {}).get("allocator_skips", {})
+    board_rows  = res.act_snap.top_n(10)
+    trace_ticks = {r.ticker for r in board_rows}
+    extra_ticks = ({t for t in plan_state}
+                   | {row.ticker for _, row in buy_now if row is not None}
+                   | {row.ticker for _, row in wait if row is not None}) - trace_ticks
+    extra_rows  = [res.act_snap.get(t) for t in extra_ticks]
+    trace_rows  = board_rows + sorted((r for r in extra_rows if r is not None),
+                                      key=lambda r: r.rank)
+
+    print(f"\n  {B}  ④ DECISION TRACE — why every candidate won or lost{RST}  "
+          f"{D}(board → gates → trigger → plan; nothing here needs a decision){RST}")
+    for r in trace_rows[:18]:
+        cf = confirm.get(r.ticker)
+        if cf is None:
+            cf = _entry_confirmation(r, res.feed.data.get(r.ticker))
+        dec = _lc_decide(r, res.leader_weeks, cf)
+        if r.ticker in plan_state:
+            trig = (cf.get("why", "") if (cf.get("breakout") or cf.get("reclaim"))
+                    else ("ACTION_NOW" if r.classification == "ACTION_NOW"
+                          else "awaiting trigger"))
+            status = f"{plan_state[r.ticker]}{D} · {trig}{RST}"
+        elif not dec.armed and not dec.triggered:
+            status = f"{R}REJECTED{RST}{D} — {dec.reason}{RST}"
+        elif dec.triggered:
+            if r.ticker in sized_fail:
+                why = ("risk budget sizes to 0 shares at current equity "
+                       "(share price too high for the ₹ risk/trade)")
+            else:
+                why = alloc_skips.get(r.symbol, "not in the target portfolio "
+                                                "(allocator pool/caps)")
+            status = f"{Y}TRIGGERED, NOT SIZED{RST}{D} — {why}{RST}"
+        else:
+            # ARMED: the reason a trader needs is WHAT the trigger is waiting
+            # for, not allocator internals — those go in parentheses if binding.
+            if r.ticker in sized_fail:
+                why = ("risk budget sizes to 0 shares at current equity "
+                       "(share price too high for the ₹ risk/trade)")
+            else:
+                why = cf.get("why") or dec.reason
+                slots_full = len(selected) + len(conditionals) >= MAX_POSITIONS
+                tail = alloc_skips.get(r.symbol, "no conditional slot free"
+                                       if slots_full else "")
+                if tail:
+                    why = f"{why} ({tail})"
+            status = f"{Y}ARMED — NO ORDER{RST}{D} — {why}{RST}"
+        print(f"  {D}  #{r.rank:>2} {r.symbol[:12]:<12s} act {r.actionability_score:>4.0f} · "
+              f"comp {r.composite_score:>4.0f} · {r.rs_status.replace('_', ' ').lower():<15s} "
+              f"→ {RST}{status}")
 
     if card.holds:
         print(f"\n  {D}  HOLD: {' · '.join(h.symbol for h in card.holds[:8])}{RST}")
 
-    # cash check against REAL available cash (prime-only and all-shown)
-    if selected:
+    # cash check against REAL available cash (confirmed buys + conditional fills)
+    if selected or conditionals:
         spend_prime = sum(c["qty"] * c["entry"] for c in prime)
-        spend_all   = sum(c["qty"] * c["entry"] for c in selected)
-        after = state.available_cash - spend_prime
-        cc = G if after >= 0 else R
-        extra = (f"  |  all-shown cost {_fmt_money(spend_all)}"
-                 if marginal else "")
-        print(f"\n  {D}  Prime cost: {_fmt_money(spend_prime)}  |  "
-              f"Cash after prime: {cc}{_fmt_money(after)}{RST}{D}{extra}{RST}")
-        if after < 0:
-            print(f"  {R}  ⚠  Short by {_fmt_money(abs(after))} for the prime names — "
-                  f"drop the lowest or add funds{RST}")
-        print(f"  {G}  Execute via: python run.py --orders{RST}")
+        spend_cond  = sum(c["qty"] * c["entry"] for c in conditionals)
+        spend_marg  = sum(c["qty"] * c["entry"] for c in marginal)
+        committed   = spend_prime + spend_cond          # prime buys + GTT fills
+        after       = state.available_cash - committed
+        after_all   = after - spend_marg
+        cc  = G if after >= 0 else R
+        ca  = G if after_all >= 0 else R
+        extra = (f"  |  + lower-quality {_fmt_money(spend_marg)} → cash "
+                 f"{ca}{_fmt_money(after_all)}{RST}" if marginal else "")
+        print(f"\n  {D}  Committed cost (prime + GTT fills): {_fmt_money(committed)}  |  "
+              f"Cash after: {cc}{_fmt_money(after)}{RST}{D}{extra}{RST}")
+        worst = after_all if marginal else after
+        if worst < 0:
+            print(f"  {R}  ⚠  Short by {_fmt_money(abs(worst))} if everything fills — "
+                  f"drop the lowest-conviction name or add funds{RST}")
+        print(f"  {G}  Execute:  python run.py --place TICKER   (GTT from today's plan) · "
+              f"then --positions after any fill{RST}")
 
-    # snapshot context so executed fills get journaled with full decision context
-    if _snapshot_plan and selected:
-        _snapshot_plan(selected, res.regime.regime, rm["mode"], rm["mode"])
+    # snapshot context so executed fills get journaled with full decision context.
+    # ALWAYS write (even empty) — a dated file is the staleness guard for --place
+    # and sync enrichment; conditional GTTs may fill days later and need context.
+    if _snapshot_plan:
+        _snapshot_plan(selected + conditionals, res.regime.regime,
+                       (edge_h or {}).get("verdict", "?"), rm["mode"])
 
     _render_live_journal(journal_stats)
     _render_edge_health(edge_h)
     _render_evidence_footer(stats)
 
 
-def render_cockpit(res: ScreenResult) -> None:
+def render_cockpit(res: ScreenResult, research: bool = False) -> None:
+    """Decision-first cockpit. Default = only what feeds TODAY's decision:
+    data quality → regime → sectors → top-10 board → actionable alerts →
+    ZERO-DECISION PLAN (verdict + exact orders + exit rules).
+    `research=True` restores the analyst tables (top-20 board, extended monitor
+    list, adaptive scoring promotions/demotions)."""
     today = date.today().isoformat()
     print(f"\n{B}{'═'*100}{RST}")
     print(f"{B}  SWING TRADING COCKPIT  ·  {today}  ·  "
@@ -1054,16 +1460,18 @@ def render_cockpit(res: ScreenResult) -> None:
         if _df is not None:
             vol_ctx[_r.ticker] = _volume_context(_df)
 
-    # 3) Top 20 candidate board
+    # 3) Candidate board — top 10 by default (the decision only ever uses the
+    #    top of the board); --research restores the full top 20.
+    board_n = 20 if research else 10
     cd = res.act_snap.classification_distribution()
-    top20 = res.act_snap.top_n(20)
+    top20 = res.act_snap.top_n(board_n)
     dist_parts = []
     for cls in ("ACTION_NOW", "WATCHLIST", "EXTENDED", "AVOID"):
         cnt = sum(1 for r in top20 if r.classification == cls)
         if cnt:
             dist_parts.append(f"{cnt} {cls}")
     dist_str = "  ·  ".join(dist_parts)
-    print(f"\n  {B}TOP 20 CANDIDATE BOARD{RST}   {D}{dist_str}{RST}")
+    print(f"\n  {B}TOP {board_n} CANDIDATE BOARD{RST}   {D}{dist_str}{RST}")
     print(f"  {D}{'#':>2}  {'TICKER':12s}  {'COMP':>5}  {'ACT':>5}  {'GR':>3}  "
           f"{'CLASS':10s}  {'RR':>4}  {'RVOL':>4}  {'ENTRY ZONE':21s}  {'STOP':>9}  DRIVERS{RST}")
     print(f"  {D}{'─'*150}{RST}")
@@ -1076,14 +1484,19 @@ def render_cockpit(res: ScreenResult) -> None:
               f"{r.actionability_score:>5.1f}  {gc}{r.grade:>3}{RST}  "
               f"{cc}{r.classification:10s}{RST}  {r.rr_ratio:>4.1f}  "
               f"{rv}  {r.entry_zone:21s}  {r.stop_zone:>9}  {drv}")
+    print(f"  {D}  ⓘ Board ENTRY/STOP/RR are raw scan geometry (ranking context only — "
+          f"RR carries zero weight). EXECUTION levels — calibrated stop/T1/T2 and exact "
+          f"qty — are in the trade plan below. Always trade the plan.{RST}")
 
     # 4) (removed) — the single actionable verdict now lives in ZERO-DECISION TRADE
     #    PLAN below (BUY TODAY / NO TRADE TODAY). The legacy "TOP 5 ACTIONABLE /
     #    No ACTION_NOW" block contradicted it, so it was deleted: one truth only.
 
-    # 5) G9: EXTENDED class — strongest IS but excluded from buy list (no OOS proof yet)
+    # 5) G9: EXTENDED class — research table (strongest IS, excluded from buys).
+    #    Hidden by default: it is monitoring context, not a decision input. The
+    #    actionable version (volume-confirmed pullback alert, 5b) always shows.
     extended = [r for r in res.act_snap.top_n(40) if r.classification == "EXTENDED"]
-    if extended:
+    if extended and research:
         print(f"\n  {B}{'─'*60}{RST}")
         print(f"  {B}  EXTENDED SETUPS — monitor for pullback entry{RST}   "
               f"{D}(IS evidence: t=8.41, +3.85% 20D avg — strongest class){RST}")
@@ -1115,10 +1528,13 @@ def render_cockpit(res: ScreenResult) -> None:
                   f"vol {vt:.2f}x (3D avg, drying)  today {rv:.1f}x  {sup}  "
                   f"entry {r.entry_zone}  stop {r.stop_zone}{RST}")
 
-    # 6) Adaptive (regime-aware) scoring — promotions / demotions
-    _render_adaptive(res.adaptive_snap)
+    # 6) Adaptive (regime-aware) scoring — research table only. The regime block
+    #    already shows the active weights one-liner; the rank-delta/promotion/
+    #    demotion tables changed no decision and were pure noise on a trade day.
+    if research:
+        _render_adaptive(res.adaptive_snap)
 
-    # 7) Zero-decision trade plan — exact qty / stop / T1 / T2 / timing
+    # 7) Zero-decision trade plan — verdict + exact orders + mechanical exits
     _render_zero_decision_plan(res)
     print()
 
@@ -1192,7 +1608,8 @@ def render_benchmark_abort(exc: "BenchmarkUnavailableError") -> None:
     print(f"  {R}{'═'*72}{RST}\n")
 
 
-def run_screen(period: str = "1y", force_refresh: bool = False) -> int:
+def run_screen(period: str = "1y", force_refresh: bool = False,
+               research: bool = False) -> int:
     try:
         sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
@@ -1204,7 +1621,8 @@ def run_screen(period: str = "1y", force_refresh: bool = False) -> int:
     except BenchmarkUnavailableError as exc:
         render_benchmark_abort(exc)
         return 2
-    render_cockpit(res)
+    render_cockpit(res, research=research)
     paths = export_reports(res)
-    print(f"  {D}Exports: {paths['json']} · {paths['csv']} · {paths['md']}{RST}\n")
+    print(f"  {D}Exports: {paths['json']} · {paths['csv']} · {paths['md']}{RST}"
+          f"{'' if research else f'  ·  full analyst tables: --screen --research'}\n")
     return 0

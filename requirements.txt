@@ -4,3 +4,5 @@ yfinance
 kiteconnect
 python-dotenv
 winotify
+pyotp
+requests

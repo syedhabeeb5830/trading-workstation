@@ -8,10 +8,15 @@ Capital is allocated by CONVICTION × RISK × REGIME — not equal weight, not
 "highest score wins". Per the Phase-8 evidence, conviction is anchored on the only
 statistically proven edge first:
 
-    conviction = 0.45 · Relative Strength      (PROVEN alpha — primary)
-               + 0.35 · Actionability          (entry quality / tradability)
-               + 0.20 · Risk/Reward
+    conviction = 0.55 · Relative Strength      (PROVEN alpha — primary)
+               + 0.45 · Actionability          (entry quality / tradability)
                ± grade modifier (≤5 pts)        (secondary only — fragile signal)
+
+Risk/Reward carries ZERO weight (2026-07-02 consistency fix): analytics/
+rr_validation proved geometric RR non-predictive OOS — it previously held 20%
+here, which made the plan's conviction ranking silently disagree with the
+actionability board for reasons no validation supports. Conviction now moves
+only on the two justified axes, so plan order ≡ board order within an RS tier.
 
 Then allocations are constrained by:
     • regime exposure cap   (Phase 6: STRONG_BULL 100% … STRONG_BEAR 10%, VOLATILE halved)
@@ -41,9 +46,15 @@ from scanner.sector_engine import week_id_for
 _log = logging.getLogger(__name__)
 
 # ── Regime → max portfolio exposure (% of capital deployed) ──────────────────
+# BEAR/VOLATILE = 0 (2026-07-02 consistency fix): the E4 validation shows the
+# leader edge REVERSES in BEAR (t≈−3.3 OOS), and --screen's committee gate
+# already refuses fresh longs there. Allocating 10-25% here made --portfolio /
+# --orders contradict the committee. ONE regime interpretation everywhere:
+# no new long capital outside BULL/NEUTRAL/RANGE. (Exit/hold management of
+# existing positions is never gated — that lives in the lifecycle engine.)
 REGIME_EXPOSURE = {
     "STRONG_BULL": 100, "BULL": 75, "NEUTRAL": 50, "RANGE": 40,
-    "WEAK_BEAR": 25, "STRONG_BEAR": 10, "VOLATILE": 25,   # VOLATILE = halved/defensive
+    "WEAK_BEAR": 0, "STRONG_BEAR": 0, "VOLATILE": 0,
 }
 
 # ── Limits (configurable) ────────────────────────────────────────────────────
@@ -130,9 +141,10 @@ class PositionSizer:
 
     def conviction(self, rs_status: str, actionability_score: float,
                    rr: float, grade: str) -> float:
+        # `rr` stays in the signature for call-site compatibility but carries
+        # ZERO weight — proven non-predictive OOS (analytics/rr_validation).
         rs = _RS_SCORE.get(rs_status, 40)
-        rr_s = 100 if rr > 3 else 70 if rr >= 2 else 40 if rr >= 1 else 10
-        base = 0.45 * rs + 0.35 * actionability_score + 0.20 * rr_s
+        base = 0.55 * rs + 0.45 * actionability_score
         grade_mod = (_GRADE_SCORE.get(grade, 50) - 50) * 0.10   # ≤ ±5 (secondary)
         return round(_clamp(base + grade_mod), 1)
 
@@ -171,9 +183,15 @@ class RiskBudgetAllocator:
         chosen: list[PortfolioCandidate] = []
 
         for c in candidates:                 # already sorted by conviction desc
-            if len(chosen) >= max_positions or total >= exposure:
-                break
+            if len(chosen) >= max_positions:
+                c.skip_reason = f"max positions ({max_positions}) reached"
+                continue
+            if total >= exposure:
+                c.skip_reason = (f"regime exposure budget ({exposure:.0f}%) fully "
+                                 f"deployed")
+                continue
             if c.desired_size <= 0:
+                c.skip_reason = "conviction below sizing floor (desired size 0)"
                 continue
             theme = (sector_to_theme or {}).get(c.sector, c.sector)
             room = min(c.desired_size,
@@ -182,7 +200,15 @@ class RiskBudgetAllocator:
                        max_theme  - theme_exp.get(theme, 0.0),
                        exposure - total)
             if room < MIN_POSITION_SIZE:
-                continue                     # capped out by a limit → skip
+                # name the binding limit so the decision trace can explain it
+                binding = min(
+                    (("sector cap", max_sector - sector_exp.get(c.sector, 0.0)),
+                     ("cluster cap", max_cluster - cluster_exp.get(c.cluster_id, 0.0)),
+                     ("theme cap", max_theme - theme_exp.get(theme, 0.0)),
+                     ("exposure budget", exposure - total)),
+                    key=lambda kv: kv[1])[0]
+                c.skip_reason = f"capped out by {binding} (room {room:.1f}% < min {MIN_POSITION_SIZE}%)"
+                continue
             c.allocation = round(room, 2)
             c.theme = theme                  # store for downstream display
             chosen.append(c)
@@ -218,6 +244,7 @@ class PortfolioCandidate:
     allocation:          float = 0.0
     risk_contribution:   float = 0.0    # allocation × stop_pct / 100 (capital at risk)
     theme:               str   = ""     # macro-theme complex (G8)
+    skip_reason:         str   = ""     # why the allocator passed on it (decision trace)
 
 
 @dataclass
@@ -362,6 +389,10 @@ class PortfolioConstructor:
         for c in chosen:                                     # capital actually at risk
             c.risk_contribution = round(c.allocation * c.stop_pct / 100.0, 3)
         metrics = self._metrics(chosen, deployed)
+        # Decision-trace audit: why each ELIGIBLE candidate was passed over.
+        chosen_syms = {c.symbol for c in chosen}
+        metrics["allocator_skips"] = {c.symbol: c.skip_reason for c in cands
+                                      if c.symbol not in chosen_syms and c.skip_reason}
         cluster_groups = _cluster_groups(clusters)
         snap = PortfolioSnapshot(
             datetime.now().isoformat(timespec="seconds"), week_id_for(), regime,
@@ -522,8 +553,16 @@ def run_portfolio(force_refresh: bool = False) -> int:
     except BenchmarkUnavailableError as exc:
         render_benchmark_abort(exc)
         return 2
-    snap = PortfolioConstructor().construct(res.act_snap, res.regime, res.feed.data,
-                                            persist=True)
+    # Same position cap as the --screen committee plan (config/deployment.yaml).
+    try:
+        from portfolio.portfolio_state import load_deployment_config
+        _cfg = load_deployment_config()
+        _maxp = int(_cfg.get("target_positions", 5))
+        _rpt = float(_cfg.get("risk_per_trade_pct", RISK_PER_TRADE_MAX))
+    except Exception:
+        _maxp, _rpt = MAX_POSITIONS, RISK_PER_TRADE_MAX
+    snap = PortfolioConstructor(max_positions=_maxp, risk_per_trade=_rpt).construct(
+        res.act_snap, res.regime, res.feed.data, persist=True)
     render_portfolio(snap)
     paths = export_portfolio(snap)
     print(f"  Exports: {paths['json']} · {paths['csv']} · {paths['md']}\n")

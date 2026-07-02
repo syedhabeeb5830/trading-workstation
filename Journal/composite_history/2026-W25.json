@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T10:25:01",
+  "generated_at": "2026-06-18T11:24:32",
   "week_id": "2026-W25",
   "weights": {
     "rs": 25,
@@ -16,12 +16,16 @@
       "reason": "price \u20b933 < \u20b950"
     },
     {
-      "ticker": "IRB.NS",
-      "reason": "price \u20b922 < \u20b950"
+      "ticker": "IDEA.NS",
+      "reason": "price \u20b915 < \u20b950"
     },
     {
       "ticker": "IOB.NS",
       "reason": "price \u20b935 < \u20b950"
+    },
+    {
+      "ticker": "IRB.NS",
+      "reason": "price \u20b922 < \u20b950"
     },
     {
       "ticker": "JPPOWER.NS",
@@ -48,20 +52,16 @@
       "reason": "price \u20b940 < \u20b950"
     },
     {
-      "ticker": "TTML.NS",
-      "reason": "price \u20b945 < \u20b950"
-    },
-    {
       "ticker": "TRIDENT.NS",
       "reason": "price \u20b925 < \u20b950"
     },
     {
-      "ticker": "UCOBANK.NS",
-      "reason": "price \u20b928 < \u20b950"
+      "ticker": "TTML.NS",
+      "reason": "price \u20b945 < \u20b950"
     },
     {
-      "ticker": "IDEA.NS",
-      "reason": "price \u20b915 < \u20b950"
+      "ticker": "UCOBANK.NS",
+      "reason": "price \u20b928 < \u20b950"
     },
     {
       "ticker": "YESBANK.NS",
@@ -587,7 +587,7 @@
       "days_since_breakout": 0,
       "breakout_level": 922.8,
       "volume_expansion": 1.41,
-      "price": 947.4000244140625
+      "price": 947.4000244140624
     },
     {
       "ticker": "THERMAX.NS",
@@ -1908,7 +1908,7 @@
       "days_since_breakout": 11,
       "breakout_level": 1069.0,
       "volume_expansion": 0.13,
-      "price": 988.4000244140625
+      "price": 988.4000244140624
     },
     {
       "ticker": "GLAND.NS",
@@ -2031,7 +2031,7 @@
       "days_since_breakout": 3,
       "breakout_level": 224.4,
       "volume_expansion": 0.35,
-      "price": 221.91000366210938
+      "price": 221.91000366210935
     },
     {
       "ticker": "MOTILALOFS.NS",
@@ -2061,7 +2061,7 @@
       "days_since_breakout": 3,
       "breakout_level": 960.0,
       "volume_expansion": 0.35,
-      "price": 958.9000244140625
+      "price": 958.9000244140624
     },
     {
       "ticker": "ANANDRATHI.NS",
@@ -2279,7 +2279,7 @@
       "days_since_breakout": 11,
       "breakout_level": 208.98,
       "volume_expansion": 0.31,
-      "price": 196.64999389648438
+      "price": 196.6499938964844
     },
     {
       "ticker": "AARTIIND.NS",
@@ -3169,7 +3169,7 @@
       "days_since_breakout": 0,
       "breakout_level": 428.55,
       "volume_expansion": 0.93,
-      "price": 431.54998779296875
+      "price": 431.5499877929688
     },
     {
       "ticker": "USHAMART.NS",
@@ -3291,7 +3291,7 @@
       "days_since_breakout": 16,
       "breakout_level": 438.35,
       "volume_expansion": 0.03,
-      "price": 403.54998779296875
+      "price": 403.5499877929688
     },
     {
       "ticker": "KOTAKBANK.NS",
@@ -3986,7 +3986,7 @@
       "days_since_breakout": 16,
       "breakout_level": 254.2,
       "volume_expansion": 0.19,
-      "price": 220.49000549316406
+      "price": 220.4900054931641
     },
     {
       "ticker": "NETWEB.NS",
@@ -4291,7 +4291,7 @@
       "days_since_breakout": 52,
       "breakout_level": 535.45,
       "volume_expansion": 0.22,
-      "price": 510.20001220703125
+      "price": 510.2000122070313
     },
     {
       "ticker": "TRITURBINE.NS",
@@ -4414,7 +4414,7 @@
       "days_since_breakout": 3,
       "breakout_level": 472.75,
       "volume_expansion": 0.18,
-      "price": 457.29998779296875
+      "price": 457.2999877929688
     },
     {
       "ticker": "IIFL.NS",
@@ -5658,7 +5658,7 @@
       "days_since_breakout": 2,
       "breakout_level": 1906.6,
       "volume_expansion": 0.15,
-      "price": 1872.0999755859375
+      "price": 1872.0999755859373
     },
     {
       "ticker": "SONATSOFTW.NS",
@@ -5781,7 +5781,7 @@
       "days_since_breakout": 31,
       "breakout_level": 953.5,
       "volume_expansion": 0.18,
-      "price": 937.4000244140625
+      "price": 937.4000244140624
     },
     {
       "ticker": "CDSL.NS",
@@ -5872,7 +5872,7 @@
       "days_since_breakout": 0,
       "breakout_level": 360.0,
       "volume_expansion": 0.33,
-      "price": 362.54998779296875
+      "price": 362.5499877929688
     },
     {
       "ticker": "SUNPHARMA.NS",
@@ -6224,7 +6224,7 @@
       "days_since_breakout": 1,
       "breakout_level": 113.2,
       "volume_expansion": 0.28,
-      "price": 111.69000244140625
+      "price": 111.69000244140624
     },
     {
       "ticker": "LGEINDIA.NS",
@@ -6581,7 +6581,7 @@
       "days_since_breakout": 12,
       "breakout_level": 409.8,
       "volume_expansion": 0.08,
-      "price": 389.79998779296875
+      "price": 389.7999877929688
     },
     {
       "ticker": "MCX.NS",
@@ -6853,7 +6853,7 @@
       "days_since_breakout": 46,
       "breakout_level": 117.95,
       "volume_expansion": 0.1,
-      "price": 113.26000213623047
+      "price": 113.26000213623048
     },
     {
       "ticker": "LICHSGFIN.NS",
@@ -7240,7 +7240,7 @@
       "days_since_breakout": 3,
       "breakout_level": 426.65,
       "volume_expansion": 0.15,
-      "price": 401.70001220703125
+      "price": 401.7000122070313
     },
     {
       "ticker": "IPCALAB.NS",
@@ -7448,7 +7448,7 @@
       "days_since_breakout": 33,
       "breakout_level": 188.3,
       "volume_expansion": 0.38,
-      "price": 185.49000549316406
+      "price": 185.4900054931641
     },
     {
       "ticker": "FORTIS.NS",
@@ -7478,7 +7478,7 @@
       "days_since_breakout": 28,
       "breakout_level": 1010.1,
       "volume_expansion": 0.26,
-      "price": 952.4000244140625
+      "price": 952.4000244140624
     },
     {
       "ticker": "TORNTPHARM.NS",
@@ -7985,7 +7985,7 @@
       "days_since_breakout": 11,
       "breakout_level": 2002.3,
       "volume_expansion": 0.15,
-      "price": 1860.0999755859375
+      "price": 1860.0999755859373
     },
     {
       "ticker": "BALKRISIND.NS",
@@ -8493,7 +8493,7 @@
       "days_since_breakout": 16,
       "breakout_level": 408.0,
       "volume_expansion": 0.68,
-      "price": 363.29998779296875
+      "price": 363.2999877929688
     },
     {
       "ticker": "LUPIN.NS",
@@ -8641,7 +8641,7 @@
       "days_since_breakout": 16,
       "breakout_level": 1176.0,
       "volume_expansion": 0.35,
-      "price": 1007.5999755859375
+      "price": 1007.5999755859376
     },
     {
       "ticker": "INDGN.NS",
@@ -8704,41 +8704,10 @@
       "price": 360.8500061035156
     },
     {
-      "ticker": "RITES.NS",
-      "symbol": "RITES",
-      "sector": "Construction",
-      "rank": 285,
-      "score": 52.69,
-      "grade": "C",
-      "components": {
-        "rs": 75.0,
-        "sector": 45.9,
-        "breakout": 73.8,
-        "trend": 0.0,
-        "liquidity": 70.0,
-        "atr": 60.0,
-        "freshness": 0.0
-      },
-      "drivers": [
-        "Best factor: rs 75"
-      ],
-      "warnings": [
-        "Downtrend",
-        "Stale breakout"
-      ],
-      "rs_status": "EMERGING_LEADER",
-      "rs_bucket": "BOTTOM_50",
-      "sector_rank": 13,
-      "days_since_breakout": 44,
-      "breakout_level": 215.4,
-      "volume_expansion": 0.13,
-      "price": 212.14999389648438
-    },
-    {
       "ticker": "BERGEPAINT.NS",
       "symbol": "BERGEPAINT",
       "sector": "Consumer Durables",
-      "rank": 286,
+      "rank": 285,
       "score": 52.66,
       "grade": "C",
       "components": {
@@ -8768,7 +8737,7 @@
       "ticker": "NLCINDIA.NS",
       "symbol": "NLCINDIA",
       "sector": "Power",
-      "rank": 287,
+      "rank": 286,
       "score": 52.64,
       "grade": "C",
       "components": {
@@ -8798,7 +8767,7 @@
       "ticker": "HYUNDAI.NS",
       "symbol": "HYUNDAI",
       "sector": "Automobile and Auto Components",
-      "rank": 288,
+      "rank": 287,
       "score": 52.52,
       "grade": "C",
       "components": {
@@ -8829,7 +8798,7 @@
       "ticker": "DEEPAKNTR.NS",
       "symbol": "DEEPAKNTR",
       "sector": "Chemicals",
-      "rank": 289,
+      "rank": 288,
       "score": 51.72,
       "grade": "C",
       "components": {
@@ -8859,7 +8828,7 @@
       "ticker": "SHRIRAMFIN.NS",
       "symbol": "SHRIRAMFIN",
       "sector": "Financial Services",
-      "rank": 290,
+      "rank": 289,
       "score": 51.5,
       "grade": "C",
       "components": {
@@ -8881,13 +8850,13 @@
       "days_since_breakout": 3,
       "breakout_level": 1015.75,
       "volume_expansion": 0.14,
-      "price": 1011.4000244140625
+      "price": 1011.4000244140624
     },
     {
       "ticker": "INDIAMART.NS",
       "symbol": "INDIAMART",
       "sector": "Consumer Services",
-      "rank": 291,
+      "rank": 290,
       "score": 51.23,
       "grade": "C",
       "components": {
@@ -8917,7 +8886,7 @@
       "ticker": "AADHARHFC.NS",
       "symbol": "AADHARHFC",
       "sector": "Financial Services",
-      "rank": 292,
+      "rank": 291,
       "score": 51.1,
       "grade": "C",
       "components": {
@@ -8945,7 +8914,7 @@
       "ticker": "TATASTEEL.NS",
       "symbol": "TATASTEEL",
       "sector": "Metals & Mining",
-      "rank": 293,
+      "rank": 292,
       "score": 51.1,
       "grade": "C",
       "components": {
@@ -8969,13 +8938,13 @@
       "days_since_breakout": 25,
       "breakout_level": 214.54,
       "volume_expansion": 0.16,
-      "price": 198.97999572753906
+      "price": 198.97999572753903
     },
     {
       "ticker": "SUMICHEM.NS",
       "symbol": "SUMICHEM",
       "sector": "Chemicals",
-      "rank": 294,
+      "rank": 293,
       "score": 51.06,
       "grade": "C",
       "components": {
@@ -9005,7 +8974,7 @@
       "ticker": "KARURVYSYA.NS",
       "symbol": "KARURVYSYA",
       "sector": "Financial Services",
-      "rank": 295,
+      "rank": 294,
       "score": 51.0,
       "grade": "C",
       "components": {
@@ -9030,6 +8999,37 @@
       "breakout_level": 298.0,
       "volume_expansion": 0.3,
       "price": 297.1000061035156
+    },
+    {
+      "ticker": "TVSMOTOR.NS",
+      "symbol": "TVSMOTOR",
+      "sector": "Automobile and Auto Components",
+      "rank": 295,
+      "score": 50.9,
+      "grade": "C",
+      "components": {
+        "rs": 40.0,
+        "sector": 65.7,
+        "breakout": 73.8,
+        "trend": 0.0,
+        "liquidity": 100.0,
+        "atr": 60.0,
+        "freshness": 0.0
+      },
+      "drivers": [
+        "Sector #5 (Automobile and Auto Components)"
+      ],
+      "warnings": [
+        "Downtrend",
+        "Stale breakout"
+      ],
+      "rs_status": "NEUTRAL",
+      "rs_bucket": "BOTTOM_50",
+      "sector_rank": 5,
+      "days_since_breakout": 48,
+      "breakout_level": 3501.7,
+      "volume_expansion": 0.08,
+      "price": 3468.0
     },
     {
       "ticker": "ONESOURCE.NS",
@@ -9120,10 +9120,40 @@
       "price": 880.3499755859375
     },
     {
+      "ticker": "DRREDDY.NS",
+      "symbol": "DRREDDY",
+      "sector": "Healthcare",
+      "rank": 299,
+      "score": 50.42,
+      "grade": "C",
+      "components": {
+        "rs": 40.0,
+        "sector": 63.6,
+        "breakout": 58.5,
+        "trend": 30.0,
+        "liquidity": 100.0,
+        "atr": 30.0,
+        "freshness": 0.0
+      },
+      "drivers": [
+        "Best factor: liquidity 100"
+      ],
+      "warnings": [
+        "Stale breakout"
+      ],
+      "rs_status": "NEUTRAL",
+      "rs_bucket": "BOTTOM_50",
+      "sector_rank": 9,
+      "days_since_breakout": 40,
+      "breakout_level": 1346.8,
+      "volume_expansion": 0.12,
+      "price": 1268.4000244140625
+    },
+    {
       "ticker": "VOLTAS.NS",
       "symbol": "VOLTAS",
       "sector": "Consumer Durables",
-      "rank": 299,
+      "rank": 300,
       "score": 50.32,
       "grade": "C",
       "components": {
@@ -9153,7 +9183,7 @@
       "ticker": "GPIL.NS",
       "symbol": "GPIL",
       "sector": "Capital Goods",
-      "rank": 300,
+      "rank": 301,
       "score": 50.14,
       "grade": "C",
       "components": {
@@ -9184,7 +9214,7 @@
       "ticker": "TENNIND.NS",
       "symbol": "TENNIND",
       "sector": "Automobile and Auto Components",
-      "rank": 301,
+      "rank": 302,
       "score": 49.78,
       "grade": "D",
       "components": {
@@ -9214,7 +9244,7 @@
       "ticker": "PNBHOUSING.NS",
       "symbol": "PNBHOUSING",
       "sector": "Financial Services",
-      "rank": 302,
+      "rank": 303,
       "score": 49.12,
       "grade": "D",
       "components": {
@@ -9244,7 +9274,7 @@
       "ticker": "ANANTRAJ.NS",
       "symbol": "ANANTRAJ",
       "sector": "Realty",
-      "rank": 303,
+      "rank": 304,
       "score": 49.1,
       "grade": "D",
       "components": {
@@ -9272,7 +9302,7 @@
       "ticker": "SBIN.NS",
       "symbol": "SBIN",
       "sector": "Financial Services",
-      "rank": 304,
+      "rank": 305,
       "score": 49.1,
       "grade": "D",
       "components": {
@@ -9302,7 +9332,7 @@
       "ticker": "UNIONBANK.NS",
       "symbol": "UNIONBANK",
       "sector": "Financial Services",
-      "rank": 305,
+      "rank": 306,
       "score": 49.1,
       "grade": "D",
       "components": {
@@ -9332,7 +9362,7 @@
       "ticker": "JSWCEMENT.NS",
       "symbol": "JSWCEMENT",
       "sector": "Construction Materials",
-      "rank": 306,
+      "rank": 307,
       "score": 48.9,
       "grade": "D",
       "components": {
@@ -9362,7 +9392,7 @@
       "ticker": "GRAPHITE.NS",
       "symbol": "GRAPHITE",
       "sector": "Capital Goods",
-      "rank": 307,
+      "rank": 308,
       "score": 48.64,
       "grade": "D",
       "components": {
@@ -9393,7 +9423,7 @@
       "ticker": "HEG.NS",
       "symbol": "HEG",
       "sector": "Capital Goods",
-      "rank": 308,
+      "rank": 309,
       "score": 48.14,
       "grade": "D",
       "components": {
@@ -9424,7 +9454,7 @@
       "ticker": "FORCEMOT.NS",
       "symbol": "FORCEMOT",
       "sector": "Automobile and Auto Components",
-      "rank": 309,
+      "rank": 310,
       "score": 47.28,
       "grade": "D",
       "components": {
@@ -9455,7 +9485,7 @@
       "ticker": "SRF.NS",
       "symbol": "SRF",
       "sector": "Chemicals",
-      "rank": 310,
+      "rank": 311,
       "score": 47.18,
       "grade": "D",
       "components": {
@@ -9486,7 +9516,7 @@
       "ticker": "MARUTI.NS",
       "symbol": "MARUTI",
       "sector": "Automobile and Auto Components",
-      "rank": 311,
+      "rank": 312,
       "score": 47.1,
       "grade": "D",
       "components": {
@@ -9516,7 +9546,7 @@
       "ticker": "JKCEMENT.NS",
       "symbol": "JKCEMENT",
       "sector": "Construction Materials",
-      "rank": 312,
+      "rank": 313,
       "score": 46.93,
       "grade": "D",
       "components": {
@@ -9547,7 +9577,7 @@
       "ticker": "ASHOKLEY.NS",
       "symbol": "ASHOKLEY",
       "sector": "Capital Goods",
-      "rank": 313,
+      "rank": 314,
       "score": 46.66,
       "grade": "D",
       "components": {
@@ -9578,7 +9608,7 @@
       "ticker": "HINDCOPPER.NS",
       "symbol": "HINDCOPPER",
       "sector": "Metals & Mining",
-      "rank": 314,
+      "rank": 315,
       "score": 46.6,
       "grade": "D",
       "components": {
@@ -9609,7 +9639,7 @@
       "ticker": "MRPL.NS",
       "symbol": "MRPL",
       "sector": "Oil Gas & Consumable Fuels",
-      "rank": 315,
+      "rank": 316,
       "score": 46.32,
       "grade": "D",
       "components": {
@@ -9639,7 +9669,7 @@
       "ticker": "TATAINVEST.NS",
       "symbol": "TATAINVEST",
       "sector": "Financial Services",
-      "rank": 316,
+      "rank": 317,
       "score": 46.24,
       "grade": "D",
       "components": {
@@ -9669,7 +9699,7 @@
       "ticker": "NTPCGREEN.NS",
       "symbol": "NTPCGREEN",
       "sector": "Power",
-      "rank": 317,
+      "rank": 318,
       "score": 45.74,
       "grade": "D",
       "components": {
@@ -9700,7 +9730,7 @@
       "ticker": "POWERGRID.NS",
       "symbol": "POWERGRID",
       "sector": "Power",
-      "rank": 318,
+      "rank": 319,
       "score": 45.74,
       "grade": "D",
       "components": {
@@ -9731,7 +9761,7 @@
       "ticker": "CIPLA.NS",
       "symbol": "CIPLA",
       "sector": "Healthcare",
-      "rank": 319,
+      "rank": 320,
       "score": 45.72,
       "grade": "D",
       "components": {
@@ -9759,10 +9789,41 @@
       "price": 1358.0
     },
     {
+      "ticker": "INDUSTOWER.NS",
+      "symbol": "INDUSTOWER",
+      "sector": "Telecommunication",
+      "rank": 321,
+      "score": 45.66,
+      "grade": "D",
+      "components": {
+        "rs": 40.0,
+        "sector": 65.1,
+        "breakout": 48.2,
+        "trend": 0.0,
+        "liquidity": 100.0,
+        "atr": 60.0,
+        "freshness": 0.0
+      },
+      "drivers": [
+        "Best factor: liquidity 100"
+      ],
+      "warnings": [
+        "Downtrend",
+        "Stale breakout"
+      ],
+      "rs_status": "NEUTRAL",
+      "rs_bucket": "BOTTOM_50",
+      "sector_rank": 7,
+      "days_since_breakout": 24,
+      "breakout_level": 449.4,
+      "volume_expansion": 0.1,
+      "price": 414.2999877929688
+    },
+    {
       "ticker": "JYOTICNC.NS",
       "symbol": "JYOTICNC",
       "sector": "Capital Goods",
-      "rank": 320,
+      "rank": 322,
       "score": 45.66,
       "grade": "D",
       "components": {
@@ -9793,7 +9854,7 @@
       "ticker": "NHPC.NS",
       "symbol": "NHPC",
       "sector": "Power",
-      "rank": 321,
+      "rank": 323,
       "score": 45.64,
       "grade": "D",
       "components": {
@@ -9824,7 +9885,7 @@
       "ticker": "TORNTPOWER.NS",
       "symbol": "TORNTPOWER",
       "sector": "Power",
-      "rank": 322,
+      "rank": 324,
       "score": 45.64,
       "grade": "D",
       "components": {
@@ -9855,7 +9916,7 @@
       "ticker": "JINDALSTEL.NS",
       "symbol": "JINDALSTEL",
       "sector": "Metals & Mining",
-      "rank": 323,
+      "rank": 325,
       "score": 45.6,
       "grade": "D",
       "components": {
@@ -9886,7 +9947,7 @@
       "ticker": "ATUL.NS",
       "symbol": "ATUL",
       "sector": "Chemicals",
-      "rank": 324,
+      "rank": 326,
       "score": 45.56,
       "grade": "D",
       "components": {
@@ -9916,7 +9977,7 @@
       "ticker": "NCC.NS",
       "symbol": "NCC",
       "sector": "Construction",
-      "rank": 325,
+      "rank": 327,
       "score": 45.44,
       "grade": "D",
       "components": {
@@ -9947,7 +10008,7 @@
       "ticker": "GLENMARK.NS",
       "symbol": "GLENMARK",
       "sector": "Healthcare",
-      "rank": 326,
+      "rank": 328,
       "score": 45.36,
       "grade": "D",
       "components": {
@@ -9978,7 +10039,7 @@
       "ticker": "COLPAL.NS",
       "symbol": "COLPAL",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 327,
+      "rank": 329,
       "score": 45.18,
       "grade": "D",
       "components": {
@@ -10002,13 +10063,13 @@
       "days_since_breakout": 39,
       "breakout_level": 2184.25,
       "volume_expansion": 0.2,
-      "price": 2041.0999755859375
+      "price": 2041.0999755859373
     },
     {
       "ticker": "NATIONALUM.NS",
       "symbol": "NATIONALUM",
       "sector": "Metals & Mining",
-      "rank": 328,
+      "rank": 330,
       "score": 44.74,
       "grade": "D",
       "components": {
@@ -10040,7 +10101,7 @@
       "ticker": "GMDCLTD.NS",
       "symbol": "GMDCLTD",
       "sector": "Metals & Mining",
-      "rank": 329,
+      "rank": 331,
       "score": 44.6,
       "grade": "D",
       "components": {
@@ -10071,7 +10132,7 @@
       "ticker": "HINDZINC.NS",
       "symbol": "HINDZINC",
       "sector": "Metals & Mining",
-      "rank": 330,
+      "rank": 332,
       "score": 44.6,
       "grade": "D",
       "components": {
@@ -10102,7 +10163,7 @@
       "ticker": "LODHA.NS",
       "symbol": "LODHA",
       "sector": "Realty",
-      "rank": 331,
+      "rank": 333,
       "score": 44.22,
       "grade": "D",
       "components": {
@@ -10127,13 +10188,13 @@
       "days_since_breakout": 30,
       "breakout_level": 969.0,
       "volume_expansion": 0.13,
-      "price": 920.9000244140625
+      "price": 920.9000244140624
     },
     {
       "ticker": "VMM.NS",
       "symbol": "VMM",
       "sector": "Consumer Services",
-      "rank": 332,
+      "rank": 334,
       "score": 44.22,
       "grade": "D",
       "components": {
@@ -10157,13 +10218,13 @@
       "days_since_breakout": 40,
       "breakout_level": 124.29,
       "volume_expansion": 0.14,
-      "price": 118.55000305175781
+      "price": 118.5500030517578
     },
     {
       "ticker": "TATAPOWER.NS",
       "symbol": "TATAPOWER",
       "sector": "Power",
-      "rank": 333,
+      "rank": 335,
       "score": 44.14,
       "grade": "D",
       "components": {
@@ -10188,13 +10249,13 @@
       "days_since_breakout": 37,
       "breakout_level": 434.0,
       "volume_expansion": 0.24,
-      "price": 403.29998779296875
+      "price": 403.2999877929688
     },
     {
       "ticker": "GODFRYPHLP.NS",
       "symbol": "GODFRYPHLP",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 334,
+      "rank": 336,
       "score": 43.94,
       "grade": "D",
       "components": {
@@ -10222,10 +10283,41 @@
       "price": 2272.199951171875
     },
     {
+      "ticker": "RITES.NS",
+      "symbol": "RITES",
+      "sector": "Construction",
+      "rank": 337,
+      "score": 43.94,
+      "grade": "D",
+      "components": {
+        "rs": 40.0,
+        "sector": 45.9,
+        "breakout": 73.8,
+        "trend": 0.0,
+        "liquidity": 70.0,
+        "atr": 60.0,
+        "freshness": 0.0
+      },
+      "drivers": [
+        "Best factor: breakout 74"
+      ],
+      "warnings": [
+        "Downtrend",
+        "Stale breakout"
+      ],
+      "rs_status": "NEUTRAL",
+      "rs_bucket": "BOTTOM_50",
+      "sector_rank": 13,
+      "days_since_breakout": 44,
+      "breakout_level": 215.4,
+      "volume_expansion": 0.13,
+      "price": 212.1499938964844
+    },
+    {
       "ticker": "KAYNES.NS",
       "symbol": "KAYNES",
       "sector": "Capital Goods",
-      "rank": 335,
+      "rank": 338,
       "score": 43.9,
       "grade": "D",
       "components": {
@@ -10257,7 +10349,7 @@
       "ticker": "TATACONSUM.NS",
       "symbol": "TATACONSUM",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 336,
+      "rank": 339,
       "score": 43.58,
       "grade": "D",
       "components": {
@@ -10287,7 +10379,7 @@
       "ticker": "ANURAS.NS",
       "symbol": "ANURAS",
       "sector": "Chemicals",
-      "rank": 337,
+      "rank": 340,
       "score": 43.56,
       "grade": "D",
       "components": {
@@ -10318,7 +10410,7 @@
       "ticker": "SPLPETRO.NS",
       "symbol": "SPLPETRO",
       "sector": "Chemicals",
-      "rank": 338,
+      "rank": 341,
       "score": 43.18,
       "grade": "D",
       "components": {
@@ -10350,7 +10442,7 @@
       "ticker": "BDL.NS",
       "symbol": "BDL",
       "sector": "Capital Goods",
-      "rank": 339,
+      "rank": 342,
       "score": 43.16,
       "grade": "D",
       "components": {
@@ -10382,7 +10474,7 @@
       "ticker": "ERIS.NS",
       "symbol": "ERIS",
       "sector": "Healthcare",
-      "rank": 340,
+      "rank": 343,
       "score": 42.86,
       "grade": "D",
       "components": {
@@ -10413,7 +10505,7 @@
       "ticker": "HINDUNILVR.NS",
       "symbol": "HINDUNILVR",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 341,
+      "rank": 344,
       "score": 42.7,
       "grade": "D",
       "components": {
@@ -10444,7 +10536,7 @@
       "ticker": "LINDEINDIA.NS",
       "symbol": "LINDEINDIA",
       "sector": "Chemicals",
-      "rank": 342,
+      "rank": 345,
       "score": 42.66,
       "grade": "D",
       "components": {
@@ -10475,7 +10567,7 @@
       "ticker": "INOXWIND.NS",
       "symbol": "INOXWIND",
       "sector": "Capital Goods",
-      "rank": 343,
+      "rank": 346,
       "score": 42.64,
       "grade": "D",
       "components": {
@@ -10502,13 +10594,13 @@
       "days_since_breakout": 31,
       "breakout_level": 99.15,
       "volume_expansion": 0.25,
-      "price": 90.16999816894531
+      "price": 90.16999816894533
     },
     {
       "ticker": "NTPC.NS",
       "symbol": "NTPC",
       "sector": "Power",
-      "rank": 344,
+      "rank": 347,
       "score": 42.64,
       "grade": "D",
       "components": {
@@ -10539,7 +10631,7 @@
       "ticker": "BPCL.NS",
       "symbol": "BPCL",
       "sector": "Oil Gas & Consumable Fuels",
-      "rank": 345,
+      "rank": 348,
       "score": 42.62,
       "grade": "D",
       "components": {
@@ -10570,7 +10662,7 @@
       "ticker": "CANHLIFE.NS",
       "symbol": "CANHLIFE",
       "sector": "Financial Services",
-      "rank": 346,
+      "rank": 349,
       "score": 42.6,
       "grade": "D",
       "components": {
@@ -10598,10 +10690,41 @@
       "price": 140.8300018310547
     },
     {
+      "ticker": "SARDAEN.NS",
+      "symbol": "SARDAEN",
+      "sector": "Metals & Mining",
+      "rank": 350,
+      "score": 42.6,
+      "grade": "D",
+      "components": {
+        "rs": 40.0,
+        "sector": 69.8,
+        "breakout": 43.2,
+        "trend": 0.0,
+        "liquidity": 70.0,
+        "atr": 60.0,
+        "freshness": 0.0
+      },
+      "drivers": [
+        "Sector #3 (Metals & Mining)"
+      ],
+      "warnings": [
+        "Downtrend",
+        "Stale breakout"
+      ],
+      "rs_status": "NEUTRAL",
+      "rs_bucket": "BOTTOM_50",
+      "sector_rank": 3,
+      "days_since_breakout": 38,
+      "breakout_level": 578.8,
+      "volume_expansion": 0.08,
+      "price": 519.3499755859375
+    },
+    {
       "ticker": "HEROMOTOCO.NS",
       "symbol": "HEROMOTOCO",
       "sector": "Automobile and Auto Components",
-      "rank": 347,
+      "rank": 351,
       "score": 42.4,
       "grade": "D",
       "components": {
@@ -10632,7 +10755,7 @@
       "ticker": "CEATLTD.NS",
       "symbol": "CEATLTD",
       "sector": "Automobile and Auto Components",
-      "rank": 348,
+      "rank": 352,
       "score": 42.14,
       "grade": "D",
       "components": {
@@ -10664,7 +10787,7 @@
       "ticker": "IREDA.NS",
       "symbol": "IREDA",
       "sector": "Financial Services",
-      "rank": 349,
+      "rank": 353,
       "score": 41.98,
       "grade": "D",
       "components": {
@@ -10695,7 +10818,7 @@
       "ticker": "SUNTV.NS",
       "symbol": "SUNTV",
       "sector": "Media Entertainment & Publication",
-      "rank": 350,
+      "rank": 354,
       "score": 41.98,
       "grade": "D",
       "components": {
@@ -10726,7 +10849,7 @@
       "ticker": "MFSL.NS",
       "symbol": "MFSL",
       "sector": "Financial Services",
-      "rank": 351,
+      "rank": 355,
       "score": 41.96,
       "grade": "D",
       "components": {
@@ -10757,7 +10880,7 @@
       "ticker": "SWANCORP.NS",
       "symbol": "SWANCORP",
       "sector": "Chemicals",
-      "rank": 352,
+      "rank": 356,
       "score": 41.96,
       "grade": "D",
       "components": {
@@ -10789,7 +10912,7 @@
       "ticker": "ASAHIINDIA.NS",
       "symbol": "ASAHIINDIA",
       "sector": "Automobile and Auto Components",
-      "rank": 353,
+      "rank": 357,
       "score": 41.78,
       "grade": "D",
       "components": {
@@ -10820,7 +10943,7 @@
       "ticker": "GESHIP.NS",
       "symbol": "GESHIP",
       "sector": "Services",
-      "rank": 354,
+      "rank": 358,
       "score": 41.7,
       "grade": "D",
       "components": {
@@ -10851,7 +10974,7 @@
       "ticker": "BIKAJI.NS",
       "symbol": "BIKAJI",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 355,
+      "rank": 359,
       "score": 41.4,
       "grade": "D",
       "components": {
@@ -10882,7 +11005,7 @@
       "ticker": "TECHM.NS",
       "symbol": "TECHM",
       "sector": "Information Technology",
-      "rank": 356,
+      "rank": 360,
       "score": 41.38,
       "grade": "D",
       "components": {
@@ -10912,7 +11035,7 @@
       "ticker": "ESCORTS.NS",
       "symbol": "ESCORTS",
       "sector": "Capital Goods",
-      "rank": 357,
+      "rank": 361,
       "score": 41.14,
       "grade": "D",
       "components": {
@@ -10944,7 +11067,7 @@
       "ticker": "M&M.NS",
       "symbol": "M&M",
       "sector": "Automobile and Auto Components",
-      "rank": 358,
+      "rank": 362,
       "score": 40.9,
       "grade": "D",
       "components": {
@@ -10973,42 +11096,10 @@
       "price": 3139.0
     },
     {
-      "ticker": "TVSMOTOR.NS",
-      "symbol": "TVSMOTOR",
-      "sector": "Automobile and Auto Components",
-      "rank": 359,
-      "score": 40.9,
-      "grade": "D",
-      "components": {
-        "rs": 0.0,
-        "sector": 65.7,
-        "breakout": 73.8,
-        "trend": 0.0,
-        "liquidity": 100.0,
-        "atr": 60.0,
-        "freshness": 0.0
-      },
-      "drivers": [
-        "Sector #5 (Automobile and Auto Components)"
-      ],
-      "warnings": [
-        "Downtrend",
-        "Stale breakout",
-        "RS laggard"
-      ],
-      "rs_status": "LAGGARD",
-      "rs_bucket": "BOTTOM_50",
-      "sector_rank": 5,
-      "days_since_breakout": 48,
-      "breakout_level": 3501.7,
-      "volume_expansion": 0.08,
-      "price": 3468.0
-    },
-    {
       "ticker": "UNOMINDA.NS",
       "symbol": "UNOMINDA",
       "sector": "Automobile and Auto Components",
-      "rank": 360,
+      "rank": 363,
       "score": 40.9,
       "grade": "D",
       "components": {
@@ -11040,7 +11131,7 @@
       "ticker": "3MINDIA.NS",
       "symbol": "3MINDIA",
       "sector": "Diversified",
-      "rank": 361,
+      "rank": 364,
       "score": 40.88,
       "grade": "D",
       "components": {
@@ -11070,7 +11161,7 @@
       "ticker": "APOLLOTYRE.NS",
       "symbol": "APOLLOTYRE",
       "sector": "Automobile and Auto Components",
-      "rank": 362,
+      "rank": 365,
       "score": 40.84,
       "grade": "D",
       "components": {
@@ -11102,7 +11193,7 @@
       "ticker": "IOC.NS",
       "symbol": "IOC",
       "sector": "Oil Gas & Consumable Fuels",
-      "rank": 363,
+      "rank": 366,
       "score": 40.78,
       "grade": "D",
       "components": {
@@ -11133,7 +11224,7 @@
       "ticker": "SHREECEM.NS",
       "symbol": "SHREECEM",
       "sector": "Construction Materials",
-      "rank": 364,
+      "rank": 367,
       "score": 40.68,
       "grade": "D",
       "components": {
@@ -11161,41 +11252,10 @@
       "price": 24990.0
     },
     {
-      "ticker": "DRREDDY.NS",
-      "symbol": "DRREDDY",
-      "sector": "Healthcare",
-      "rank": 365,
-      "score": 40.42,
-      "grade": "D",
-      "components": {
-        "rs": 0.0,
-        "sector": 63.6,
-        "breakout": 58.5,
-        "trend": 30.0,
-        "liquidity": 100.0,
-        "atr": 30.0,
-        "freshness": 0.0
-      },
-      "drivers": [
-        "Best factor: liquidity 100"
-      ],
-      "warnings": [
-        "Stale breakout",
-        "RS laggard"
-      ],
-      "rs_status": "LAGGARD",
-      "rs_bucket": "BOTTOM_50",
-      "sector_rank": 9,
-      "days_since_breakout": 40,
-      "breakout_level": 1346.8,
-      "volume_expansion": 0.12,
-      "price": 1268.4000244140625
-    },
-    {
       "ticker": "FSL.NS",
       "symbol": "FSL",
       "sector": "Services",
-      "rank": 366,
+      "rank": 368,
       "score": 40.34,
       "grade": "D",
       "components": {
@@ -11220,13 +11280,13 @@
       "days_since_breakout": 29,
       "breakout_level": 282.05,
       "volume_expansion": 0.21,
-      "price": 241.35000610351562
+      "price": 241.3500061035156
     },
     {
       "ticker": "COROMANDEL.NS",
       "symbol": "COROMANDEL",
       "sector": "Chemicals",
-      "rank": 367,
+      "rank": 369,
       "score": 40.12,
       "grade": "D",
       "components": {
@@ -11257,7 +11317,7 @@
       "ticker": "SYNGENE.NS",
       "symbol": "SYNGENE",
       "sector": "Healthcare",
-      "rank": 368,
+      "rank": 370,
       "score": 39.96,
       "grade": "D",
       "components": {
@@ -11288,7 +11348,7 @@
       "ticker": "AFCONS.NS",
       "symbol": "AFCONS",
       "sector": "Construction",
-      "rank": 369,
+      "rank": 371,
       "score": 39.82,
       "grade": "D",
       "components": {
@@ -11319,7 +11379,7 @@
       "ticker": "CLEAN.NS",
       "symbol": "CLEAN",
       "sector": "Chemicals",
-      "rank": 370,
+      "rank": 372,
       "score": 39.42,
       "grade": "D",
       "components": {
@@ -11350,7 +11410,7 @@
       "ticker": "MRF.NS",
       "symbol": "MRF",
       "sector": "Automobile and Auto Components",
-      "rank": 371,
+      "rank": 373,
       "score": 39.4,
       "grade": "D",
       "components": {
@@ -11382,7 +11442,7 @@
       "ticker": "GLAXO.NS",
       "symbol": "GLAXO",
       "sector": "Healthcare",
-      "rank": 372,
+      "rank": 374,
       "score": 39.22,
       "grade": "D",
       "components": {
@@ -11413,7 +11473,7 @@
       "ticker": "KEC.NS",
       "symbol": "KEC",
       "sector": "Construction",
-      "rank": 373,
+      "rank": 375,
       "score": 38.84,
       "grade": "D",
       "components": {
@@ -11444,7 +11504,7 @@
       "ticker": "KFINTECH.NS",
       "symbol": "KFINTECH",
       "sector": "Financial Services",
-      "rank": 374,
+      "rank": 376,
       "score": 38.74,
       "grade": "D",
       "components": {
@@ -11475,7 +11535,7 @@
       "ticker": "JSL.NS",
       "symbol": "JSL",
       "sector": "Metals & Mining",
-      "rank": 375,
+      "rank": 377,
       "score": 38.62,
       "grade": "D",
       "components": {
@@ -11507,7 +11567,7 @@
       "ticker": "BHARTIARTL.NS",
       "symbol": "BHARTIARTL",
       "sector": "Telecommunication",
-      "rank": 376,
+      "rank": 378,
       "score": 38.28,
       "grade": "D",
       "components": {
@@ -11533,13 +11593,13 @@
       "days_since_breakout": 23,
       "breakout_level": 1915.3,
       "volume_expansion": 0.07,
-      "price": 1871.0999755859375
+      "price": 1871.0999755859373
     },
     {
       "ticker": "HDFCBANK.NS",
       "symbol": "HDFCBANK",
       "sector": "Financial Services",
-      "rank": 377,
+      "rank": 379,
       "score": 38.24,
       "grade": "D",
       "components": {
@@ -11570,7 +11630,7 @@
       "ticker": "POONAWALLA.NS",
       "symbol": "POONAWALLA",
       "sector": "Financial Services",
-      "rank": 378,
+      "rank": 380,
       "score": 38.24,
       "grade": "D",
       "components": {
@@ -11595,13 +11655,13 @@
       "days_since_breakout": 0,
       "breakout_level": 408.3,
       "volume_expansion": 0.33,
-      "price": 410.29998779296875
+      "price": 410.2999877929688
     },
     {
       "ticker": "PIIND.NS",
       "symbol": "PIIND",
       "sector": "Chemicals",
-      "rank": 379,
+      "rank": 381,
       "score": 38.18,
       "grade": "D",
       "components": {
@@ -11633,7 +11693,7 @@
       "ticker": "JKTYRE.NS",
       "symbol": "JKTYRE",
       "sector": "Automobile and Auto Components",
-      "rank": 380,
+      "rank": 382,
       "score": 38.1,
       "grade": "D",
       "components": {
@@ -11664,7 +11724,7 @@
       "ticker": "SBICARD.NS",
       "symbol": "SBICARD",
       "sector": "Financial Services",
-      "rank": 381,
+      "rank": 383,
       "score": 38.0,
       "grade": "D",
       "components": {
@@ -11695,7 +11755,7 @@
       "ticker": "GODREJPROP.NS",
       "symbol": "GODREJPROP",
       "sector": "Realty",
-      "rank": 382,
+      "rank": 384,
       "score": 37.98,
       "grade": "D",
       "components": {
@@ -11726,7 +11786,7 @@
       "ticker": "RHIM.NS",
       "symbol": "RHIM",
       "sector": "Capital Goods",
-      "rank": 383,
+      "rank": 385,
       "score": 37.92,
       "grade": "D",
       "components": {
@@ -11759,7 +11819,7 @@
       "ticker": "ULTRACEMCO.NS",
       "symbol": "ULTRACEMCO",
       "sector": "Construction Materials",
-      "rank": 384,
+      "rank": 386,
       "score": 37.92,
       "grade": "D",
       "components": {
@@ -11790,7 +11850,7 @@
       "ticker": "KALYANKJIL.NS",
       "symbol": "KALYANKJIL",
       "sector": "Consumer Durables",
-      "rank": 385,
+      "rank": 387,
       "score": 37.82,
       "grade": "D",
       "components": {
@@ -11821,7 +11881,7 @@
       "ticker": "PFIZER.NS",
       "symbol": "PFIZER",
       "sector": "Healthcare",
-      "rank": 386,
+      "rank": 388,
       "score": 37.72,
       "grade": "D",
       "components": {
@@ -11852,7 +11912,7 @@
       "ticker": "RELIANCE.NS",
       "symbol": "RELIANCE",
       "sector": "Oil Gas & Consumable Fuels",
-      "rank": 387,
+      "rank": 389,
       "score": 37.38,
       "grade": "D",
       "components": {
@@ -11884,7 +11944,7 @@
       "ticker": "IRFC.NS",
       "symbol": "IRFC",
       "sector": "Financial Services",
-      "rank": 388,
+      "rank": 390,
       "score": 37.1,
       "grade": "D",
       "components": {
@@ -11916,7 +11976,7 @@
       "ticker": "JIOFIN.NS",
       "symbol": "JIOFIN",
       "sector": "Financial Services",
-      "rank": 389,
+      "rank": 391,
       "score": 37.1,
       "grade": "D",
       "components": {
@@ -11942,13 +12002,13 @@
       "days_since_breakout": 38,
       "breakout_level": 245.15,
       "volume_expansion": 0.19,
-      "price": 243.86000061035156
+      "price": 243.8600006103516
     },
     {
       "ticker": "LTFOODS.NS",
       "symbol": "LTFOODS",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 390,
+      "rank": 392,
       "score": 37.08,
       "grade": "D",
       "components": {
@@ -11973,13 +12033,13 @@
       "days_since_breakout": 38,
       "breakout_level": 415.75,
       "volume_expansion": 0.56,
-      "price": 386.04998779296875
+      "price": 386.0499877929688
     },
     {
       "ticker": "GICRE.NS",
       "symbol": "GICRE",
       "sector": "Financial Services",
-      "rank": 391,
+      "rank": 393,
       "score": 36.54,
       "grade": "D",
       "components": {
@@ -12011,7 +12071,7 @@
       "ticker": "PINELABS.NS",
       "symbol": "PINELABS",
       "sector": "Financial Services",
-      "rank": 392,
+      "rank": 394,
       "score": 36.5,
       "grade": "D",
       "components": {
@@ -12043,7 +12103,7 @@
       "ticker": "SUNDARMFIN.NS",
       "symbol": "SUNDARMFIN",
       "sector": "Financial Services",
-      "rank": 393,
+      "rank": 395,
       "score": 36.5,
       "grade": "D",
       "components": {
@@ -12074,7 +12134,7 @@
       "ticker": "GILLETTE.NS",
       "symbol": "GILLETTE",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 394,
+      "rank": 396,
       "score": 36.32,
       "grade": "D",
       "components": {
@@ -12105,7 +12165,7 @@
       "ticker": "HAVELLS.NS",
       "symbol": "HAVELLS",
       "sector": "Consumer Durables",
-      "rank": 395,
+      "rank": 397,
       "score": 35.92,
       "grade": "D",
       "components": {
@@ -12137,7 +12197,7 @@
       "ticker": "PVRINOX.NS",
       "symbol": "PVRINOX",
       "sector": "Media Entertainment & Publication",
-      "rank": 396,
+      "rank": 398,
       "score": 35.72,
       "grade": "D",
       "components": {
@@ -12163,45 +12223,13 @@
       "days_since_breakout": 36,
       "breakout_level": 1005.1,
       "volume_expansion": 0.27,
-      "price": 961.1500244140625
-    },
-    {
-      "ticker": "INDUSTOWER.NS",
-      "symbol": "INDUSTOWER",
-      "sector": "Telecommunication",
-      "rank": 397,
-      "score": 35.66,
-      "grade": "D",
-      "components": {
-        "rs": 0.0,
-        "sector": 65.1,
-        "breakout": 48.2,
-        "trend": 0.0,
-        "liquidity": 100.0,
-        "atr": 60.0,
-        "freshness": 0.0
-      },
-      "drivers": [
-        "Best factor: liquidity 100"
-      ],
-      "warnings": [
-        "Downtrend",
-        "Stale breakout",
-        "RS laggard"
-      ],
-      "rs_status": "LAGGARD",
-      "rs_bucket": "BOTTOM_50",
-      "sector_rank": 7,
-      "days_since_breakout": 24,
-      "breakout_level": 449.4,
-      "volume_expansion": 0.1,
-      "price": 414.29998779296875
+      "price": 961.1500244140624
     },
     {
       "ticker": "ALKEM.NS",
       "symbol": "ALKEM",
       "sector": "Healthcare",
-      "rank": 398,
+      "rank": 399,
       "score": 35.36,
       "grade": "D",
       "components": {
@@ -12233,7 +12261,7 @@
       "ticker": "PAYTM.NS",
       "symbol": "PAYTM",
       "sector": "Financial Services",
-      "rank": 399,
+      "rank": 400,
       "score": 35.3,
       "grade": "D",
       "components": {
@@ -12265,7 +12293,7 @@
       "ticker": "ICICIPRULI.NS",
       "symbol": "ICICIPRULI",
       "sector": "Financial Services",
-      "rank": 400,
+      "rank": 401,
       "score": 35.0,
       "grade": "D",
       "components": {
@@ -12296,7 +12324,7 @@
       "ticker": "SBFC.NS",
       "symbol": "SBFC",
       "sector": "Financial Services",
-      "rank": 401,
+      "rank": 402,
       "score": 34.84,
       "grade": "D",
       "components": {
@@ -12321,13 +12349,13 @@
       "days_since_breakout": 45,
       "breakout_level": 97.0,
       "volume_expansion": 0.39,
-      "price": 91.94999694824219
+      "price": 91.9499969482422
     },
     {
       "ticker": "BLUEDART.NS",
       "symbol": "BLUEDART",
       "sector": "Services",
-      "rank": 402,
+      "rank": 403,
       "score": 34.82,
       "grade": "D",
       "components": {
@@ -12359,7 +12387,7 @@
       "ticker": "BAJAJFINSV.NS",
       "symbol": "BAJAJFINSV",
       "sector": "Financial Services",
-      "rank": 403,
+      "rank": 404,
       "score": 34.5,
       "grade": "D",
       "components": {
@@ -12391,7 +12419,7 @@
       "ticker": "IEX.NS",
       "symbol": "IEX",
       "sector": "Financial Services",
-      "rank": 404,
+      "rank": 405,
       "score": 34.5,
       "grade": "D",
       "components": {
@@ -12423,7 +12451,7 @@
       "ticker": "BLUESTARCO.NS",
       "symbol": "BLUESTARCO",
       "sector": "Consumer Durables",
-      "rank": 405,
+      "rank": 406,
       "score": 34.32,
       "grade": "D",
       "components": {
@@ -12455,7 +12483,7 @@
       "ticker": "NUVOCO.NS",
       "symbol": "NUVOCO",
       "sector": "Construction Materials",
-      "rank": 406,
+      "rank": 407,
       "score": 34.3,
       "grade": "D",
       "components": {
@@ -12486,7 +12514,7 @@
       "ticker": "M&MFIN.NS",
       "symbol": "M&MFIN",
       "sector": "Financial Services",
-      "rank": 407,
+      "rank": 408,
       "score": 34.24,
       "grade": "D",
       "components": {
@@ -12518,7 +12546,7 @@
       "ticker": "BRITANNIA.NS",
       "symbol": "BRITANNIA",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 408,
+      "rank": 409,
       "score": 34.2,
       "grade": "D",
       "components": {
@@ -12549,7 +12577,7 @@
       "ticker": "VEDL.NS",
       "symbol": "VEDL",
       "sector": "Metals & Mining",
-      "rank": 409,
+      "rank": 410,
       "score": 34.18,
       "grade": "D",
       "components": {
@@ -12581,7 +12609,7 @@
       "ticker": "UPL.NS",
       "symbol": "UPL",
       "sector": "Chemicals",
-      "rank": 410,
+      "rank": 411,
       "score": 34.06,
       "grade": "D",
       "components": {
@@ -12613,7 +12641,7 @@
       "ticker": "MEESHO.NS",
       "symbol": "MEESHO",
       "sector": "Consumer Services",
-      "rank": 411,
+      "rank": 412,
       "score": 33.86,
       "grade": "D",
       "components": {
@@ -12644,7 +12672,7 @@
       "ticker": "ICICIGI.NS",
       "symbol": "ICICIGI",
       "sector": "Financial Services",
-      "rank": 412,
+      "rank": 413,
       "score": 33.84,
       "grade": "D",
       "components": {
@@ -12676,7 +12704,7 @@
       "ticker": "HDFCLIFE.NS",
       "symbol": "HDFCLIFE",
       "sector": "Financial Services",
-      "rank": 413,
+      "rank": 414,
       "score": 33.74,
       "grade": "D",
       "components": {
@@ -12707,7 +12735,7 @@
       "ticker": "CONCOR.NS",
       "symbol": "CONCOR",
       "sector": "Services",
-      "rank": 414,
+      "rank": 415,
       "score": 33.7,
       "grade": "D",
       "components": {
@@ -12739,7 +12767,7 @@
       "ticker": "ECLERX.NS",
       "symbol": "ECLERX",
       "sector": "Services",
-      "rank": 415,
+      "rank": 416,
       "score": 33.2,
       "grade": "D",
       "components": {
@@ -12771,7 +12799,7 @@
       "ticker": "GODREJCP.NS",
       "symbol": "GODREJCP",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 416,
+      "rank": 417,
       "score": 33.2,
       "grade": "D",
       "components": {
@@ -12803,7 +12831,7 @@
       "ticker": "BAJAJHFL.NS",
       "symbol": "BAJAJHFL",
       "sector": "Financial Services",
-      "rank": 417,
+      "rank": 418,
       "score": 33.1,
       "grade": "D",
       "components": {
@@ -12835,7 +12863,7 @@
       "ticker": "JAINREC.NS",
       "symbol": "JAINREC",
       "sector": "Metals & Mining",
-      "rank": 418,
+      "rank": 419,
       "score": 33.0,
       "grade": "D",
       "components": {
@@ -12868,7 +12896,7 @@
       "ticker": "GODIGIT.NS",
       "symbol": "GODIGIT",
       "sector": "Financial Services",
-      "rank": 419,
+      "rank": 420,
       "score": 32.98,
       "grade": "D",
       "components": {
@@ -12899,7 +12927,7 @@
       "ticker": "IRCON.NS",
       "symbol": "IRCON",
       "sector": "Construction",
-      "rank": 420,
+      "rank": 421,
       "score": 32.84,
       "grade": "D",
       "components": {
@@ -12931,7 +12959,7 @@
       "ticker": "OIL.NS",
       "symbol": "OIL",
       "sector": "Oil Gas & Consumable Fuels",
-      "rank": 421,
+      "rank": 422,
       "score": 32.76,
       "grade": "D",
       "components": {
@@ -12957,13 +12985,13 @@
       "days_since_breakout": 25,
       "breakout_level": 507.0,
       "volume_expansion": 0.08,
-      "price": 418.29998779296875
+      "price": 418.2999877929688
     },
     {
       "ticker": "UBL.NS",
       "symbol": "UBL",
       "sector": "Fast Moving Consumer Goods",
-      "rank": 422,
+      "rank": 423,
       "score": 32.7,
       "grade": "D",
       "components": {
@@ -12989,38 +13017,6 @@
       "breakout_level": 1373.0,
       "volume_expansion": 0.29,
       "price": 1342.300048828125
-    },
-    {
-      "ticker": "SARDAEN.NS",
-      "symbol": "SARDAEN",
-      "sector": "Metals & Mining",
-      "rank": 423,
-      "score": 32.6,
-      "grade": "D",
-      "components": {
-        "rs": 0.0,
-        "sector": 69.8,
-        "breakout": 43.2,
-        "trend": 0.0,
-        "liquidity": 70.0,
-        "atr": 60.0,
-        "freshness": 0.0
-      },
-      "drivers": [
-        "Sector #3 (Metals & Mining)"
-      ],
-      "warnings": [
-        "Downtrend",
-        "Stale breakout",
-        "RS laggard"
-      ],
-      "rs_status": "LAGGARD",
-      "rs_bucket": "BOTTOM_50",
-      "sector_rank": 3,
-      "days_since_breakout": 38,
-      "breakout_level": 578.8,
-      "volume_expansion": 0.08,
-      "price": 519.3499755859375
     },
     {
       "ticker": "SBILIFE.NS",
@@ -13147,7 +13143,7 @@
       "days_since_breakout": 29,
       "breakout_level": 455.75,
       "volume_expansion": 0.15,
-      "price": 430.45001220703125
+      "price": 430.4500122070313
     },
     {
       "ticker": "ONGC.NS",
@@ -13211,7 +13207,7 @@
       "days_since_breakout": 30,
       "breakout_level": 200.0,
       "volume_expansion": 0.17,
-      "price": 194.14999389648438
+      "price": 194.1499938964844
     },
     {
       "ticker": "BHARTIHEXA.NS",
@@ -13275,7 +13271,7 @@
       "days_since_breakout": 36,
       "breakout_level": 121.38,
       "volume_expansion": 2.85,
-      "price": 111.51000213623047
+      "price": 111.51000213623048
     },
     {
       "ticker": "ABREL.NS",
@@ -13370,7 +13366,7 @@
       "days_since_breakout": 42,
       "breakout_level": 967.0,
       "volume_expansion": 0.23,
-      "price": 948.8499755859375
+      "price": 948.8499755859376
     },
     {
       "ticker": "CRISIL.NS",
@@ -13752,7 +13748,7 @@
       "days_since_breakout": 43,
       "breakout_level": 1047.8,
       "volume_expansion": 0.1,
-      "price": 1012.8499755859375
+      "price": 1012.8499755859376
     },
     {
       "ticker": "HEXT.NS",
@@ -13783,7 +13779,7 @@
       "days_since_breakout": 12,
       "breakout_level": 552.5,
       "volume_expansion": 0.59,
-      "price": 494.54998779296875
+      "price": 494.5499877929688
     },
     {
       "ticker": "SAPPHIRE.NS",
@@ -13878,7 +13874,7 @@
       "days_since_breakout": 41,
       "breakout_level": 449.3,
       "volume_expansion": 0.05,
-      "price": 423.79998779296875
+      "price": 423.7999877929688
     },
     {
       "ticker": "BAYERCROP.NS",
@@ -13941,7 +13937,7 @@
       "days_since_breakout": null,
       "breakout_level": 245.0,
       "volume_expansion": 0.07,
-      "price": 217.85000610351562
+      "price": 217.8500061035156
     },
     {
       "ticker": "ACC.NS",
@@ -14196,7 +14192,7 @@
       "days_since_breakout": 44,
       "breakout_level": 275.85,
       "volume_expansion": 0.72,
-      "price": 246.64999389648438
+      "price": 246.6499938964844
     },
     {
       "ticker": "ABLBL.NS",
@@ -14964,7 +14960,7 @@
       "days_since_breakout": 18,
       "breakout_level": 211.0,
       "volume_expansion": 0.12,
-      "price": 184.05999755859375
+      "price": 184.05999755859372
     },
     {
       "ticker": "ZENSARTECH.NS",

@@ -122,6 +122,25 @@ def main() -> None:
         help="One-time-per-day OAuth flow for Kite Connect (auto-called)",
     )
     parser.add_argument(
+        "--auto",
+        action="store_true",
+        help="Use with --kite-login: fully automated pyotp/TOTP login (no browser). "
+             "Requires KITE_USER_ID / KITE_PASSWORD / KITE_TOTP_SECRET in .env",
+    )
+    parser.add_argument(
+        "--weight-sweep",
+        action="store_true",
+        dest="weight_sweep",
+        help="Walk-forward OOS sweep of adaptive weights (RS/Sector/Breakout/Trend) "
+             "+ 2025 failure diagnostic. Measurement only — adopts nothing automatically.",
+    )
+    parser.add_argument(
+        "--sweep-quick",
+        action="store_true",
+        dest="sweep_quick",
+        help="Use with --weight-sweep: coarse grid (fast)",
+    )
+    parser.add_argument(
         "--trail",
         nargs=2, metavar=("TICKER", "NEW_STOP"),
         help="Raise the stop on an open trade (also modifies the protective GTT)",
@@ -186,12 +205,18 @@ def main() -> None:
     parser.add_argument(
         "--screen",
         action="store_true",
-        help="Swing-trading cockpit: dynamic Nifty 500 screen → Top 20 board + Top 5 actionable trades",
+        help="Swing-trading cockpit: Nifty 500 screen → committee verdict + exact orders + exit rules",
     )
     parser.add_argument(
         "--refresh",
         action="store_true",
         help="Use with --screen: force-refresh the universe + OHLCV cache",
+    )
+    parser.add_argument(
+        "--research",
+        action="store_true",
+        help="Use with --screen: show the full analyst tables (top-20 board, "
+             "extended monitor, adaptive promotions/demotions)",
     )
     parser.add_argument(
         "--portfolio",
@@ -378,7 +403,8 @@ def main() -> None:
 
     elif args.screen:
         import sys as _sys
-        _sys.exit(_cmd_swing_screen(force_refresh=args.refresh))
+        _sys.exit(_cmd_swing_screen(force_refresh=args.refresh,
+                                    research=args.research))
 
     elif args.trades:
         import sys as _sys
@@ -408,6 +434,10 @@ def main() -> None:
         import sys as _sys
         _sys.exit(_cmd_validate_rolling(years=args.years, every_weeks=args.every_weeks,
                                         sample=args.rsample))
+
+    elif args.weight_sweep:
+        import sys as _sys
+        _sys.exit(_cmd_weight_sweep(quick=args.sweep_quick, top_n=args.top_n))
 
     elif args.orb_screen is not None:
         _cmd_screen(args.orb_screen, top_n=args.top_n)
@@ -442,7 +472,7 @@ def main() -> None:
         _cmd_partial(args.partial[0], args.partial[1], args.price, args.journal)
 
     elif args.kite_login:
-        _cmd_kite_login()
+        _cmd_kite_login(auto=args.auto)
 
     elif args.reconcile:
         _cmd_reconcile(args.journal)
@@ -486,10 +516,10 @@ def _cmd_screen(days: int = 30, top_n: int = 8) -> None:
     run_screen(days=days, top_n=top_n)
 
 
-def _cmd_swing_screen(force_refresh: bool = False) -> int:
+def _cmd_swing_screen(force_refresh: bool = False, research: bool = False) -> int:
     """Swing-trading cockpit — dynamic Nifty 500 screen (Phases 1-5)."""
     from screen.screen_runner import run_screen as run_swing_screen
-    return run_swing_screen(force_refresh=force_refresh)
+    return run_swing_screen(force_refresh=force_refresh, research=research)
 
 
 def _cmd_portfolio(force_refresh: bool = False) -> int:
@@ -519,6 +549,14 @@ def _cmd_sync_portfolio(capital: float = None) -> int:
 
     print(f"\n  Syncing portfolio state  (capital: ₹{cap:,.0f})...")
     state, path = sync_and_save(cap)
+    # Heartbeat for the @enforce_live_sync(15m) fail-safe — only when we truly
+    # saw the live broker account (not CSV/simulated fallback).
+    if "ZERODHA_LIVE" in (state.source or ""):
+        try:
+            from integrations.kite_auth import mark_synced
+            mark_synced(source="sync_portfolio")
+        except Exception:
+            pass
     render_state_summary(state)
     print(f"  Saved → {path}\n")
     return 0
@@ -555,9 +593,14 @@ def _cmd_orders(capital: float = None, force_refresh: bool = False) -> int:
         render_benchmark_abort(exc)
         return 2
 
-    # Target portfolio (what the system recommends)
-    snap = PortfolioConstructor().construct(res.act_snap, res.regime, res.feed.data,
-                                            persist=True)
+    # Target portfolio (what the system recommends) — same position cap as the
+    # --screen committee plan (ONE truth: config/deployment.yaml target_positions)
+    snap = PortfolioConstructor(
+        risk_per_trade=float(cfg.get("risk_per_trade_pct", 1.0)),
+        max_positions=int(cfg.get("target_positions", 5)),
+    ).construct(res.act_snap, res.regime, res.feed.data, persist=True)
+    print("  ⓘ Order-card levels are raw scan geometry. For calibrated execution "
+          "levels + the committee verdict, run: python run.py --screen")
 
     # Current account state (Kite → CSV → simulated)
     state = load_state(cap)
@@ -777,10 +820,47 @@ def _cmd_swing_backtest(spec: str, journal_dir: str, days: int = 180) -> None:
     run_swing_backtest(tickers, days=days)
 
 
-def _cmd_kite_login() -> None:
-    """One-time-per-day Kite Connect OAuth flow."""
+def _cmd_kite_login(auto: bool = False) -> None:
+    """Kite Connect login. --auto uses stored credentials + pyotp (no browser);
+    otherwise the manual paste-the-redirect-URL OAuth flow."""
+    if auto:
+        import logging
+        logging.basicConfig(level=logging.INFO,
+                            format="%(levelname)s %(name)s: %(message)s")
+        from integrations.kite_auth import auto_login, AutoLoginError
+        try:
+            res = auto_login()
+            print(f"\n  ✓ Auto-login OK for {res.user_id} "
+                  f"(session cached, synced {res.synced_at}).\n")
+        except AutoLoginError as exc:
+            print(f"\n  ✗ Automated login failed: {exc}\n"
+                  f"    Fall back to manual: python run.py --kite-login\n")
+            import sys as _s
+            _s.exit(2)
+        return
     from integrations.zerodha import login_interactive
     login_interactive()
+
+
+def _cmd_weight_sweep(quick: bool = False, top_n: int = 10) -> int:
+    """Walk-forward OOS weight sweep + 2025 failure diagnostic (measurement only)."""
+    import sys as _s
+    try:
+        _s.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+    from analytics.weight_sweep import run_sweep, render_report
+    print(f"\n  Running walk-forward OOS weight sweep "
+          f"({'coarse' if quick else 'full'} grid, basket={top_n or 10})...")
+    try:
+        rep = run_sweep(top_n=top_n or 10, quick=quick, persist=True)
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"  ✗ {exc}")
+        return 1
+    render_report(rep)
+    from datetime import date as _d
+    print(f"  Report: reports/validation/weight_sweep.json  ({_d.today().isoformat()})\n")
+    return 0
 
 
 def _cmd_sync(journal_dir: str) -> None:

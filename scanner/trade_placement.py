@@ -56,49 +56,67 @@ GTT_LOG_COLUMNS = [
 # Helper: load today's plan for a ticker from the scan log
 # ─────────────────────────────────────────────────────────────────────────────
 def _todays_plan(ticker: str, journal_dir: str) -> Optional[dict]:
+    # PRIMARY: today's --screen zero-decision plan (Journal/plan_context.json).
+    # --screen is the discovery+committee engine; its snapshot holds the exact
+    # calibrated entry(=GTT trigger)/stop/T1/T2/qty that the committee sized.
+    # HARD DATE GUARD inside: entries not dated TODAY are refused — a stale plan
+    # once nearly placed 15-day-old levels.
+    # (2026-07-02 consistency fix: this used to be the FALLBACK, so a same-day
+    # legacy --today scan could silently override the committee's levels with a
+    # different engine's numbers. One execution truth now: screen plan first.)
+    plan = _screen_plan(ticker)
+    if plan is not None:
+        return plan
+    # Fallback: legacy --today scan log (research/debug shell only).
     scan_df = load_scan_log(journal_dir)
-    if scan_df.empty or "scan_date" not in scan_df.columns:
+    today_str = date.today().strftime("%Y-%m-%d")
+    if not scan_df.empty and "scan_date" in scan_df.columns:
+        match = scan_df[
+            (scan_df["scan_date"] == today_str) &
+            (scan_df["ticker"]    == ticker)
+        ].tail(1)
+        if not match.empty:
+            row = match.iloc[0]
+            return {k: row.get(k, 0) for k in [
+                "ticker", "grade", "score", "tier", "status",
+                "entry_price", "stop_price", "t1", "t2",
+                "rr_t1", "quantity", "max_loss_inr",
+            ]} | {"ticker": ticker, "regime": str(row.get("regime", "BULL"))}
+    return None
+
+
+def _screen_plan(ticker: str) -> Optional[dict]:
+    """Load today's --screen zero-decision plan for `ticker` (None if absent or
+    not dated today)."""
+    import json
+    p = Path("Journal/plan_context.json")
+    try:
+        ctx = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    except Exception:
+        return None
+    sym = ticker.replace(".NS", "")
+    e = ctx.get(sym)
+    if not e:
         return None
     today_str = date.today().strftime("%Y-%m-%d")
-    match = scan_df[
-        (scan_df["scan_date"] == today_str) &
-        (scan_df["ticker"]    == ticker)
-    ].tail(1)
-    if match.empty:
+    if str(e.get("date", "")) != today_str:
+        print(_r(f"  ✗ Screen plan for {sym} is dated {e.get('date', '?')} — STALE."))
+        print(_d("    Re-run `python run.py --screen` to regenerate today's levels.\n"))
         return None
-    row = match.iloc[0]
-    return {k: row.get(k, 0) for k in [
-        "ticker", "grade", "score", "tier", "status",
-        "entry_price", "stop_price", "t1", "t2",
-        "rr_t1", "quantity", "max_loss_inr",
-    ]} | {"ticker": ticker, "regime": str(row.get("regime", "BULL"))}
+    return {
+        "ticker": ticker, "grade": e.get("tier", "-"), "score": e.get("conviction", 0),
+        "tier": e.get("tier", "-"), "status": "SCREEN_PLAN",
+        "entry_price": e.get("entry"), "stop_price": e.get("stop"),
+        "t1": e.get("t1"), "t2": e.get("t2"), "rr_t1": 0,
+        "quantity": e.get("qty"), "max_loss_inr": e.get("risk_inr"),
+        "regime": str(e.get("regime", "BULL")),
+    }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# COMMAND: --place TICKER
-# ─────────────────────────────────────────────────────────────────────────────
-def place_gtt_interactive(ticker: str, journal_dir: str = "journal") -> None:
-    """
-    Interactive GTT placement:
-      1. Looks up today's plan in scan log
-      2. Shows the plan + max loss in ₹
-      3. Asks for [y/N] confirmation
-      4. Places GTT on Zerodha, logs the gtt_id to journal/gtt_orders.csv
-    """
-    print(f"\n  {_b('PLACE GTT')}  —  {ticker}\n")
-
-    plan = _todays_plan(ticker, journal_dir)
-    if plan is None or float(plan.get("entry_price", 0) or 0) <= 0:
-        print(_r(f"  ✗ {ticker} not in today's scan log."))
-        print(_d("    Run --today first, or use --record for an off-plan trade.\n"))
-        return
-
-    if str(plan.get("status", "")) not in ("READY", "WATCH"):
-        print(_y(f"  ⚠  {ticker} status is '{plan['status']}' — not READY/WATCH."))
-        print(_d("    Continuing anyway (you may be placing a forward alert).\n"))
-
-    # ── REGIME GATE ────────────────────────────────────────────────────────
-    # Fetch current NIFTY regime and apply the configured gate policy.
+def _legacy_regime_gate() -> bool:
+    """Legacy SMA regime gate — applies ONLY to legacy scan-log plans (--today).
+    Screen plans skip it: the committee already regime-gated them. Returns True
+    to proceed, False when the trader cancels."""
     try:
         from scanner.scanner import get_market_regime
         from scanner.guards import check_regime_gate
@@ -123,7 +141,7 @@ def place_gtt_interactive(ticker: str, journal_dir: str = "journal") -> None:
             ).strip().lower()
             if _override != "override":
                 print(_d("\n  Smart call. No order placed.\n"))
-                return
+                return False
             print(_y("\n  ⚠  Override accepted. Proceeding against regime.\n"))
 
         elif _gate.code == "WARN":
@@ -134,11 +152,49 @@ def place_gtt_interactive(ticker: str, journal_dir: str = "journal") -> None:
             _cont = input(_b("  Proceed? [y/N]: ")).strip().lower()
             if _cont != "y":
                 print(_d("\n  Cancelled.\n"))
-                return
+                return False
             print()
-
     except Exception:
         pass  # regime check is advisory — never block --place due to a code error
+    return True
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMMAND: --place TICKER
+# ─────────────────────────────────────────────────────────────────────────────
+def place_gtt_interactive(ticker: str, journal_dir: str = "journal") -> None:
+    """
+    Interactive GTT placement:
+      1. Looks up today's plan in scan log
+      2. Shows the plan + max loss in ₹
+      3. Asks for [y/N] confirmation
+      4. Places GTT on Zerodha, logs the gtt_id to journal/gtt_orders.csv
+    """
+    print(f"\n  {_b('PLACE GTT')}  —  {ticker}\n")
+
+    plan = _todays_plan(ticker, journal_dir)
+    if plan is None or float(plan.get("entry_price", 0) or 0) <= 0:
+        print(_r(f"  ✗ {ticker} not in today's plan (scan log or --screen plan)."))
+        print(_d("    Run `python run.py --screen` first — only names in TODAY's "
+                 "order card can be placed.\n"))
+        return
+
+    if str(plan.get("status", "")) not in ("READY", "WATCH", "SCREEN_PLAN"):
+        print(_y(f"  ⚠  {ticker} status is '{plan['status']}' — not READY/WATCH."))
+        print(_d("    Continuing anyway (you may be placing a forward alert).\n"))
+
+    # ── REGIME GATE ────────────────────────────────────────────────────────
+    # A SCREEN_PLAN order was already regime-gated by the committee (the
+    # multi-dimensional RegimeClassifier + E4 posture) when --screen sized it
+    # TODAY. Re-gating it here with the LEGACY SMA regime engine created the
+    # "two regimes" contradiction — the screen could say BUY (BULL) while the
+    # old engine said BEAR and blocked placement. One regime truth: trust the
+    # committee for screen plans; keep the legacy gate for legacy scan-log plans.
+    if str(plan.get("status", "")) == "SCREEN_PLAN":
+        print(f"  Regime      {_g(str(plan.get('regime', '?')))}  "
+              f"{_d('(committee-gated at screen time — not re-checked by the legacy engine)')}\n")
+    elif not _legacy_regime_gate():
+        return
 
     qty = int(float(plan.get("quantity", 0) or 0))
     if qty <= 0:
